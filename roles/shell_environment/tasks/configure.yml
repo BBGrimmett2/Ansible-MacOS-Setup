@@ -16,12 +16,42 @@
     - shell_environment_zshrc_path is exists
   failed_when: false
 
-- name: Deploy .zshrc configuration
+- name: Deploy .zshrc from Dashlane
+  when: shell_environment_zshrc_from_dashlane
+  block:
+    - name: Set Dashlane secret name for .zshrc
+      ansible.builtin.set_fact:
+        zshrc_secret_name: "{{ shell_environment_zshrc_dashlane_secret_personal if workstation_profile == 'personal' else shell_environment_zshrc_dashlane_secret_work }}"
+
+    - name: Fetch .zshrc from Dashlane
+      ansible.builtin.include_role:
+        name: dashlane_secrets
+        tasks_from: fetch_file
+      vars:
+        dashlane_secret_name: "{{ zshrc_secret_name }}"
+        dashlane_secret_output_path: "{{ shell_environment_zshrc_path }}"
+        dashlane_secret_permissions: "0644"
+
+    - name: Display .zshrc deployment status (Dashlane)
+      ansible.builtin.debug:
+        msg:
+          - "ZSH configuration deployed from Dashlane ({{ zshrc_secret_name }})"
+          - "Profile: {{ workstation_profile | default('personal') }}"
+
+- name: Deploy .zshrc from template
   ansible.builtin.template:
     src: zshrc.j2
     dest: "{{ shell_environment_zshrc_path }}"
     mode: "0644"
     backup: false
+  when: not shell_environment_zshrc_from_dashlane
+
+- name: Display .zshrc deployment status (template)
+  ansible.builtin.debug:
+    msg:
+      - "ZSH configuration deployed from template"
+      - "Profile: {{ workstation_profile | default('personal') }}"
+  when: not shell_environment_zshrc_from_dashlane
 
 - name: Ensure ZSH is default shell
   ansible.builtin.user:
@@ -33,9 +63,7 @@
 - name: Display shell configuration info
   ansible.builtin.debug:
     msg:
-      - "ZSH configuration deployed successfully"
       - "Configuration file: {{ shell_environment_zshrc_path }}"
-      - "Profile: {{ workstation_profile | default('personal') }}"
       - ""
       - "Reload with: source ~/.zshrc"
       - "Or open a new terminal"

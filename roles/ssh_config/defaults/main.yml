@@ -78,6 +78,13 @@ ssh_deploy_config: true
 # Whether to backup existing SSH config
 ssh_backup_existing: true
 
+# Fetch SSH config from Dashlane (if true, ignores template)
+ssh_config_from_dashlane: false
+
+# Dashlane secret name for SSH config (if using Dashlane)
+ssh_config_dashlane_secret_personal: "ssh_config_personal"
+ssh_config_dashlane_secret_work: "ssh_config_work"
+
 # SSH client options (applied globally)
 ssh_global_options:
   AddKeysToAgent: "yes"

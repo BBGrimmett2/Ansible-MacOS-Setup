@@ -126,6 +126,20 @@ Examples:
   ssh-key-github              ✗ Bad (wrong separator)
 ```
 
+## Sensitive Configuration Files
+
+You can also store complete config files in Dashlane (for files with sensitive endpoints, API keys, etc.):
+
+| File | Secret Name | Enable With |
+|------|------------|-------------|
+| ~/.ssh/config | `ssh_config_personal` or `ssh_config_work` | `ssh_config_from_dashlane: true` |
+| ~/.zshrc | `zshrc_personal` or `zshrc_work` | `shell_environment_zshrc_from_dashlane: true` |
+| ~/.gitconfig | `gitconfig_personal` or `gitconfig_work` | `development_tools_gitconfig_from_dashlane: true` |
+
+See [SENSITIVE_FILES_GUIDE.md](SENSITIVE_FILES_GUIDE.md) for detailed examples and setup.
+
 ## Full Documentation
 
-For complete details, see: [DASHLANE_SECRETS_SETUP.md](DASHLANE_SECRETS_SETUP.md)
+For complete details, see:
+- [DASHLANE_SECRETS_SETUP.md](DASHLANE_SECRETS_SETUP.md) - SSH keys and credentials
+- [SENSITIVE_FILES_GUIDE.md](SENSITIVE_FILES_GUIDE.md) - Configuration files

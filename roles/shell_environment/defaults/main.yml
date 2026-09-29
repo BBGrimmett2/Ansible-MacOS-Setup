@@ -25,6 +25,13 @@ shell_environment_zshrc_path: "{{ ansible_env.HOME }}/.zshrc"
 # Backup existing configuration
 shell_environment_backup_existing: true
 
+# Fetch .zshrc from Dashlane (if true, ignores template)
+shell_environment_zshrc_from_dashlane: false
+
+# Dashlane secret name for .zshrc (if using Dashlane)
+shell_environment_zshrc_dashlane_secret_personal: "zshrc_personal"
+shell_environment_zshrc_dashlane_secret_work: "zshrc_work"
+
 # -----------------------------------------------------------------------------
 # PATH Configuration
 # -----------------------------------------------------------------------------

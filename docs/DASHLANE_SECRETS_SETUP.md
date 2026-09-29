@@ -6,6 +6,7 @@ This guide documents all secrets required for the macOS workstation automation, 
 
 - [Overview](#overview)
 - [Required Secrets](#required-secrets)
+- [Sensitive Configuration Files](#sensitive-configuration-files)
 - [Optional Secrets](#optional-secrets)
 - [How to Create Secrets in Dashlane](#how-to-create-secrets-in-dashlane)
 - [Naming Conventions](#naming-conventions)
@@ -110,6 +111,50 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==
 3. Add public key to Red Hat git:
    - Copy public key: `cat ~/.ssh/id_shadowman.pub`
    - Add to your Red Hat git server's SSH keys settings
+
+## Sensitive Configuration Files
+
+Instead of using templates or hardcoding configuration files, you can store complete sensitive config files in Dashlane. This is useful when files contain:
+- Private hostnames/endpoints
+- API keys or tokens
+- Company-specific configurations
+- Credential helpers
+
+### Supported Configuration Files
+
+| Config File | Personal Secret | Work Secret | Enable Variable |
+|------------|----------------|-------------|-----------------|
+| SSH config | `ssh_config_personal` | `ssh_config_work` | `ssh_config_from_dashlane: true` |
+| ZSH config | `zshrc_personal` | `zshrc_work` | `shell_environment_zshrc_from_dashlane: true` |
+| Git config | `gitconfig_personal` | `gitconfig_work` | `development_tools_gitconfig_from_dashlane: true` |
+
+### Quick Setup
+
+1. **Export your current config:**
+   ```bash
+   cat ~/.ssh/config    # or ~/.zshrc or ~/.gitconfig
+   ```
+
+2. **Create Dashlane Secure Note:**
+   - Title: Use exact name from table (e.g., `ssh_config_personal`)
+   - Content: Paste complete file content
+   - Save and sync
+
+3. **Enable in Ansible:**
+   ```yaml
+   # In group_vars/localhost.yml or as extra-vars
+   ssh_config_from_dashlane: true
+   shell_environment_zshrc_from_dashlane: true
+   development_tools_gitconfig_from_dashlane: true
+   ```
+
+4. **Run playbook:**
+   ```bash
+   ansible-playbook playbooks/bootstrap_workstation.yml
+   ```
+
+For complete documentation including examples and troubleshooting, see:
+**[SENSITIVE_FILES_GUIDE.md](SENSITIVE_FILES_GUIDE.md)**
 
 ## Optional Secrets
 

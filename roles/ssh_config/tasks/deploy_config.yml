@@ -21,13 +21,35 @@
     - ssh_backup_existing
     - ssh_config_stat.stat.exists
 
+- name: Deploy SSH config from Dashlane
+  when: ssh_config_from_dashlane
+  block:
+    - name: Set Dashlane secret name for SSH config
+      ansible.builtin.set_fact:
+        ssh_config_secret_name: "{{ ssh_config_dashlane_secret_personal if workstation_profile == 'personal' else ssh_config_dashlane_secret_work }}"
+
+    - name: Fetch SSH config from Dashlane
+      ansible.builtin.include_role:
+        name: dashlane_secrets
+        tasks_from: fetch_file
+      vars:
+        dashlane_secret_name: "{{ ssh_config_secret_name }}"
+        dashlane_secret_output_path: "{{ ssh_config_file }}"
+        dashlane_secret_permissions: "{{ ssh_config_permissions }}"
+
+    - name: Display SSH config deployment status
+      ansible.builtin.debug:
+        msg: "SSH config deployed from Dashlane ({{ ssh_config_secret_name }}) for {{ workstation_profile }} profile"
+
 - name: Deploy SSH config from template
   ansible.builtin.template:
     src: "ssh_config_{{ workstation_profile }}.j2"
     dest: "{{ ssh_config_file }}"
     mode: "{{ ssh_config_permissions }}"
     backup: "{{ ssh_backup_existing }}"
+  when: not ssh_config_from_dashlane
 
-- name: Display SSH config deployment status
+- name: Display SSH config deployment status (template)
   ansible.builtin.debug:
-    msg: "SSH config deployed for {{ workstation_profile }} profile"
+    msg: "SSH config deployed from template for {{ workstation_profile }} profile"
+  when: not ssh_config_from_dashlane

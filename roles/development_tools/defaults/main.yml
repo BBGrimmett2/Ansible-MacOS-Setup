@@ -42,6 +42,19 @@ development_tools_packages:
 # Configure git globally
 development_tools_configure_git: true
 
+# Deploy full .gitconfig from Dashlane (if true, skips individual settings)
+development_tools_gitconfig_from_dashlane: false
+
+# Dashlane secret name for .gitconfig (if using Dashlane)
+development_tools_gitconfig_dashlane_secret_personal: "gitconfig_personal"
+development_tools_gitconfig_dashlane_secret_work: "gitconfig_work"
+
+# Git config file path
+development_tools_gitconfig_path: "{{ ansible_env.HOME }}/.gitconfig"
+
+# Backup existing .gitconfig
+development_tools_gitconfig_backup: true
+
 # Git user name (profile-specific)
 development_tools_git_user_name: "{{ git_user_name_personal if workstation_profile == 'personal' else git_user_name_work }}"
 

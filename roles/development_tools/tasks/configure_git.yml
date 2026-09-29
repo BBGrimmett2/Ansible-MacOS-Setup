@@ -5,43 +5,83 @@
 # Configures git globally with profile-specific settings
 # =============================================================================
 
-- name: Configure git user name
-  community.general.git_config:
-    name: user.name
-    value: "{{ development_tools_git_user_name }}"
-    scope: global
+- name: Check if .gitconfig exists
+  ansible.builtin.stat:
+    path: "{{ development_tools_gitconfig_path }}"
+  register: gitconfig_stat
 
-- name: Configure git user email
-  community.general.git_config:
-    name: user.email
-    value: "{{ development_tools_git_user_email }}"
-    scope: global
-  when: development_tools_git_user_email != ""
+- name: Backup existing .gitconfig
+  ansible.builtin.copy:
+    src: "{{ development_tools_gitconfig_path }}"
+    dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch }}"
+    remote_src: true
+    mode: "0644"
+  when:
+    - development_tools_gitconfig_backup
+    - gitconfig_stat.stat.exists
 
-- name: Configure git default branch
-  community.general.git_config:
-    name: init.defaultBranch
-    value: "{{ development_tools_git_default_branch }}"
-    scope: global
+- name: Deploy .gitconfig from Dashlane
+  when: development_tools_gitconfig_from_dashlane
+  block:
+    - name: Set Dashlane secret name for .gitconfig
+      ansible.builtin.set_fact:
+        gitconfig_secret_name: "{{ development_tools_gitconfig_dashlane_secret_personal if workstation_profile == 'personal' else development_tools_gitconfig_dashlane_secret_work }}"
 
-- name: Configure git editor
-  community.general.git_config:
-    name: core.editor
-    value: "{{ development_tools_git_editor }}"
-    scope: global
+    - name: Fetch .gitconfig from Dashlane
+      ansible.builtin.include_role:
+        name: dashlane_secrets
+        tasks_from: fetch_file
+      vars:
+        dashlane_secret_name: "{{ gitconfig_secret_name }}"
+        dashlane_secret_output_path: "{{ development_tools_gitconfig_path }}"
+        dashlane_secret_permissions: "0644"
 
-- name: Configure git to use delta as pager (if installed)
-  community.general.git_config:
-    name: core.pager
-    value: delta
-    scope: global
-  when: "'git-delta' in ansible_facts.packages | default({})"
-  failed_when: false
+    - name: Display .gitconfig deployment status
+      ansible.builtin.debug:
+        msg:
+          - "Git configured from Dashlane ({{ gitconfig_secret_name }})"
+          - "Profile: {{ workstation_profile | default('personal') }}"
 
-- name: Display git configuration
-  ansible.builtin.debug:
-    msg:
-      - "Git configured successfully"
-      - "User: {{ development_tools_git_user_name }} <{{ development_tools_git_user_email }}>"
-      - "Default branch: {{ development_tools_git_default_branch }}"
-      - "Editor: {{ development_tools_git_editor }}"
+- name: Configure git with individual settings
+  when: not development_tools_gitconfig_from_dashlane
+  block:
+    - name: Configure git user name
+      community.general.git_config:
+        name: user.name
+        value: "{{ development_tools_git_user_name }}"
+        scope: global
+
+    - name: Configure git user email
+      community.general.git_config:
+        name: user.email
+        value: "{{ development_tools_git_user_email }}"
+        scope: global
+      when: development_tools_git_user_email != ""
+
+    - name: Configure git default branch
+      community.general.git_config:
+        name: init.defaultBranch
+        value: "{{ development_tools_git_default_branch }}"
+        scope: global
+
+    - name: Configure git editor
+      community.general.git_config:
+        name: core.editor
+        value: "{{ development_tools_git_editor }}"
+        scope: global
+
+    - name: Configure git to use delta as pager (if installed)
+      community.general.git_config:
+        name: core.pager
+        value: delta
+        scope: global
+      when: "'git-delta' in ansible_facts.packages | default({})"
+      failed_when: false
+
+    - name: Display git configuration
+      ansible.builtin.debug:
+        msg:
+          - "Git configured successfully"
+          - "User: {{ development_tools_git_user_name }} <{{ development_tools_git_user_email }}>"
+          - "Default branch: {{ development_tools_git_default_branch }}"
+          - "Editor: {{ development_tools_git_editor }}"
