@@ -22,11 +22,11 @@ development_tools_install_all: true
 # pre-commit - Git hooks framework
 development_tools_precommit_enabled: true
 
-# Claude Code CLI - AI coding assistant (work profile only by default)
-development_tools_claude_code_enabled: "{{ true if workstation_profile == 'work' else false }}"
+# Claude Code CLI - AI coding assistant (TODO: manual configuration for now)
+development_tools_claude_code_enabled: false
 
-# AAP demo environment tools (work profile only)
-development_tools_aap_demo_enabled: "{{ true if workstation_profile == 'work' else false }}"
+# AAP demo environment tools (TODO: not yet implemented)
+development_tools_aap_demo_enabled: false
 
 # -----------------------------------------------------------------------------
 # Package Mapping (Homebrew/pip packages)
@@ -84,24 +84,15 @@ development_tools_precommit_ansible_hooks:
 # -----------------------------------------------------------------------------
 # Claude Code Configuration (Work Profile)
 # -----------------------------------------------------------------------------
-
-# Claude Code installation method
-development_tools_claude_code_install_method: npm  # or 'manual'
-
-# Claude Code organization (for work)
-development_tools_claude_code_org: ""  # Set via Dashlane secret
-
-# Claude Code API key source
-development_tools_claude_code_api_key_source: dashlane
+# TODO: Claude Code installation is manual for now
+# User has custom configuration steps outside of Ansible
+# Future: Implement if automation is desired
 
 # -----------------------------------------------------------------------------
 # AAP Demo Environment (Work Profile)
 # -----------------------------------------------------------------------------
-
-# AAP demo tools to install
-development_tools_aap_demo_tools:
-  - ansible-navigator
-  - ansible-builder
+# TODO: AAP demo tools installation not yet implemented
+# Future: Add ansible-navigator, ansible-builder installation
 
 # -----------------------------------------------------------------------------
 # Custom Scripts

@@ -121,8 +121,8 @@ cd Ansible-MacOS-Setup
 - Git global configuration (profile-specific)
 
 ### Development Tools (Work Profile Only)
-- Claude Code CLI (Red Hat organization config)
-- AAP-demo environment tools
+- Claude Code CLI (manual configuration - not automated)
+- AAP-demo environment tools (TODO - not yet implemented)
 
 ---
 
@@ -254,8 +254,8 @@ Configured for Red Hat work:
 - Work SSH keys (Work GitLab, Shadowman git server)
 - Work git configuration (Red Hat email)
 - Work VPN profiles (Shadowman, root CAs, OpenShift certs)
-- Claude Code CLI with Red Hat organization config
-- AAP-demo environment tools
+- Claude Code CLI (manual configuration)
+- AAP-demo environment tools (TODO)
 - All standard tools
 
 Profile selection happens interactively when you run `bootstrap_workstation.yml`.
@@ -281,7 +281,6 @@ Before running playbooks, ensure these secrets are stored in Dashlane:
 - `vpn_shadowman_profile` - Shadowman VPN configuration
 - `vpn_shadowman_root_ca` - Root CA certificate
 - `openshift_root_ca` - OpenShift cluster root CA
-- `claude_code_api_key` - Claude Code API key
 
 See [docs/dashlane_secrets_setup.md](docs/dashlane_secrets_setup.md) for detailed setup instructions.
 
