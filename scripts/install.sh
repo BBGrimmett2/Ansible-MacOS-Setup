@@ -179,6 +179,45 @@ install_xcode_cli_tools() {
     print_step "Xcode Command Line Tools installed successfully"
 }
 
+configure_homebrew_shell() {
+    # Determine shell configuration file
+    local shell_rc=""
+    if [[ -n "$ZSH_VERSION" ]] || [[ "$SHELL" == *"zsh"* ]]; then
+        shell_rc="$HOME/.zshrc"
+    elif [[ -n "$BASH_VERSION" ]] || [[ "$SHELL" == *"bash"* ]]; then
+        shell_rc="$HOME/.bash_profile"
+    else
+        print_warning "Unknown shell, skipping shell configuration"
+        return 0
+    fi
+
+    # Determine Homebrew path
+    local brew_path=""
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        brew_path="/opt/homebrew"
+    elif [[ -f "/usr/local/bin/brew" ]]; then
+        brew_path="/usr/local"
+    else
+        return 0
+    fi
+
+    # Check if shellenv already in rc file
+    if grep -q "brew shellenv" "$shell_rc" 2>/dev/null; then
+        print_step "Homebrew already configured in $shell_rc"
+        return 0
+    fi
+
+    # Add Homebrew to shell configuration
+    print_info "Adding Homebrew to $shell_rc"
+    {
+        echo ""
+        echo "# Homebrew"
+        echo "eval \"\$(${brew_path}/bin/brew shellenv)\""
+    } >> "$shell_rc"
+
+    print_step "Homebrew configured in $shell_rc"
+}
+
 install_homebrew() {
     print_section "Installing Homebrew Package Manager"
 
@@ -188,12 +227,14 @@ install_homebrew() {
         eval "$(/opt/homebrew/bin/brew shellenv)"
         print_step "Homebrew already installed at /opt/homebrew/bin/brew"
         print_info "Skipping Homebrew update (Ansible will manage packages)"
+        configure_homebrew_shell
         return 0
     elif [[ -f "/usr/local/bin/brew" ]]; then
         # Intel - already installed
         eval "$(/usr/local/bin/brew shellenv)"
         print_step "Homebrew already installed at /usr/local/bin/brew"
         print_info "Skipping Homebrew update (Ansible will manage packages)"
+        configure_homebrew_shell
         return 0
     fi
 
@@ -215,6 +256,9 @@ install_homebrew() {
     else
         print_fatal "Homebrew installation failed"
     fi
+
+    # Configure shell for future sessions
+    configure_homebrew_shell
 }
 
 install_python() {
