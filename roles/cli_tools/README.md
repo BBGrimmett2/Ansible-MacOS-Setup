@@ -17,7 +17,7 @@ This role manages installation and configuration of modern CLI tools that enhanc
 
 ## Special Feature: direnv Safety Checks
 
-When enabled, direnv is configured with interactive safety prompts when entering directories under `~/Projects/`. This prevents accidentally loading environment variables from the wrong project, which is especially useful when working with multiple demo or test environments that use similar credentials.
+When enabled, direnv is configured with interactive safety prompts when entering directories under `~/Documents/Projects/`. This prevents accidentally loading environment variables from the wrong project, which is especially useful when working with multiple demo or test environments that use similar credentials.
 
 **How it works:**
 - Custom `~/.config/direnv/direnvrc` with `use_project_env` function
@@ -27,7 +27,7 @@ When enabled, direnv is configured with interactive safety prompts when entering
 
 **Example `.envrc` usage:**
 ```bash
-# ~/Projects/demo-aws-project/.envrc
+# ~/Documents/Projects/demo-aws-project/.envrc
 use_project_env
 export AWS_PROFILE=demo-aws
 export ENV=staging
@@ -73,7 +73,7 @@ cli_tools_direnv_configure: true
 cli_tools_direnv_safety_enabled: true
 
 # Projects directory path for safety checks
-cli_tools_direnv_projects_path: "{{ ansible_env.HOME }}/Projects"
+cli_tools_direnv_projects_path: "{{ ansible_env.HOME }}/Documents/Projects"
 
 # direnv configuration directory
 cli_tools_direnv_config_dir: "{{ ansible_env.HOME }}/.config/direnv"
@@ -260,8 +260,8 @@ After installing with safety checks enabled:
 
 ```bash
 # Create a test project
-mkdir -p ~/Projects/test-project
-cd ~/Projects/test-project
+mkdir -p ~/Documents/Projects/test-project
+cd ~/Documents/Projects/test-project
 
 # Create .envrc
 cat > .envrc << 'EOF'

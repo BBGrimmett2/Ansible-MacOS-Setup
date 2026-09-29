@@ -29,7 +29,7 @@
            tasks_from: fetch_ssh_key
          vars:
            dashlane_secret_name: "ssh_key_github"
-           dashlane_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_github"
+           dashlane_secret_output_path: "{{ ansible_facts['env']['HOME'] }}/.ssh/id_github"
 
       2. Fetch Credential:
          ansible.builtin.import_role:

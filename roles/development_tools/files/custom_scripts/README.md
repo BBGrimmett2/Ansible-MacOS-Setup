@@ -19,7 +19,7 @@ Quick setup of cloud demo environments with direnv integration.
 
 **Workflow:**
 ```bash
-cd ~/Projects/demo-aws-project
+cd ~/Documents/Projects/demo-aws-project
 rhdps setup aws
 direnv allow
 # Environment auto-loads when entering this directory

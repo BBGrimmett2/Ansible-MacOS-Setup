@@ -40,8 +40,8 @@ homebrew_configure_shell: true
 
 # Shell profile files to update
 homebrew_shell_profiles:
-  - "{{ ansible_env.HOME }}/.zprofile"
-  - "{{ ansible_env.HOME }}/.zshrc"
+  - "{{ ansible_facts['env']['HOME'] }}/.zprofile"
+  - "{{ ansible_facts['env']['HOME'] }}/.zshrc"
 
 # -----------------------------------------------------------------------------
 # Repository Settings

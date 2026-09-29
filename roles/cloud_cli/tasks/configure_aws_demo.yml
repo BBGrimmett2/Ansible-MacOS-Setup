@@ -27,13 +27,13 @@
 
 - name: Create AWS config directory
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.aws"
+    path: "{{ ansible_facts['env']['HOME'] }}/.aws"
     state: directory
     mode: "0700"
 
 - name: Configure AWS demo profile credentials
   ansible.builtin.blockinfile:
-    path: "{{ ansible_env.HOME }}/.aws/credentials"
+    path: "{{ ansible_facts['env']['HOME'] }}/.aws/credentials"
     create: true
     mode: "0600"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ aws_demo_profile_name }}"
@@ -44,7 +44,7 @@
 
 - name: Configure AWS demo profile config
   ansible.builtin.blockinfile:
-    path: "{{ ansible_env.HOME }}/.aws/config"
+    path: "{{ ansible_facts['env']['HOME'] }}/.aws/config"
     create: true
     mode: "0600"
     marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ aws_demo_profile_name }}"

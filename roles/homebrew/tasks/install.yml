@@ -114,8 +114,8 @@
         state: absent
       loop:
         - "{{ homebrew_prefix }}"
-        - "{{ ansible_env.HOME }}/Library/Caches/Homebrew"
-        - "{{ ansible_env.HOME }}/Library/Logs/Homebrew"
+        - "{{ ansible_facts['env']['HOME'] }}/Library/Caches/Homebrew"
+        - "{{ ansible_facts['env']['HOME'] }}/Library/Logs/Homebrew"
 
     - name: Display Homebrew uninstall completion
       ansible.builtin.debug:

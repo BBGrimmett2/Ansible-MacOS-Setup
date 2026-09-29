@@ -26,21 +26,21 @@
 
 - name: Create GCP credentials directory
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.config/gcloud"
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/gcloud"
     state: directory
     mode: "0700"
 
 - name: Save GCP service account credentials
   ansible.builtin.copy:
     content: "{{ gcp_demo_credentials_json }}"
-    dest: "{{ ansible_env.HOME }}/.config/gcloud/{{ gcp_demo_config_name }}-sa.json"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/gcloud/{{ gcp_demo_config_name }}-sa.json"
     mode: "0600"
   no_log: true
 
 - name: Authenticate with service account
   ansible.builtin.command: >
     gcloud auth activate-service-account
-    --key-file="{{ ansible_env.HOME }}/.config/gcloud/{{ gcp_demo_config_name }}-sa.json"
+    --key-file="{{ ansible_facts['env']['HOME'] }}/.config/gcloud/{{ gcp_demo_config_name }}-sa.json"
     --project="{{ gcp_demo_project_id }}"
   register: gcp_auth_result
   changed_when: gcp_auth_result.rc == 0

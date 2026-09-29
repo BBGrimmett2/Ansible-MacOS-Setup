@@ -92,7 +92,7 @@ macos_trackpad_natural_scrolling: true
 # -----------------------------------------------------------------------------
 
 # Screenshot save location
-macos_screenshots_location: "{{ ansible_env.HOME }}/Desktop"
+macos_screenshots_location: "{{ ansible_facts['env']['HOME'] }}/Desktop"
 
 # Screenshot file format (png, jpg, gif, pdf, tiff)
 macos_screenshots_format: png

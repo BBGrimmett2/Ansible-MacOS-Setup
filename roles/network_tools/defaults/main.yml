@@ -57,7 +57,7 @@ network_tools_packages:
 network_tools_vpn_configure: false
 
 # VPN profiles directory
-network_tools_vpn_profiles_dir: "{{ ansible_env.HOME }}/.vpn"
+network_tools_vpn_profiles_dir: "{{ ansible_facts['env']['HOME'] }}/.vpn"
 
 # Profile-specific VPN configuration
 network_tools_vpn_personal_enabled: false
@@ -75,4 +75,4 @@ network_tools_vpn_shadowman_profile_name: "shadowman"
 network_tools_bruno_configure: false
 
 # Bruno configuration directory
-network_tools_bruno_config_dir: "{{ ansible_env.HOME }}/.bruno"
+network_tools_bruno_config_dir: "{{ ansible_facts['env']['HOME'] }}/.bruno"

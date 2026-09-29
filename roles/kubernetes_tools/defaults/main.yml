@@ -64,7 +64,7 @@ kubernetes_tools_configure_completion: true
 kubernetes_tools_k9s_configure: false
 
 # k9s configuration directory
-kubernetes_tools_k9s_config_dir: "{{ ansible_env.HOME }}/.config/k9s"
+kubernetes_tools_k9s_config_dir: "{{ ansible_facts['env']['HOME'] }}/.config/k9s"
 
 # k9s skin/theme
 kubernetes_tools_k9s_skin: "nord"

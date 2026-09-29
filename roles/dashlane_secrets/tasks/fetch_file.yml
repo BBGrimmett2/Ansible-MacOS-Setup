@@ -57,7 +57,7 @@
     content: "{{ dashlane_file_content.stdout }}"
     dest: "{{ dashlane_secret_output_path }}"
     mode: "{{ dashlane_secret_permissions | default(dashlane_default_permissions) }}"
-    owner: "{{ ansible_env.USER }}"
+    owner: "{{ ansible_facts['env']['USER'] }}"
   when: dashlane_file_retrieved
   no_log: "{{ dashlane_no_log }}"
 

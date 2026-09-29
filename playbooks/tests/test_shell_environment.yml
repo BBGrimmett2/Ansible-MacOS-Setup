@@ -38,25 +38,25 @@
       block:
         - name: Check .zshrc exists
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.zshrc"
+            path: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
           register: zshrc_stat
           failed_when: not zshrc_stat.stat.exists
 
         - name: Check .zshrc contains tool integrations
-          ansible.builtin.command: grep -q "eval.*direnv hook zsh" {{ ansible_env.HOME }}/.zshrc
+          ansible.builtin.command: grep -q "eval.*direnv hook zsh" {{ ansible_facts['env']['HOME'] }}/.zshrc
           register: direnv_integration
           changed_when: false
           failed_when: direnv_integration.rc != 0
           when: shell_environment_enable_tool_integrations
 
         - name: Check .zshrc contains modern aliases
-          ansible.builtin.command: grep -q "alias ls='eza" {{ ansible_env.HOME }}/.zshrc
+          ansible.builtin.command: grep -q "alias ls='eza" {{ ansible_facts['env']['HOME'] }}/.zshrc
           register: eza_alias
           changed_when: false
           failed_when: eza_alias.rc != 0
 
         - name: Check .zshrc contains custom prompt
-          ansible.builtin.command: grep -q "PROMPT=" {{ ansible_env.HOME }}/.zshrc
+          ansible.builtin.command: grep -q "PROMPT=" {{ ansible_facts['env']['HOME'] }}/.zshrc
           register: custom_prompt
           changed_when: false
           failed_when: custom_prompt.rc != 0

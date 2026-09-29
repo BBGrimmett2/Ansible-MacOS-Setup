@@ -20,7 +20,7 @@ shell_environment_state: present
 shell_environment_zsh_enabled: true
 
 # ZSH configuration file
-shell_environment_zshrc_path: "{{ ansible_env.HOME }}/.zshrc"
+shell_environment_zshrc_path: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
 
 # Backup existing configuration
 shell_environment_backup_existing: true
@@ -38,7 +38,7 @@ shell_environment_zshrc_dashlane_secret_work: "zshrc_work"
 
 # Custom PATH entries (prepended to PATH)
 shell_environment_path_entries:
-  - "{{ ansible_env.HOME }}/.local/bin"
+  - "{{ ansible_facts['env']['HOME'] }}/.local/bin"
   - "{{ homebrew_prefix }}/bin"
   - "{{ homebrew_prefix }}/sbin"
 

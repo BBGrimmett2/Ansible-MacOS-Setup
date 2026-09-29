@@ -10,7 +10,7 @@
 # -----------------------------------------------------------------------------
 
 # SSH configuration directory
-ssh_config_dir: "{{ ansible_env.HOME }}/.ssh"
+ssh_config_dir: "{{ ansible_facts['env']['HOME'] }}/.ssh"
 
 # SSH configuration file
 ssh_config_file: "{{ ssh_config_dir }}/config"

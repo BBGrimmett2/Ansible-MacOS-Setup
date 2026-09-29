@@ -45,20 +45,20 @@
 
         - name: Check git global config exists
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.gitconfig"
+            path: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
           register: gitconfig_stat
           failed_when: not gitconfig_stat.stat.exists
 
         - name: Check custom scripts directory exists
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.local/bin"
+            path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
           register: scripts_dir_stat
           failed_when: not scripts_dir_stat.stat.exists
           when: development_tools_install_custom_scripts
 
         - name: Check rhdps script exists
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.local/bin/rhdps"
+            path: "{{ ansible_facts['env']['HOME'] }}/.local/bin/rhdps"
           register: rhdps_stat
           failed_when: not rhdps_stat.stat.exists
           when: development_tools_install_custom_scripts

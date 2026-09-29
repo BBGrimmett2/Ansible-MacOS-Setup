@@ -140,7 +140,7 @@ killport 3000
 
 Example:
 ```
-~/Projects/my-app git:(main*) k8s:(dev/default)
+~/Documents/Projects/my-app git:(main*) k8s:(dev/default)
 ❯
 ```
 
@@ -148,7 +148,7 @@ Example:
 
 **direnv** - Automatic environment loading:
 ```bash
-cd ~/Projects/demo-aws
+cd ~/Documents/Projects/demo-aws
 # Automatically loads .envrc with AWS credentials
 ```
 

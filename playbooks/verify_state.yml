@@ -11,7 +11,7 @@
   gather_facts: true
 
   vars:
-    state_dir: "{{ ansible_env.HOME }}/.config/workstation-manager"
+    state_dir: "{{ ansible_facts['env']['HOME'] }}/.config/workstation-manager"
     state_file: "{{ state_dir }}/state.json"
 
   tasks:
@@ -60,7 +60,7 @@
 
     - name: Check direnv configuration
       ansible.builtin.stat:
-        path: "{{ ansible_env.HOME }}/.config/direnv/direnvrc"
+        path: "{{ ansible_facts['env']['HOME'] }}/.config/direnv/direnvrc"
       register: direnvrc_stat
 
     # =========================================================================
@@ -154,7 +154,7 @@
         full_state:
           last_verified: "{{ ansible_date_time.iso8601 }}"
           hostname: "{{ ansible_facts['hostname'] }}"
-          username: "{{ ansible_env.USER }}"
+          username: "{{ ansible_facts['env']['USER'] }}"
           profile: "{{ workstation_profile | default('unknown') }}"
           os_version: "{{ ansible_facts['distribution_version'] }}"
           architecture: "{{ ansible_facts['architecture'] }}"

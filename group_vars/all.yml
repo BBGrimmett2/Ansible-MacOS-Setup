@@ -29,15 +29,15 @@ homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64'
 # -----------------------------------------------------------------------------
 
 # Current user's home directory (commonly used across roles)
-user_home: "{{ ansible_env.HOME }}"
-user_name: "{{ ansible_env.USER }}"
+user_home: "{{ ansible_facts['env']['HOME'] }}"
+user_name: "{{ ansible_facts['env']['USER'] }}"
 
 # -----------------------------------------------------------------------------
 # Project Paths
 # -----------------------------------------------------------------------------
 
 # Projects directory for direnv safety checks
-projects_directory: "{{ user_home }}/Projects"
+projects_directory: "{{ user_home }}/Documents/Projects"
 
 # Configuration directories
 config_directory: "{{ user_home }}/.config"

@@ -68,10 +68,10 @@ cli_tools_direnv_configure: true
 cli_tools_direnv_safety_enabled: true
 
 # Projects directory path for safety checks
-cli_tools_direnv_projects_path: "{{ ansible_env.HOME }}/Projects"
+cli_tools_direnv_projects_path: "{{ ansible_facts['env']['HOME'] }}/Documents/Projects"
 
 # direnv configuration directory
-cli_tools_direnv_config_dir: "{{ ansible_env.HOME }}/.config/direnv"
+cli_tools_direnv_config_dir: "{{ ansible_facts['env']['HOME'] }}/.config/direnv"
 
 # direnv configuration file
 cli_tools_direnv_config_file: "{{ cli_tools_direnv_config_dir }}/direnvrc"

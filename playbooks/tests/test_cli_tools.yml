@@ -24,7 +24,7 @@
         msg:
           - "=== CLI Tools Role Test ==="
           - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
-          - "User: {{ ansible_env.USER }}"
+          - "User: {{ ansible_facts['env']['USER'] }}"
           - "Architecture: {{ ansible_facts['architecture'] }}"
           - "Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else 'disabled' }}"
 
@@ -85,13 +85,13 @@
 
         - name: Verify direnvrc exists
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/.config/direnv/direnvrc"
+            path: "{{ ansible_facts['env']['HOME'] }}/.config/direnv/direnvrc"
           register: direnvrc_stat
           failed_when: not direnvrc_stat.stat.exists
 
         - name: Verify Projects directory exists
           ansible.builtin.stat:
-            path: "{{ ansible_env.HOME }}/Projects"
+            path: "{{ ansible_facts['env']['HOME'] }}/Documents/Projects"
           register: projects_stat
           failed_when: not projects_stat.stat.exists
           when: cli_tools_direnv_safety_enabled

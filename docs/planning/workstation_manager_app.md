@@ -221,7 +221,7 @@ Sources/
 │                                                           │
 │  Configuration:                                           │
 │    cli_tools_direnv_safety_enabled: true                 │
-│    cli_tools_direnv_projects_path: ~/Projects            │
+│    cli_tools_direnv_projects_path: ~/Documents/Projects            │
 │                                                           │
 │  [View Logs] [Edit Config] [🔄 Redeploy] [× Uninstall]   │
 │                                                           │

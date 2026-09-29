@@ -290,10 +290,10 @@ See [docs/dashlane_secrets_setup.md](docs/dashlane_secrets_setup.md) for detaile
 
 ### direnv Safety Checks
 
-When working in `~/Projects/*` directories, direnv will prompt for confirmation before loading environment variables:
+When working in `~/Documents/Projects/*` directories, direnv will prompt for confirmation before loading environment variables:
 
 ```bash
-# In ~/Projects/demo-aws-project/.envrc
+# In ~/Documents/Projects/demo-aws-project/.envrc
 use_project_env
 export AWS_PROFILE=demo-aws-project
 export ENV=staging

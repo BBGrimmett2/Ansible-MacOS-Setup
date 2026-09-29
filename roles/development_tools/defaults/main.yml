@@ -47,7 +47,7 @@ development_tools_gitconfig_dashlane_secret_personal: "gitconfig_personal"
 development_tools_gitconfig_dashlane_secret_work: "gitconfig_work"
 
 # Git config file path
-development_tools_gitconfig_path: "{{ ansible_env.HOME }}/.gitconfig"
+development_tools_gitconfig_path: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
 
 # Backup existing .gitconfig
 development_tools_gitconfig_backup: true
@@ -59,11 +59,11 @@ development_tools_git_user_name: "{{ git_user_name_personal if workstation_profi
 development_tools_git_user_email: "{{ git_user_email_personal if workstation_profile == 'personal' else git_user_email_work }}"
 
 # Personal git config
-git_user_name_personal: "{{ ansible_env.USER | title }}"
+git_user_name_personal: "{{ ansible_facts['env']['USER'] | title }}"
 git_user_email_personal: ""  # Set in group_vars or override
 
 # Work git config
-git_user_name_work: "{{ ansible_env.USER | title }}"
+git_user_name_work: "{{ ansible_facts['env']['USER'] | title }}"
 git_user_email_work: ""  # Set in group_vars or override
 
 # Git default branch
@@ -106,7 +106,7 @@ development_tools_precommit_ansible_hooks:
 development_tools_aap_demo_enabled: false
 
 # AAP demo clone directory
-development_tools_aap_demo_dir: "{{ ansible_env.HOME }}/aap-demo"
+development_tools_aap_demo_dir: "{{ ansible_facts['env']['HOME'] }}/aap-demo"
 
 # AAP demo GitHub repository
 development_tools_aap_demo_repo: "https://github.com/RedHatOfficial/aap-demo"

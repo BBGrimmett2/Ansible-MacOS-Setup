@@ -314,12 +314,12 @@ WORKFLOW:
 
 EXAMPLES:
     # Setup AWS demo environment
-    cd ~/Projects/demo-aws-project
+    cd ~/Documents/Projects/demo-aws-project
     $SCRIPT_NAME setup aws
     direnv allow
 
     # Setup GCP demo environment
-    cd ~/Projects/demo-gcp-project
+    cd ~/Documents/Projects/demo-gcp-project
     $SCRIPT_NAME setup gcp
     direnv allow
 
@@ -331,7 +331,7 @@ EXAMPLES:
 
 INTEGRATION:
     This tool integrates with direnv safety checks. When you cd into
-    a Projects/ directory, you'll be prompted to confirm you're in the
+    a Documents/Projects/ directory, you'll be prompted to confirm you're in the
     correct project before environment variables are loaded.
 
 EOF

@@ -41,7 +41,7 @@ pam_yubikey_install_module: true
 pam_yubikey_mode: sufficient
 
 # Location for U2F keys mapping file
-pam_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
+pam_u2f_authfile: "{{ ansible_facts['env']['HOME'] }}/.config/Yubico/u2f_keys"
 
 # Whether to prompt for Touch ID first, then YubiKey
 pam_touchid_priority: true

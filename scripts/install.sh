@@ -552,6 +552,9 @@ main() {
     print_info "Removing Ansible virtual environment..."
     rm -rf "$VENV_DIR" &>/dev/null || print_warning "Could not remove venv (non-fatal)"
 
+    print_info "Cleaning up Ansible fact cache..."
+    rm -rf /tmp/ansible_facts_cache &>/dev/null || true
+
     print_step "Installation artifacts cleaned up"
 
     # Final instructions

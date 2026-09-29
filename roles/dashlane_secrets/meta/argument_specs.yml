@@ -47,7 +47,7 @@ argument_specs:
       dashlane_secret_output_path:
         type: str
         required: true
-        description: Where to save the SSH key (e.g., '{{ ansible_env.HOME }}/.ssh/id_github')
+        description: Where to save the SSH key (e.g., '{{ ansible_facts['env']['HOME'] }}/.ssh/id_github')
 
       dashlane_secret_permissions:
         type: str

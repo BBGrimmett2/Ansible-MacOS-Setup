@@ -8,7 +8,7 @@
 
 - name: Create local bin directory
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.local/bin"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
     state: directory
     mode: "0755"
 
@@ -24,14 +24,14 @@
 - name: Install custom scripts
   ansible.builtin.copy:
     src: "{{ item.path }}"
-    dest: "{{ ansible_env.HOME }}/.local/bin/{{ item.path | basename }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/{{ item.path | basename }}"
     mode: "0755"
   loop: "{{ custom_scripts_found.files }}"
   when: custom_scripts_found.files | length > 0
 
 - name: Verify ~/.local/bin is in PATH
   ansible.builtin.shell: |
-    if [[ ":$PATH:" == *":{{ ansible_env.HOME }}/.local/bin:"* ]]; then
+    if [[ ":$PATH:" == *":{{ ansible_facts['env']['HOME'] }}/.local/bin:"* ]]; then
       echo "present"
     else
       echo "missing"
@@ -43,7 +43,7 @@
   ansible.builtin.debug:
     msg:
       - "Custom scripts installed successfully"
-      - "Location: {{ ansible_env.HOME }}/.local/bin/"
+      - "Location: {{ ansible_facts['env']['HOME'] }}/.local/bin/"
       - "Installed scripts:"
       - "{{ custom_scripts_found.files | map(attribute='path') | map('basename') | list }}"
       - ""
