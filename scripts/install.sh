@@ -397,61 +397,53 @@ authenticate_dashlane() {
     fi
 
     # Check if already authenticated
-    local already_authenticated=false
-    local dashlane_user=""
-
     if $dcli_cmd whoami &>/dev/null; then
-        already_authenticated=true
-        dashlane_user=$($dcli_cmd whoami 2>/dev/null || echo "unknown")
+        local dashlane_user=$($dcli_cmd whoami 2>/dev/null || echo "unknown")
         print_step "Dashlane CLI already authenticated (user: ${dashlane_user})"
-        echo ""
-        read -p "Re-authenticate with different account? (y/N): " reauth_choice
-
-        if [[ ! "$reauth_choice" =~ ^[Yy]$ ]]; then
-            print_info "Keeping current Dashlane authentication"
-            return 0
-        fi
-
-        print_info "Proceeding with re-authentication..."
-    else
-        print_info "Dashlane authentication required for secret management"
-        print_info "Skip now and authenticate later by running: dcli configure"
-        echo ""
-        read -p "Authenticate now? (Y/n): " auth_choice
-
-        if [[ "$auth_choice" =~ ^[Nn]$ ]]; then
-            print_warning "Skipping Dashlane authentication"
-            print_warning "Run 'dcli configure' before running playbooks that need secrets"
-            return 0
-        fi
-    fi
-
-    # Run dcli configure for initial authentication (not sync!)
-    echo ""
-    print_info "Follow the prompts to authenticate with Dashlane..."
-    print_info "This will ask for your email, open browser, and require 2FA + master password"
-    echo ""
-
-    if ! $dcli_cmd configure; then
-        echo ""
-        print_warning "Dashlane authentication failed"
-        print_warning "You can authenticate later by running: dcli configure"
-        print_info "Press Enter to continue..."
-        read -r
         return 0
     fi
 
-    # Verify authentication actually worked
+    # Not authenticated - try to authenticate automatically
     echo ""
-    if $dcli_cmd whoami &>/dev/null; then
-        local verified_user=$($dcli_cmd whoami 2>/dev/null)
-        print_step "Dashlane CLI authenticated successfully (user: ${verified_user})"
-    else
-        print_warning "Dashlane configure completed but authentication verification failed"
-        print_warning "Try running 'dcli configure' manually before running playbooks"
-        print_info "Press Enter to continue..."
-        read -r
+    print_info "Attempting Dashlane authentication..."
+    echo ""
+
+    # Try running any dcli command which should trigger auth flow
+    print_info "Running: $dcli_cmd whoami"
+    print_info "(This should prompt for authentication if not already logged in)"
+    echo ""
+
+    # Run whoami directly - this should trigger interactive auth on first run
+    if $dcli_cmd whoami 2>&1; then
+        echo ""
+        print_step "Dashlane CLI authenticated successfully"
+        return 0
     fi
+
+    # If that failed, try configure
+    echo ""
+    print_warning "Initial authentication attempt failed"
+    print_info "Trying: $dcli_cmd configure"
+    echo ""
+
+    if $dcli_cmd configure; then
+        # Verify it worked
+        if $dcli_cmd whoami &>/dev/null; then
+            local verified_user=$($dcli_cmd whoami 2>/dev/null)
+            print_step "Dashlane CLI authenticated successfully (user: ${verified_user})"
+            return 0
+        fi
+    fi
+
+    # If we get here, authentication failed
+    echo ""
+    print_warning "Dashlane authentication could not be completed automatically"
+    print_warning "Please authenticate manually after installation:"
+    print_warning "  1. Try: dcli whoami (may prompt for auth)"
+    print_warning "  2. Or: dcli configure"
+    print_warning "  3. Or: dcli sync"
+    print_info "Press Enter to continue without Dashlane authentication..."
+    read -r
 }
 
 # =============================================================================
