@@ -397,40 +397,20 @@ authenticate_dashlane() {
     fi
 
     # Check if already authenticated
-    if $dcli_cmd whoami &>/dev/null; then
-        local dashlane_user=$($dcli_cmd whoami 2>/dev/null || echo "unknown")
-        print_step "Dashlane CLI already authenticated (user: ${dashlane_user})"
+    if $dcli_cmd status &>/dev/null; then
+        print_step "Dashlane CLI already authenticated"
         return 0
     fi
 
-    # Not authenticated - try to authenticate automatically
+    # Not authenticated - run configure for initial authentication
     echo ""
-    print_info "Attempting Dashlane authentication..."
-    echo ""
-
-    # Try running any dcli command which should trigger auth flow
-    print_info "Running: $dcli_cmd whoami"
-    print_info "(This should prompt for authentication if not already logged in)"
-    echo ""
-
-    # Run whoami directly - this should trigger interactive auth on first run
-    if $dcli_cmd whoami 2>&1; then
-        echo ""
-        print_step "Dashlane CLI authenticated successfully"
-        return 0
-    fi
-
-    # If that failed, try configure
-    echo ""
-    print_warning "Initial authentication attempt failed"
-    print_info "Trying: $dcli_cmd configure"
+    print_info "Dashlane CLI not authenticated. Running configuration..."
     echo ""
 
     if $dcli_cmd configure; then
         # Verify it worked
-        if $dcli_cmd whoami &>/dev/null; then
-            local verified_user=$($dcli_cmd whoami 2>/dev/null)
-            print_step "Dashlane CLI authenticated successfully (user: ${verified_user})"
+        if $dcli_cmd status &>/dev/null; then
+            print_step "Dashlane CLI authenticated successfully"
             return 0
         fi
     fi
@@ -439,9 +419,7 @@ authenticate_dashlane() {
     echo ""
     print_warning "Dashlane authentication could not be completed automatically"
     print_warning "Please authenticate manually after installation:"
-    print_warning "  1. Try: dcli whoami (may prompt for auth)"
-    print_warning "  2. Or: dcli configure"
-    print_warning "  3. Or: dcli sync"
+    print_warning "  Run: dcli configure"
     print_info "Press Enter to continue without Dashlane authentication..."
     read -r
 }
