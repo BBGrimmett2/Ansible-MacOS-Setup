@@ -2,19 +2,52 @@
 # =============================================================================
 # Desktop Apps Role - Install Google Drive (Public Function)
 # =============================================================================
-# Installs Google Drive
+# Installs and configures Google Drive
 # =============================================================================
 
-- name: Check if Google Drive is installed
-  ansible.builtin.stat:
-    path: /Applications/Google Drive.app
-  register: desktop_apps_google_drive_check
+- name: Check if Google Drive is installed (via Homebrew)
+  ansible.builtin.command: brew list --cask google-drive
+  register: desktop_apps_google_drive_brew_check
+  changed_when: false
+  failed_when: false
+
+- name: Check if Google Drive binary exists
+  ansible.builtin.command: which "Google Drive"
+  register: desktop_apps_google_drive_bin_check
+  changed_when: false
+  failed_when: false
 
 - name: Install Google Drive via Homebrew
   ansible.builtin.command: brew install --cask google-drive
   when:
     - desktop_apps_state == 'present'
     - desktop_apps_google_drive_enabled | default(true)
-    - not desktop_apps_google_drive_check.stat.exists
+    - desktop_apps_google_drive_brew_check.rc != 0
+    - desktop_apps_google_drive_bin_check.rc != 0
   register: desktop_apps_google_drive_install
   changed_when: desktop_apps_google_drive_install.rc == 0
+
+- name: Open Google Drive for configuration
+  ansible.builtin.command: open -a "Google Drive"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_google_drive_enabled | default(true)
+    - desktop_apps_google_drive_configure | default(false)
+    - (desktop_apps_google_drive_brew_check.rc == 0 or desktop_apps_google_drive_bin_check.rc == 0)
+  changed_when: false
+  failed_when: false
+
+- name: Display Google Drive configuration instructions
+  ansible.builtin.debug:
+    msg:
+      - "Google Drive is installed"
+      - "Configuration steps:"
+      - "  1. Sign in with your Google account"
+      - "  2. Choose folders to sync"
+      - "  3. Configure sync preferences"
+      - "  4. Set up streaming or mirroring mode"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_google_drive_enabled | default(true)
+    - desktop_apps_google_drive_configure | default(false)
+    - (desktop_apps_google_drive_brew_check.rc == 0 or desktop_apps_google_drive_bin_check.rc == 0)

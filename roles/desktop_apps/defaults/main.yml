@@ -85,3 +85,14 @@ desktop_apps_vscode_file_associations:
   - py
   - md
   - txt
+
+# -----------------------------------------------------------------------------
+# Google Drive Configuration
+# -----------------------------------------------------------------------------
+
+# Open Google Drive for configuration after installation
+desktop_apps_google_drive_configure: false
+
+# Google Drive sync preferences (future implementation)
+# desktop_apps_google_drive_sync_folders: []
+# desktop_apps_google_drive_streaming_mode: true
