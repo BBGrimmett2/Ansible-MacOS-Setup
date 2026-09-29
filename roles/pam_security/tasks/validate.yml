@@ -6,7 +6,7 @@
 - name: Validate platform is macOS
   ansible.builtin.assert:
     that:
-      - ansible_os_family == 'Darwin'
+      - ansible_facts['os_family'] == 'Darwin'
     fail_msg: "PAM Touch ID configuration only works on macOS"
     success_msg: "Platform validation passed"
     quiet: true

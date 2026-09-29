@@ -11,12 +11,12 @@
   register: brew_binary
   failed_when: not brew_binary.stat.exists
   vars:
-    homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+    homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
 
 - name: Validate macOS platform
   ansible.builtin.assert:
     that:
-      - ansible_os_family == 'Darwin'
+      - ansible_facts['os_family'] == 'Darwin'
     fail_msg: "This role is designed for macOS only"
     quiet: true
 

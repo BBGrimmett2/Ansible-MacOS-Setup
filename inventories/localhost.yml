@@ -18,4 +18,4 @@ all:
     ansible_become_ask_pass: false  # Use Touch ID for sudo (configured by pam_security role)
 
     # macOS detection
-    ansible_os_family: Darwin
+    ansible_facts['os_family']: Darwin

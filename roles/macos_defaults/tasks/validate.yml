@@ -6,8 +6,8 @@
 - name: Validate platform is macOS
   ansible.builtin.assert:
     that:
-      - ansible_os_family == 'Darwin'
-    fail_msg: "This role only works on macOS (Darwin). Detected: {{ ansible_os_family }}"
+      - ansible_facts['os_family'] == 'Darwin'
+    fail_msg: "This role only works on macOS (Darwin). Detected: {{ ansible_facts['os_family'] }}"
     success_msg: "Platform validation passed: macOS detected"
     quiet: true
 

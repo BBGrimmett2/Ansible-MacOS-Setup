@@ -43,7 +43,7 @@ shell_environment_path_entries:
   - "{{ homebrew_prefix }}/sbin"
 
 # Homebrew prefix (auto-detected)
-homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
 
 # -----------------------------------------------------------------------------
 # Environment Variables

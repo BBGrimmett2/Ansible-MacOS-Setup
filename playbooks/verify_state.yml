@@ -30,7 +30,7 @@
         path: "{{ homebrew_prefix }}/bin/brew"
       register: homebrew_binary
       vars:
-        homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+        homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
 
     - name: Get Homebrew version
       ansible.builtin.command: brew --version
@@ -153,11 +153,11 @@
       ansible.builtin.set_fact:
         full_state:
           last_verified: "{{ ansible_date_time.iso8601 }}"
-          hostname: "{{ ansible_hostname }}"
+          hostname: "{{ ansible_facts['hostname'] }}"
           username: "{{ ansible_env.USER }}"
           profile: "{{ workstation_profile | default('unknown') }}"
-          os_version: "{{ ansible_distribution_version }}"
-          architecture: "{{ ansible_architecture }}"
+          os_version: "{{ ansible_facts['distribution_version'] }}"
+          architecture: "{{ ansible_facts['architecture'] }}"
           components: "{{ component_state }}"
 
     - name: Write state file

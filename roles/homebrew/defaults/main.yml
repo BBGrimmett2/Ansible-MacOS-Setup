@@ -26,7 +26,7 @@ homebrew_upgrade_all: false
 # Homebrew installation prefix (auto-detected based on architecture)
 # Apple Silicon (arm64): /opt/homebrew
 # Intel (x86_64): /usr/local
-homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
 
 # Homebrew binary path
 homebrew_bin: "{{ homebrew_prefix }}/bin/brew"

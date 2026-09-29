@@ -22,7 +22,7 @@ ansible_python_interpreter: auto
 # -----------------------------------------------------------------------------
 
 # Homebrew prefix varies by architecture
-homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
 
 # -----------------------------------------------------------------------------
 # User Information

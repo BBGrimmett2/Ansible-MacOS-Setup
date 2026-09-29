@@ -25,7 +25,7 @@
           - "=== CLI Tools Role Test ==="
           - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
           - "User: {{ ansible_env.USER }}"
-          - "Architecture: {{ ansible_architecture }}"
+          - "Architecture: {{ ansible_facts['architecture'] }}"
           - "Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else 'disabled' }}"
 
     - name: Execute cli_tools role
