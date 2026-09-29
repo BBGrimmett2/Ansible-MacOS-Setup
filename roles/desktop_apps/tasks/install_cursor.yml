@@ -5,7 +5,16 @@
 # Installs Cursor
 # =============================================================================
 
+- name: Check if Cursor is installed
+  ansible.builtin.command: brew list --cask cursor
+  register: desktop_apps_cursor_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Cursor via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ desktop_apps_packages.cursor }}"
-    state: "{{ desktop_apps_state }}"
+  ansible.builtin.command: brew install --cask cursor
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_cursor_check.rc != 0
+  register: desktop_apps_cursor_install
+  changed_when: desktop_apps_cursor_install.rc == 0

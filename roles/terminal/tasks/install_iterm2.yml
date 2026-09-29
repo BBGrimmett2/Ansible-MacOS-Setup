@@ -5,7 +5,16 @@
 # Installs iTerm2 terminal emulator
 # =============================================================================
 
+- name: Check if iTerm2 is installed
+  ansible.builtin.command: brew list --cask iterm2
+  register: terminal_iterm2_check
+  changed_when: false
+  failed_when: false
+
 - name: Install iTerm2 via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ terminal_packages.iterm2 }}"
-    state: "{{ terminal_state }}"
+  ansible.builtin.command: brew install --cask iterm2
+  when:
+    - terminal_state == 'present'
+    - terminal_iterm2_check.rc != 0
+  register: terminal_iterm2_install
+  changed_when: terminal_iterm2_install.rc == 0

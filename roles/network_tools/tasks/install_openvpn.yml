@@ -5,7 +5,16 @@
 # Installs OpenVPN client
 # =============================================================================
 
+- name: Check if OpenVPN is installed
+  ansible.builtin.command: brew list --formula openvpn
+  register: network_tools_openvpn_check
+  changed_when: false
+  failed_when: false
+
 - name: Install OpenVPN via Homebrew
-  community.general.homebrew:
-    name: "{{ network_tools_packages.openvpn }}"
-    state: "{{ network_tools_state }}"
+  ansible.builtin.command: brew install openvpn
+  when:
+    - network_tools_state == 'present'
+    - network_tools_openvpn_check.rc != 0
+  register: network_tools_openvpn_install
+  changed_when: network_tools_openvpn_install.rc == 0

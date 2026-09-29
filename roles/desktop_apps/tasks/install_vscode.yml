@@ -5,7 +5,16 @@
 # Installs Vscode
 # =============================================================================
 
-- name: Install Vscode via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ desktop_apps_packages.vscode }}"
-    state: "{{ desktop_apps_state }}"
+- name: Check if VS Code is installed
+  ansible.builtin.command: brew list --cask visual-studio-code
+  register: desktop_apps_vscode_check
+  changed_when: false
+  failed_when: false
+
+- name: Install VS Code via Homebrew
+  ansible.builtin.command: brew install --cask visual-studio-code
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_vscode_check.rc != 0
+  register: desktop_apps_vscode_install
+  changed_when: desktop_apps_vscode_install.rc == 0

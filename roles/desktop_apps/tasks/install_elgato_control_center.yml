@@ -3,11 +3,27 @@
 # Desktop Apps Role - Install Elgato Control Center (Public Function)
 # =============================================================================
 # Installs Elgato Control Center for Stream Deck and lighting
+# Note: Not available via Homebrew - opens download page in browser
 # =============================================================================
 
-- name: Install Elgato Control Center via direct download
-  ansible.builtin.debug:
-    msg: "Elgato Control Center requires manual download from https://www.elgato.com/us/en/s/downloads"
+- name: Check if Elgato Control Center is installed
+  ansible.builtin.stat:
+    path: /Applications/Elgato Control Center.app
+  register: desktop_apps_elgato_control_center_check
 
-# Note: Elgato Control Center not available via Homebrew
-# Users should download from official website
+- name: Open Elgato Control Center download page
+  ansible.builtin.command: open https://www.elgato.com/us/en/s/downloads
+  when:
+    - desktop_apps_state == 'present'
+    - not desktop_apps_elgato_control_center_check.stat.exists
+  changed_when: true
+
+- name: Display Elgato Control Center installation instructions
+  ansible.builtin.debug:
+    msg:
+      - "Elgato Control Center download page opened in your browser"
+      - "Please download and install manually"
+      - "URL: https://www.elgato.com/us/en/s/downloads"
+  when:
+    - desktop_apps_state == 'present'
+    - not desktop_apps_elgato_control_center_check.stat.exists

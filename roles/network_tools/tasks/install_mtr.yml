@@ -5,7 +5,16 @@
 # Installs mtr - network diagnostic tool (traceroute + ping)
 # =============================================================================
 
+- name: Check if mtr is installed
+  ansible.builtin.command: brew list --formula mtr
+  register: network_tools_mtr_check
+  changed_when: false
+  failed_when: false
+
 - name: Install mtr via Homebrew
-  community.general.homebrew:
-    name: "{{ network_tools_packages.mtr }}"
-    state: "{{ network_tools_state }}"
+  ansible.builtin.command: brew install mtr
+  when:
+    - network_tools_state == 'present'
+    - network_tools_mtr_check.rc != 0
+  register: network_tools_mtr_install
+  changed_when: network_tools_mtr_install.rc == 0

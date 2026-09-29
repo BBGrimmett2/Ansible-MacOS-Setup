@@ -5,7 +5,16 @@
 # Installs BIND DNS tools (dig, nslookup, host)
 # =============================================================================
 
+- name: Check if BIND tools are installed
+  ansible.builtin.command: brew list --formula bind
+  register: network_tools_bind_check
+  changed_when: false
+  failed_when: false
+
 - name: Install BIND tools via Homebrew
-  community.general.homebrew:
-    name: "{{ network_tools_packages.bind }}"
-    state: "{{ network_tools_state }}"
+  ansible.builtin.command: brew install bind
+  when:
+    - network_tools_state == 'present'
+    - network_tools_bind_check.rc != 0
+  register: network_tools_bind_install
+  changed_when: network_tools_bind_install.rc == 0

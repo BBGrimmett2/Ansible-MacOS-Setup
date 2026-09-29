@@ -3,11 +3,27 @@
 # Desktop Apps Role - Install Elgato Camera Hub (Public Function)
 # =============================================================================
 # Installs Elgato Camera Hub webcam software
+# Note: Not available via Homebrew - opens download page in browser
 # =============================================================================
 
-- name: Install Elgato Camera Hub via direct download
-  ansible.builtin.debug:
-    msg: "Elgato Camera Hub requires manual download from https://www.elgato.com/us/en/s/downloads"
+- name: Check if Elgato Camera Hub is installed
+  ansible.builtin.stat:
+    path: /Applications/Elgato Camera Hub.app
+  register: desktop_apps_elgato_camera_hub_check
 
-# Note: Elgato Camera Hub not available via Homebrew
-# Users should download from official website
+- name: Open Elgato Camera Hub download page
+  ansible.builtin.command: open https://www.elgato.com/us/en/s/downloads
+  when:
+    - desktop_apps_state == 'present'
+    - not desktop_apps_elgato_camera_hub_check.stat.exists
+  changed_when: true
+
+- name: Display Elgato Camera Hub installation instructions
+  ansible.builtin.debug:
+    msg:
+      - "Elgato Camera Hub download page opened in your browser"
+      - "Please download and install manually"
+      - "URL: https://www.elgato.com/us/en/s/downloads"
+  when:
+    - desktop_apps_state == 'present'
+    - not desktop_apps_elgato_camera_hub_check.stat.exists

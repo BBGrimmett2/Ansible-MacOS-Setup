@@ -5,7 +5,16 @@
 # Installs Obsidian
 # =============================================================================
 
+- name: Check if Obsidian is installed
+  ansible.builtin.command: brew list --cask obsidian
+  register: desktop_apps_obsidian_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Obsidian via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ desktop_apps_packages.obsidian }}"
-    state: "{{ desktop_apps_state }}"
+  ansible.builtin.command: brew install --cask obsidian
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_obsidian_check.rc != 0
+  register: desktop_apps_obsidian_install
+  changed_when: desktop_apps_obsidian_install.rc == 0

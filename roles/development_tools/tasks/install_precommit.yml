@@ -5,7 +5,16 @@
 # Installs pre-commit git hooks framework
 # =============================================================================
 
+- name: Check if pre-commit is installed
+  ansible.builtin.command: brew list --formula pre-commit
+  register: development_tools_precommit_check
+  changed_when: false
+  failed_when: false
+
 - name: Install pre-commit via Homebrew
-  community.general.homebrew:
-    name: "{{ development_tools_packages.precommit }}"
-    state: "{{ development_tools_state }}"
+  ansible.builtin.command: brew install pre-commit
+  when:
+    - development_tools_state == 'present'
+    - development_tools_precommit_check.rc != 0
+  register: development_tools_precommit_install
+  changed_when: development_tools_precommit_install.rc == 0

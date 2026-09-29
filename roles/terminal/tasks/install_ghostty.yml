@@ -5,7 +5,16 @@
 # Installs Ghostty terminal emulator (GPU-accelerated)
 # =============================================================================
 
+- name: Check if Ghostty is installed
+  ansible.builtin.command: brew list --cask ghostty
+  register: terminal_ghostty_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Ghostty via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ terminal_packages.ghostty }}"
-    state: "{{ terminal_state }}"
+  ansible.builtin.command: brew install --cask ghostty
+  when:
+    - terminal_state == 'present'
+    - terminal_ghostty_check.rc != 0
+  register: terminal_ghostty_install
+  changed_when: terminal_ghostty_install.rc == 0

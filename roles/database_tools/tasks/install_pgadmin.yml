@@ -5,7 +5,16 @@
 # Installs pgAdmin PostgreSQL management tool
 # =============================================================================
 
+- name: Check if pgAdmin is installed
+  ansible.builtin.command: brew list --cask pgadmin4
+  register: database_tools_pgadmin_check
+  changed_when: false
+  failed_when: false
+
 - name: Install pgAdmin via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ database_tools_packages.pgadmin }}"
-    state: "{{ database_tools_state }}"
+  ansible.builtin.command: brew install --cask pgadmin4
+  when:
+    - database_tools_state == 'present'
+    - database_tools_pgadmin_check.rc != 0
+  register: database_tools_pgadmin_install
+  changed_when: database_tools_pgadmin_install.rc == 0

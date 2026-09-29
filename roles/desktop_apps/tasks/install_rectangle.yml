@@ -5,7 +5,16 @@
 # Installs Rectangle
 # =============================================================================
 
+- name: Check if Rectangle is installed
+  ansible.builtin.command: brew list --cask rectangle
+  register: desktop_apps_rectangle_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Rectangle via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ desktop_apps_packages.rectangle }}"
-    state: "{{ desktop_apps_state }}"
+  ansible.builtin.command: brew install --cask rectangle
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_rectangle_check.rc != 0
+  register: desktop_apps_rectangle_install
+  changed_when: desktop_apps_rectangle_install.rc == 0

@@ -7,20 +7,20 @@
 # =============================================================================
 
 - name: Check if pam-u2f is installed
-  ansible.builtin.command: which pam_u2f
+  ansible.builtin.command: brew list --formula pam-u2f
   register: pam_u2f_check
   failed_when: false
   changed_when: false
   when: pam_yubikey_enabled
 
 - name: Install pam-u2f module
-  community.general.homebrew:
-    name: pam-u2f
-    state: present
+  ansible.builtin.command: brew install pam-u2f
   when:
     - pam_yubikey_enabled
     - pam_yubikey_install_module
     - pam_u2f_check.rc != 0
+  register: pam_u2f_install
+  changed_when: pam_u2f_install.rc == 0
 
 - name: Check if YubiKey is already configured in PAM
   ansible.builtin.command: grep -q "pam_u2f.so" {{ pam_sudo_config }}

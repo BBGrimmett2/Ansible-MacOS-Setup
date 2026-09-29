@@ -5,7 +5,16 @@
 # Installs Google Drive
 # =============================================================================
 
+- name: Check if Google Drive is installed
+  ansible.builtin.command: brew list --cask google-drive
+  register: desktop_apps_google_drive_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Google Drive via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ desktop_apps_packages.google_drive }}"
-    state: "{{ desktop_apps_state }}"
+  ansible.builtin.command: brew install --cask google-drive
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_google_drive_check.rc != 0
+  register: desktop_apps_google_drive_install
+  changed_when: desktop_apps_google_drive_install.rc == 0

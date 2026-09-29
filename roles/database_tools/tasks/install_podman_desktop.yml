@@ -5,7 +5,16 @@
 # Installs Podman Desktop container management GUI
 # =============================================================================
 
+- name: Check if Podman Desktop is installed
+  ansible.builtin.command: brew list --cask podman-desktop
+  register: database_tools_podman_desktop_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Podman Desktop via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ database_tools_packages.podman_desktop }}"
-    state: "{{ database_tools_state }}"
+  ansible.builtin.command: brew install --cask podman-desktop
+  when:
+    - database_tools_state == 'present'
+    - database_tools_podman_desktop_check.rc != 0
+  register: database_tools_podman_desktop_install
+  changed_when: database_tools_podman_desktop_install.rc == 0

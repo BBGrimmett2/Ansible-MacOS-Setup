@@ -5,7 +5,16 @@
 # Installs Google Chrome web browser
 # =============================================================================
 
+- name: Check if Google Chrome is installed
+  ansible.builtin.command: brew list --cask google-chrome
+  register: desktop_apps_chrome_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Google Chrome via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ desktop_apps_packages.chrome }}"
-    state: "{{ desktop_apps_state }}"
+  ansible.builtin.command: brew install --cask google-chrome
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_chrome_check.rc != 0
+  register: desktop_apps_chrome_install
+  changed_when: desktop_apps_chrome_install.rc == 0
