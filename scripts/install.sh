@@ -434,9 +434,19 @@ authenticate_dashlane() {
         print_warning "You can authenticate later by running: dcli sync"
         print_info "Press Enter to continue..."
         read -r
+        return 0
+    fi
+
+    # Verify authentication actually worked
+    echo ""
+    if $dcli_cmd whoami &>/dev/null; then
+        local verified_user=$($dcli_cmd whoami 2>/dev/null)
+        print_step "Dashlane CLI authenticated successfully (user: ${verified_user})"
     else
-        echo ""
-        print_step "Dashlane CLI authenticated successfully"
+        print_warning "Dashlane sync completed but authentication verification failed"
+        print_warning "You may need to run 'dcli sync' again before running playbooks"
+        print_info "Press Enter to continue..."
+        read -r
     fi
 }
 
@@ -525,6 +535,19 @@ main() {
 
     # Setup repository
     clone_repository
+
+    # Ensure Homebrew tools are available before Dashlane auth
+    # Source the shell config to pick up Homebrew PATH
+    if [[ -f "$HOME/.zshrc" ]]; then
+        print_info "Loading shell environment..."
+        # Only source if we're in zsh context, otherwise use export
+        if [[ -f "/opt/homebrew/bin/brew" ]]; then
+            export PATH="/opt/homebrew/bin:$PATH"
+        elif [[ -f "/usr/local/bin/brew" ]]; then
+            export PATH="/usr/local/bin:$PATH"
+        fi
+    fi
+
     authenticate_dashlane
     install_galaxy_collections
 
@@ -533,15 +556,16 @@ main() {
 
     # Final instructions
     print_section "Next Steps"
-    print_info "1. Restart your terminal to load new shell configuration"
-    print_info "2. Run 'source ~/.zshrc' to reload your shell environment"
-    print_info "3. Verify installations: brew list, kubectl version, etc."
+    echo ""
+    print_info "${BOLD}IMPORTANT:${RESET} To use dcli and other Homebrew tools in THIS terminal:"
+    echo ""
+    echo -e "  ${GREEN}source ~/.zshrc${RESET}"
+    echo ""
+    print_info "Or open a new terminal window (Homebrew is now in your PATH for new sessions)"
     echo ""
     print_info "For cloud demo environments, run:"
     print_info "  cd ${REPO_DIR}"
     print_info "  ansible-playbook playbooks/setup_aws_demo.yml"
-    print_info "  ansible-playbook playbooks/setup_gcp_demo.yml"
-    print_info "  ansible-playbook playbooks/setup_azure_demo.yml"
     echo ""
     print_info "Repository: ${REPO_DIR}"
     print_info "Virtual environment: ${VENV_DIR}"
