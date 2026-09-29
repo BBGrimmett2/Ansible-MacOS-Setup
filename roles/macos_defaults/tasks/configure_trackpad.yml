@@ -10,8 +10,8 @@
   community.general.osx_defaults:
     domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
     key: Clicking
-    type: bool
-    value: "{{ macos_trackpad_tap_to_click }}"
+    type: int
+    value: "{{ 1 if macos_trackpad_tap_to_click else 0 }}"
 
 - name: Enable tap to click for login screen
   community.general.osx_defaults:
