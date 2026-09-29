@@ -3,16 +3,32 @@
 # Development Tools Role - Install AAP Demo Tools (Public Function)
 # =============================================================================
 # Installs Ansible Automation Platform demo environment tools
+# Note: Opens GitHub repository for manual setup
 # =============================================================================
 
-- name: TODO - Install AAP demo tools
+- name: Check if AAP demo is already cloned
+  ansible.builtin.stat:
+    path: "{{ development_tools_aap_demo_dir }}"
+  register: development_tools_aap_demo_check
+
+- name: Open AAP demo GitHub repository
+  ansible.builtin.command: open {{ development_tools_aap_demo_repo }}
+  when:
+    - development_tools_state == 'present'
+    - not development_tools_aap_demo_check.stat.exists
+  changed_when: true
+
+- name: Display AAP demo installation instructions
   ansible.builtin.debug:
     msg:
-      - "AAP demo tools installation not yet implemented"
-      - "Tools to install: {{ development_tools_aap_demo_tools }}"
-
-# TODO: Implement actual AAP demo tools installation
-# - Install ansible-navigator
-# - Install ansible-builder
-# - Configure execution environments
-# - Set up demo project templates
+      - "AAP demo GitHub repository opened in your browser"
+      - "Please clone and follow setup instructions"
+      - "URL: {{ development_tools_aap_demo_repo }}"
+      - ""
+      - "Quick start:"
+      - "  git clone {{ development_tools_aap_demo_repo }} {{ development_tools_aap_demo_dir }}"
+      - "  cd {{ development_tools_aap_demo_dir }}"
+      - "  # Follow README.md for setup"
+  when:
+    - development_tools_state == 'present'
+    - not development_tools_aap_demo_check.stat.exists

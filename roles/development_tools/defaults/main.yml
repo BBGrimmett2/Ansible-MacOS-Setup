@@ -104,8 +104,15 @@ development_tools_precommit_ansible_hooks:
 # -----------------------------------------------------------------------------
 # AAP Demo Environment (Work Profile)
 # -----------------------------------------------------------------------------
-# TODO: AAP demo tools installation not yet implemented
-# Future: Add ansible-navigator, ansible-builder installation
+
+# Enable AAP demo environment setup
+development_tools_aap_demo_enabled: false
+
+# AAP demo clone directory
+development_tools_aap_demo_dir: "{{ ansible_env.HOME }}/aap-demo"
+
+# AAP demo GitHub repository
+development_tools_aap_demo_repo: "https://github.com/RedHatOfficial/aap-demo"
 
 # -----------------------------------------------------------------------------
 # Custom Scripts
