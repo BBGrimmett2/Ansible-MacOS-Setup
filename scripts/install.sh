@@ -337,6 +337,33 @@ authenticate_dashlane() {
 }
 
 # =============================================================================
+# Ansible Galaxy Collections
+# =============================================================================
+
+install_galaxy_collections() {
+    print_section "Installing Ansible Galaxy Collections"
+
+    # Activate venv
+    # shellcheck disable=SC1091
+    source "${VENV_DIR}/bin/activate"
+
+    # Change to repository directory
+    cd "$REPO_DIR"
+
+    # Check if requirements file exists
+    if [[ ! -f "collections/requirements.yml" ]]; then
+        print_warning "No collections/requirements.yml found, skipping collection installation"
+        return 0
+    fi
+
+    print_info "Installing required Ansible collections..."
+    ansible-galaxy collection install -r collections/requirements.yml &>/dev/null &
+    spinner $! "Installing Galaxy collections"
+
+    print_step "Ansible collections installed successfully"
+}
+
+# =============================================================================
 # Ansible Playbook Execution
 # =============================================================================
 
@@ -386,6 +413,7 @@ main() {
     # Setup repository
     clone_repository
     authenticate_dashlane
+    install_galaxy_collections
 
     # Run Ansible automation
     run_ansible_playbook
