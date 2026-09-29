@@ -109,6 +109,7 @@ context/
 *.swo
 *~
 *.bak
+.serena/
 
 # =============================================================================
 # Platform Artifacts
@@ -128,3 +129,25 @@ context/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# =============================================================================
+# macOS Workstation Automation Specific
+# =============================================================================
+
+# Dashlane CLI cache and session files
+.dcli/
+
+# Temporary SSH keys (fetched from Dashlane at runtime)
+temp_keys/
+
+# Ansible fact cache
+/tmp/ansible_facts_cache/
+
+# Local environment overrides
+.env.local
+*.local.yml
+
+# Downloaded installer DMGs and packages
+downloads/
+*.dmg
+*.pkg
