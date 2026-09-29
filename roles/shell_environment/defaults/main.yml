@@ -68,10 +68,10 @@ shell_environment_modern_aliases: true
 # Alias definitions
 shell_environment_aliases:
   # Modern tool replacements
-  ls: eza --icons --git
-  ll: eza --icons --git -lh
-  la: eza --icons --git -lha
-  tree: eza --tree --icons
+  ls: eza --git
+  ll: eza --git -lh
+  la: eza --git -lha
+  tree: eza --tree
   cat: bat --paging=never
   # Kubernetes shortcuts
   k: kubectl
