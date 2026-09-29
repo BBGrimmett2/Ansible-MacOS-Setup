@@ -96,6 +96,22 @@ ssh_global_options:
 ssh_compression: false
 
 # -----------------------------------------------------------------------------
+# SSH Keys Configuration
+# -----------------------------------------------------------------------------
+
+# SSH keys to deploy (override in group_vars)
+# This should be defined in group_vars/localhost.yml
+ssh_keys: []
+
+# -----------------------------------------------------------------------------
+# SSH Host Configurations
+# -----------------------------------------------------------------------------
+
+# SSH host configurations (override in group_vars)
+# This should be defined in group_vars/localhost.yml
+ssh_host_configs: []
+
+# -----------------------------------------------------------------------------
 # Known Hosts
 # -----------------------------------------------------------------------------
 
