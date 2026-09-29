@@ -1,0 +1,34 @@
+---
+# =============================================================================
+# macOS Defaults Role - File Association Configuration
+# =============================================================================
+# Configure default applications for file types using duti
+# =============================================================================
+
+- name: Check if duti is installed
+  ansible.builtin.command: brew list --formula duti
+  register: macos_duti_check
+  changed_when: false
+  failed_when: false
+
+- name: Install duti for file associations
+  ansible.builtin.command: brew install duti
+  when: macos_duti_check.rc != 0
+
+- name: Configure file type associations
+  ansible.builtin.command: duti -s {{ item.value }} .{{ item.key }} all
+  loop: "{{ macos_file_associations | dict2items }}"
+  when:
+    - macos_file_associations_enabled
+    - macos_file_associations | length > 0
+  loop_control:
+    label: ".{{ item.key }} -> {{ item.value }}"
+
+- name: Display file association info
+  ansible.builtin.debug:
+    msg:
+      - "File associations configured"
+      - "{{ macos_file_associations | length }} file types configured"
+  when:
+    - macos_file_associations_enabled
+    - macos_file_associations | length > 0

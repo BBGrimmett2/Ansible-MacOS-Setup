@@ -46,3 +46,9 @@
   tags:
     - macos_defaults
     - macos_defaults:system
+
+- name: Configure file type associations
+  ansible.builtin.import_tasks: configure_file_associations.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:file_associations

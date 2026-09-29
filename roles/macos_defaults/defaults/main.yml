@@ -132,6 +132,52 @@ macos_show_battery_percentage: true
 macos_require_password_delay: 5
 
 # -----------------------------------------------------------------------------
+# File Associations
+# -----------------------------------------------------------------------------
+
+# Configure default applications for file types
+macos_file_associations_enabled: true
+
+# File type associations
+# Format: extension -> bundle ID
+macos_file_associations:
+  # Documentation
+  md: com.microsoft.VSCode
+  txt: com.microsoft.VSCode
+  rst: com.microsoft.VSCode
+  # Configuration files
+  yaml: com.microsoft.VSCode
+  yml: com.microsoft.VSCode
+  json: com.microsoft.VSCode
+  toml: com.microsoft.VSCode
+  ini: com.microsoft.VSCode
+  cfg: com.microsoft.VSCode
+  conf: com.microsoft.VSCode
+  # Python
+  py: com.microsoft.VSCode
+  # JavaScript/TypeScript
+  js: com.microsoft.VSCode
+  jsx: com.microsoft.VSCode
+  ts: com.microsoft.VSCode
+  tsx: com.microsoft.VSCode
+  # Go
+  go: com.microsoft.VSCode
+  # Shell scripts
+  sh: com.microsoft.VSCode
+  bash: com.microsoft.VSCode
+  zsh: com.microsoft.VSCode
+  # Other code files
+  c: com.microsoft.VSCode
+  cpp: com.microsoft.VSCode
+  h: com.microsoft.VSCode
+  java: com.microsoft.VSCode
+  rb: com.microsoft.VSCode
+  # Ansible
+  j2: com.microsoft.VSCode
+  # Logs
+  log: com.microsoft.VSCode
+
+# -----------------------------------------------------------------------------
 # Application Control
 # -----------------------------------------------------------------------------
 
