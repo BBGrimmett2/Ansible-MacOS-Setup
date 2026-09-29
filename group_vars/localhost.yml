@@ -65,7 +65,7 @@ ssh_host_configs:
 
   # Shadowman Internal Hosts (wildcard)
   - name: shadowman_internal
-    host_pattern: "*.shadowman.dev !git.shadowman.dev"
+    host_pattern: "*.shadowman.dev"
     user: bgrimmet
     identity_file: "~/.ssh/id_shadowman"
     options:
