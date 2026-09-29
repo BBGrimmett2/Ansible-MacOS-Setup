@@ -489,11 +489,11 @@ run_ansible_playbook() {
     cd "$REPO_DIR"
 
     print_info "Starting Ansible playbook execution..."
-    print_info "You will be prompted to select your workstation profile"
+    print_info "You will be prompted for your sudo password and workstation profile"
     echo ""
 
-    # Run the bootstrap playbook
-    if ! ansible-playbook playbooks/bootstrap_workstation.yml; then
+    # Run the bootstrap playbook with become password prompt
+    if ! ansible-playbook playbooks/bootstrap_workstation.yml --ask-become-pass; then
         print_fatal "Ansible playbook execution failed. Check the output above for errors."
     fi
 
