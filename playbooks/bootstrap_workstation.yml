@@ -18,7 +18,7 @@
     - name: workstation_profile
       prompt: "Select workstation profile (personal/work)"
       private: false
-      default: "personal"
+      default: "work"
 
   pre_tasks:
     - name: Validate profile selection
