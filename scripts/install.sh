@@ -320,6 +320,13 @@ clone_repository() {
 authenticate_dashlane() {
     print_section "Authenticating Dashlane CLI"
 
+    # Check if already authenticated
+    if dcli whoami &>/dev/null; then
+        local dashlane_user=$(dcli whoami 2>/dev/null || echo "unknown")
+        print_step "Dashlane CLI already authenticated (user: ${dashlane_user})"
+        return 0
+    fi
+
     print_info "Dashlane authentication required for secret management"
     print_info "Skip now and authenticate later by running: dcli sync"
     echo ""
