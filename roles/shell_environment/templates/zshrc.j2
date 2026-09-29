@@ -6,6 +6,24 @@
 # Profile: {{ workstation_profile | default('personal') }}
 # =============================================================================
 
+{% if shell_environment_ohmyzsh_enabled %}
+# -----------------------------------------------------------------------------
+# Oh-My-Zsh Configuration
+# -----------------------------------------------------------------------------
+
+# Path to oh-my-zsh installation
+export ZSH="$HOME/.oh-my-zsh"
+
+# Theme
+ZSH_THEME="{{ shell_environment_ohmyzsh_theme }}"
+
+# Plugins
+plugins=({{ shell_environment_ohmyzsh_plugins | join(' ') }})
+
+# Load Oh-My-Zsh
+source $ZSH/oh-my-zsh.sh
+
+{% endif %}
 # -----------------------------------------------------------------------------
 # Environment Variables
 # -----------------------------------------------------------------------------
@@ -56,6 +74,7 @@ setopt HIST_VERIFY
 # Completion System
 # -----------------------------------------------------------------------------
 
+{% if not shell_environment_ohmyzsh_enabled %}
 autoload -Uz compinit
 compinit
 
@@ -67,7 +86,9 @@ zstyle ':completion:*' menu select
 
 # Colors in completion
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+{% endif %}
 
+{% if not shell_environment_ohmyzsh_enabled %}
 {% if shell_environment_kubectl_completion %}
 # Kubectl completion
 source <(kubectl completion zsh)
@@ -81,6 +102,7 @@ source <(helm completion zsh)
 {% if shell_environment_gh_completion %}
 # GitHub CLI completion
 eval "$(gh completion -s zsh)"
+{% endif %}
 {% endif %}
 
 # -----------------------------------------------------------------------------
@@ -126,7 +148,7 @@ fi
 # Prompt Configuration
 # -----------------------------------------------------------------------------
 
-{% if shell_environment_custom_prompt %}
+{% if shell_environment_custom_prompt and not shell_environment_ohmyzsh_enabled %}
 # Enable prompt substitution
 setopt PROMPT_SUBST
 

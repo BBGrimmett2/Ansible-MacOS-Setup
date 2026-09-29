@@ -9,6 +9,13 @@
   ansible.builtin.import_tasks: validate.yml
   tags: [always, validate]
 
+- name: Install Oh-My-Zsh
+  ansible.builtin.import_tasks: install_ohmyzsh.yml
+  tags: [install, ohmyzsh]
+  when:
+    - shell_environment_state == 'present'
+    - shell_environment_ohmyzsh_enabled
+
 - name: Configure shell environment
   ansible.builtin.import_tasks: configure.yml
   tags: [configure]

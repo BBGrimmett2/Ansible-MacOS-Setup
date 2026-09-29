@@ -3,16 +3,22 @@
 # Terminal Role - Install Nerd Fonts (Public Function)
 # =============================================================================
 # Installs Nerd Fonts for terminal icons and glyphs
+# Note: Fonts are now in homebrew/cask (no separate tap needed)
 # =============================================================================
 
-- name: Tap homebrew/cask-fonts repository
-  community.general.homebrew_tap:
-    name: homebrew/cask-fonts
-    state: present
+- name: Check if each Nerd Font is installed
+  ansible.builtin.command: brew list --cask {{ item }}
+  loop: "{{ terminal_nerdfonts }}"
+  register: terminal_nerdfonts_check
+  changed_when: false
+  failed_when: false
   when: terminal_state == 'present'
 
 - name: Install Nerd Fonts via Homebrew
-  community.general.homebrew_cask:
-    name: "{{ item }}"
-    state: "{{ terminal_state }}"
-  loop: "{{ terminal_nerdfonts }}"
+  ansible.builtin.command: brew install --cask {{ item.item }}
+  loop: "{{ terminal_nerdfonts_check.results }}"
+  when:
+    - terminal_state == 'present'
+    - item.rc != 0
+  register: terminal_nerdfonts_install
+  changed_when: terminal_nerdfonts_install.rc == 0

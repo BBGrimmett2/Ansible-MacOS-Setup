@@ -119,10 +119,29 @@ shell_environment_helm_completion: true
 shell_environment_gh_completion: true
 
 # -----------------------------------------------------------------------------
+# Oh-My-Zsh Configuration
+# -----------------------------------------------------------------------------
+
+# Install and configure Oh-My-Zsh
+shell_environment_ohmyzsh_enabled: true
+
+# Oh-My-Zsh theme (see https://github.com/ohmyzsh/ohmyzsh/wiki/Themes)
+shell_environment_ohmyzsh_theme: eastwood
+
+# Oh-My-Zsh plugins
+shell_environment_ohmyzsh_plugins:
+  - git
+  - kubectl
+  - docker
+  - ansible
+  - aws
+  - terraform
+
+# -----------------------------------------------------------------------------
 # Prompt Configuration
 # -----------------------------------------------------------------------------
 
-# Configure custom prompt
+# Configure custom prompt (only used if oh-my-zsh is disabled)
 shell_environment_custom_prompt: true
 
 # Prompt style (simple, detailed)
