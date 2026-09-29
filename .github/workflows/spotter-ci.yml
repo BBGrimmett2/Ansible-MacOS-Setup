@@ -1,0 +1,14 @@
+name: CI/CD workflow for Steampunk Spotter
+on: [push]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Scan Ansible content with different inputs
+        uses: xlab-steampunk/spotter-action@5.2.0
+        with:
+          api_token: ${{ secrets.SPOTTER_TOKEN }}
+          ansible_version: 2.16

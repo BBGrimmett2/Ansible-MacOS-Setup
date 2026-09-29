@@ -1,0 +1,108 @@
+---
+# Ansible Execution Environment Definition
+# Docs: https://docs.ansible.com/projects/builder/en/latest/definition/
+# Schema version for ansible-builder
+version: 3
+
+# Container images to use
+images:
+  # Base image - choose the appropriate image for your needs
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest
+    # Other common options:
+    # name: registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9:latest
+    # name: quay.io/ansible/creator-ee:latest
+    # name: quay.io/ansible/ansible-runner:latest
+
+  # Optional: Override the builder image used for multi-stage builds
+  # builder_image:
+  #   name: registry.redhat.io/ansible-automation-platform-26/ansible-builder-rhel9:latest
+
+# Dependencies to install in the execution environment
+dependencies:
+  # Ansible Galaxy requirements (collections and roles)
+  galaxy: requirements/requirements.yml
+
+  # Python package requirements
+  python: requirements/requirements.txt
+  # Alternative: specify packages inline
+  # python:
+  #   - requests>=2.28.0
+  #   - jinja2>=3.1.0
+  #   - netaddr
+
+  # System-level dependencies (RPM packages, etc.)
+  system: requirements/bindep.txt
+  # Alternative: specify packages inline
+  # system:
+  #   - git-core [platform:rpm]
+  #   - python3-devel [platform:rpm]
+  #   - gcc [compile platform:rpm]
+
+# Build options
+options:
+  # Package manager to use in the container
+  package_manager_path: /usr/bin/microdnf
+  # Other options:
+  # package_manager_path: /usr/bin/dnf
+  # package_manager_path: /usr/bin/yum
+
+  # Container runtime options
+  # container_init:
+  #   package_pip: dumb-init==1.2.5
+  #   entrypoint: '["dumb-init"]'
+  #   cmd: '["bash"]'
+
+  # Relax password requirements for user
+  # relax_passwd_req: true
+
+  # Skip Ansible installation (if base image already has it)
+  # skip_ansible_check: true
+
+  # User configuration
+  # user: 1000
+
+  # Working directory
+  # workdir: /runner
+
+# Additional custom build steps
+# These are executed during the build process at specific stages
+# additional_build_steps:
+#   # Steps to run before installing Galaxy dependencies
+#   prepend_galaxy:
+#     - RUN echo "Running before Galaxy install"
+#     - COPY custom-files /opt/custom
+#
+#   # Steps to run after installing Galaxy dependencies
+#   append_galaxy:
+#     - RUN ansible-galaxy collection list
+#
+#   # Steps to run before the final image stage
+#   prepend_final:
+#     - RUN echo "Preparing final image"
+#
+#   # Steps to run at the end of the final image
+#   append_final:
+#     - RUN chmod -R g+w /runner
+#     - COPY --from=builder /custom-tool /usr/local/bin/
+#     - RUN ln -s /usr/local/bin/custom-tool /usr/bin/custom-tool
+
+# Build arguments to pass to the container build
+# build_arg_defaults:
+#   # Proxy settings
+#   HTTP_PROXY: 'http://proxy.example.com:8080'
+#   HTTPS_PROXY: 'http://proxy.example.com:8080'
+#   NO_PROXY: 'localhost,127.0.0.1'
+#
+#   # Python package index
+#   PIP_INDEX_URL: 'https://pypi.org/simple'
+#
+#   # Custom build arguments
+#   CUSTOM_VAR: 'value'
+
+# Additional files to include in the build context
+# additional_build_files:
+#   - src: files/custom-script.sh
+#     dest: configs
+#   - src: files/ansible.cfg
+#     dest: configs

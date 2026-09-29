@@ -1,0 +1,20 @@
+---
+- name: Listen for events on a webhook
+  hosts: all
+  ## Define our source for events
+  ## The list of one or more sources that will generate events for ansible-rulebook.
+  sources:
+  ## See ansible.eda.webhook code and docs: https://github.com/ansible/event-driven-ansible/blob/main/extensions/eda/plugins/event_source/webhook.py#L15
+    - ansible.eda.webhook:
+        host: "0.0.0.0"
+        port: 5000
+  ## Define the conditions we are looking for
+  ## The list of one or more rule. See https://ansible.readthedocs.io/projects/rulebook/en/v1.1.3/rules.html
+  rules:
+    - name: Say Hello
+      condition: event.payload.message == "Ansible is super cool!"
+      ## Define the action we should take should the condition be met
+      action:
+        run_job_template:
+          organization: Default
+          name: Demo Job Template

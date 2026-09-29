@@ -1,0 +1,6 @@
+---
+# Example Roles Requirements
+# Usage:
+#  - name: <role name>
+#    version: 1.0.0
+roles: []

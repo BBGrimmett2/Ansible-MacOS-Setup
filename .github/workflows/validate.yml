@@ -1,0 +1,69 @@
+name: Validate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ansible-validate:
+    name: Validate Ansible
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ansible tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible ansible-lint yamllint
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y shellcheck
+
+      # - name: Lint YAML
+      #   run: yamllint .
+
+      - name: Lint Ansible
+        run: ansible-lint
+
+      - name: Syntax check top-level playbooks
+        run: |
+          shopt -s nullglob
+          for playbook in playbooks/*.yml playbooks/*.yaml; do
+            echo "Syntax checking $playbook"
+            ansible-playbook --syntax-check "$playbook"
+          done
+        shell: bash
+        env:
+          ANSIBLE_NOCOLOR: "1"
+
+  docs-validate:
+    name: Validate Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install docs tooling
+        run: npm install -g markdownlint-cli cspell
+
+      # - name: Lint Markdown
+      #   run: markdownlint "**/*.md" "#node_modules"
+
+      - name: Spell check Markdown
+        run: cspell "README.md" 
