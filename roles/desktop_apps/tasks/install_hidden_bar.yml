@@ -1,0 +1,20 @@
+---
+# =============================================================================
+# Desktop Apps Role - Install Hidden Bar (Public Function)
+# =============================================================================
+# Installs Hidden Bar - menu bar icon organizer
+# =============================================================================
+
+- name: Check if Hidden Bar is installed
+  ansible.builtin.stat:
+    path: /Applications/Hidden Bar.app
+  register: desktop_apps_hidden_bar_check
+
+- name: Install Hidden Bar via Homebrew
+  ansible.builtin.command: brew install --cask hiddenbar
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_hidden_bar_enabled | default(true)
+    - not desktop_apps_hidden_bar_check.stat.exists
+  register: desktop_apps_hidden_bar_install
+  changed_when: desktop_apps_hidden_bar_install.rc == 0

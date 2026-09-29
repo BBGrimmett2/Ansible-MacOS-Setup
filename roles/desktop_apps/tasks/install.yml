@@ -44,3 +44,7 @@
 - name: Install Discord
   ansible.builtin.include_tasks: install_discord.yml
   when: desktop_apps_install_all or desktop_apps_discord_enabled
+
+- name: Install Hidden Bar
+  ansible.builtin.include_tasks: install_hidden_bar.yml
+  when: desktop_apps_install_all or desktop_apps_hidden_bar_enabled
