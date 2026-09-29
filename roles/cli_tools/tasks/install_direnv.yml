@@ -5,7 +5,16 @@
 # Installs direnv for per-directory environment variables
 # =============================================================================
 
+- name: Check if direnv is installed
+  ansible.builtin.command: brew list --formula direnv
+  register: cli_tools_direnv_check
+  changed_when: false
+  failed_when: false
+
 - name: Install direnv via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.direnv }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install direnv
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_direnv_check.rc != 0
+  register: cli_tools_direnv_install
+  changed_when: cli_tools_direnv_install.rc == 0

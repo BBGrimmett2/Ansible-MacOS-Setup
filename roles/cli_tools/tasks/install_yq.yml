@@ -5,7 +5,16 @@
 # Installs yq YAML processor
 # =============================================================================
 
+- name: Check if yq is installed
+  ansible.builtin.command: brew list --formula yq
+  register: cli_tools_yq_check
+  changed_when: false
+  failed_when: false
+
 - name: Install yq via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.yq }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install yq
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_yq_check.rc != 0
+  register: cli_tools_yq_install
+  changed_when: cli_tools_yq_install.rc == 0

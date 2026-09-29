@@ -5,7 +5,16 @@
 # Installs fd - modern find replacement with better performance
 # =============================================================================
 
+- name: Check if fd is installed
+  ansible.builtin.command: brew list --formula fd
+  register: cli_tools_fd_check
+  changed_when: false
+  failed_when: false
+
 - name: Install fd via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.fd }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install fd
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_fd_check.rc != 0
+  register: cli_tools_fd_install
+  changed_when: cli_tools_fd_install.rc == 0

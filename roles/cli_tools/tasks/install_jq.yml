@@ -5,7 +5,16 @@
 # Installs jq JSON processor
 # =============================================================================
 
+- name: Check if jq is installed
+  ansible.builtin.command: brew list --formula jq
+  register: cli_tools_jq_check
+  changed_when: false
+  failed_when: false
+
 - name: Install jq via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.jq }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install jq
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_jq_check.rc != 0
+  register: cli_tools_jq_install
+  changed_when: cli_tools_jq_install.rc == 0

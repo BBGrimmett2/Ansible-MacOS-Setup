@@ -5,7 +5,16 @@
 # Installs bat - modern cat replacement with syntax highlighting
 # =============================================================================
 
+- name: Check if bat is installed
+  ansible.builtin.command: brew list --formula bat
+  register: cli_tools_bat_check
+  changed_when: false
+  failed_when: false
+
 - name: Install bat via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.bat }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install bat
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_bat_check.rc != 0
+  register: cli_tools_bat_install
+  changed_when: cli_tools_bat_install.rc == 0

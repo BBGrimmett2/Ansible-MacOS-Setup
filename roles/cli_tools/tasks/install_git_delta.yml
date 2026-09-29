@@ -5,7 +5,16 @@
 # Installs git-delta - git diff pager with syntax highlighting
 # =============================================================================
 
+- name: Check if git-delta is installed
+  ansible.builtin.command: brew list --formula git-delta
+  register: cli_tools_git_delta_check
+  changed_when: false
+  failed_when: false
+
 - name: Install git-delta via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.git_delta }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install git-delta
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_git_delta_check.rc != 0
+  register: cli_tools_git_delta_install
+  changed_when: cli_tools_git_delta_install.rc == 0

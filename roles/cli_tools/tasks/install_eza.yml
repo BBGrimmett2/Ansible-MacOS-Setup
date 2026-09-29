@@ -5,7 +5,16 @@
 # Installs eza - modern ls replacement with color and icons
 # =============================================================================
 
+- name: Check if eza is installed
+  ansible.builtin.command: brew list --formula eza
+  register: cli_tools_eza_check
+  changed_when: false
+  failed_when: false
+
 - name: Install eza via Homebrew
-  community.general.homebrew:
-    name: "{{ cli_tools_packages.eza }}"
-    state: "{{ cli_tools_state }}"
+  ansible.builtin.command: brew install eza
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_eza_check.rc != 0
+  register: cli_tools_eza_install
+  changed_when: cli_tools_eza_install.rc == 0
