@@ -3,7 +3,12 @@
 # Workstation Setup - Web Installer
 # =============================================================================
 # Purpose: Zero-to-configured macOS workstation automation
-# Usage: curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh | bash
+#
+# Usage (recommended):
+#   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh)"
+#
+# Usage (shorter):
+#   curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh | bash
 #
 # This script bootstraps a fresh macOS machine from zero to fully configured
 # workstation by installing prerequisites and running Ansible automation.

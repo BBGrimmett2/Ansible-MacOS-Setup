@@ -8,65 +8,51 @@ Comprehensive Ansible automation for macOS workstation setup and configuration. 
 
 ## Features
 
-- 🚀 **Zero-to-Hero Bootstrap** - Single script to go from fresh Mac to Ansible-ready
-- 🔐 **Secure Secret Management** - No hardcoded credentials; all secrets via Dashlane CLI
-- 👤 **Profile-Aware** - Interactive personal/work profile selection with separate configurations
-- ☁️ **Cloud Demo Helpers** - Quick setup for AWS/Azure/GCP demo environments
-- 🛡️ **direnv Safety** - Confirmation prompts for Projects/ directory environment loading
-- 📦 **Category-Based Roles** - Logical tool grouping (not monolithic, not per-tool explosion)
-- ✅ **Idempotent** - Safe to run multiple times; only changes what's needed
-- 🎯 **AGENTS.md Compliant** - Follows Red Hat CoP best practices
+- **Zero-to-Hero Bootstrap** - Single script to go from fresh Mac to Ansible-ready
+- **Secure Secret Management** - No hardcoded credentials; all secrets via Dashlane CLI
+- **Profile-Aware** - Interactive personal/work profile selection with separate configurations
+- **Cloud Demo Helpers** - Quick setup for AWS/Azure/GCP demo environments
+- **direnv Safety** - Confirmation prompts for Projects/ directory environment loading
+- **Category-Based Roles** - Logical tool grouping (not monolithic, not per-tool explosion)
+- **Idempotent** - Safe to run multiple times; only changes what's needed
+- **AGENTS.md Compliant** - Follows Red Hat CoP best practices
 
 ---
 
 ## Quick Start
 
-### First-Time Setup (Fresh Mac)
+### One-Line Installation (Recommended)
 
-1. **Download and run the bootstrap script**:
-   ```bash
-   # Download
-   curl -fsSL https://raw.githubusercontent.com/bgrimmet/Ansible-MacOS-Setup/main/scripts/bootstrap.sh -o bootstrap.sh
+Run this command on a fresh macOS machine to install everything:
 
-   # Make executable
-   chmod +x bootstrap.sh
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh)"
+```
 
-   # Run
-   ./bootstrap.sh
-   ```
+This will:
+1. Install Xcode Command Line Tools
+2. Install Homebrew
+3. Install Python and Ansible
+4. Install Dashlane CLI
+5. Clone this repository
+6. Run the bootstrap playbook (prompts for profile selection)
 
-2. **Authenticate with Dashlane**:
-   ```bash
-   dcli login
-   ```
+**Alternative shorter version:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh | bash
+```
 
-3. **Run the main workstation setup**:
-   ```bash
-   source ~/venv-ansible/bin/activate
-   cd ~/ansible-macos-setup
-   ansible-playbook playbooks/bootstrap_workstation.yml
-   ```
+### Manual Installation (From Cloned Repository)
 
-   You'll be prompted to select your profile (personal or work).
-
-### From Cloned Repository
+If you prefer to clone first:
 
 ```bash
 # Clone the repository
 git clone https://github.com/BBGrimmett2/Ansible-MacOS-Setup.git
 cd Ansible-MacOS-Setup
 
-# Run bootstrap
-./scripts/bootstrap.sh
-
-# Authenticate with Dashlane
-dcli login
-
-# Activate Ansible virtual environment
-source ~/venv-ansible/bin/activate
-
-# Run main playbook
-ansible-playbook playbooks/bootstrap_workstation.yml
+# Run the installer
+./scripts/install.sh
 ```
 
 ---
