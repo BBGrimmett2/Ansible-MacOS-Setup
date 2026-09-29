@@ -1,0 +1,10 @@
+---
+# =============================================================================
+# Localhost Variables
+# =============================================================================
+# Override default role variables for localhost execution
+# =============================================================================
+
+# Disable Touch ID for sudo (requires sudo password during playbook run)
+# Set to true if you want Touch ID and run playbook with --ask-become-pass
+pam_touchid_enabled: false
