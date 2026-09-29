@@ -316,12 +316,6 @@ clone_repository() {
 authenticate_dashlane() {
     print_section "Authenticating Dashlane CLI"
 
-    # Check if already authenticated (don't suppress output here)
-    if dcli sync 2>/dev/null; then
-        print_step "Dashlane CLI already authenticated"
-        return 0
-    fi
-
     print_info "Dashlane authentication required for secret management"
     print_info "This will open your browser for login"
     echo ""
@@ -335,14 +329,19 @@ authenticate_dashlane() {
         return 0
     fi
 
-    # Don't suppress output for interactive dcli sync
+    # Run dcli sync with full output visible
     echo ""
+    print_info "Opening browser for Dashlane authentication..."
+    echo ""
+
     if ! dcli sync; then
+        echo ""
         print_warning "Dashlane authentication failed"
         print_warning "You can authenticate later by running: dcli sync"
         print_info "Press Enter to continue..."
         read -r
     else
+        echo ""
         print_step "Dashlane CLI authenticated successfully"
     fi
 }
