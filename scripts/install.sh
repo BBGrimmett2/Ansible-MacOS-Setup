@@ -184,12 +184,7 @@ install_homebrew() {
 
     if command -v brew &>/dev/null; then
         print_step "Homebrew already installed at $(which brew)"
-
-        # Update Homebrew
-        print_info "Updating Homebrew..."
-        (brew update 2>&1 | grep -v "^Already up-to-date" || true) &
-        spinner $! "Updating Homebrew"
-
+        print_info "Skipping Homebrew update (Ansible will manage packages)"
         return 0
     fi
 
