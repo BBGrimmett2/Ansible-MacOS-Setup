@@ -20,11 +20,11 @@
       Please install it first:
         brew tap dashlane/tap
         brew install dashlane-cli
-      Or run the bootstrap script: ./scripts/bootstrap.sh
+      Or run the installer script: ./scripts/install.sh
     success_msg: "Dashlane CLI is installed"
 
 - name: Check Dashlane authentication status
-  ansible.builtin.command: "{{ dashlane_cli }} whoami"
+  ansible.builtin.command: "{{ dashlane_cli }} status"
   register: dashlane_auth_check
   failed_when: false
   changed_when: false
@@ -36,14 +36,14 @@
       - dashlane_auth_check.rc == 0
     fail_msg: |
       Dashlane CLI is not authenticated.
-      Please login first:
-        {{ dashlane_cli }} login
+      Please authenticate first:
+        {{ dashlane_cli }} configure
     success_msg: "Dashlane authentication verified"
   when: dashlane_validate_auth
 
-- name: Display Dashlane user info
+- name: Display Dashlane authentication status
   ansible.builtin.debug:
-    msg: "Authenticated as: {{ dashlane_auth_check.stdout }}"
+    msg: "Dashlane CLI is authenticated"
   when:
     - dashlane_validate_auth
     - dashlane_auth_check.rc == 0
