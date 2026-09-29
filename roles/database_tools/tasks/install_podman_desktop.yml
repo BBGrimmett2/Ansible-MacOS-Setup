@@ -6,15 +6,15 @@
 # =============================================================================
 
 - name: Check if Podman Desktop is installed
-  ansible.builtin.command: brew list --cask podman-desktop
+  ansible.builtin.stat:
+    path: /Applications/Podman Desktop.app
   register: database_tools_podman_desktop_check
-  changed_when: false
-  failed_when: false
 
 - name: Install Podman Desktop via Homebrew
   ansible.builtin.command: brew install --cask podman-desktop
   when:
     - database_tools_state == 'present'
-    - database_tools_podman_desktop_check.rc != 0
+    - database_tools_podman_desktop_enabled | default(true)
+    - not database_tools_podman_desktop_check.stat.exists
   register: database_tools_podman_desktop_install
   changed_when: database_tools_podman_desktop_install.rc == 0

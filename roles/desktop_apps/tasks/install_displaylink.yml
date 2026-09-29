@@ -5,16 +5,16 @@
 # Installs Displaylink
 # =============================================================================
 
-- name: Check if Displaylink is installed
-  ansible.builtin.command: brew list --cask displaylink
+- name: Check if DisplayLink Manager is installed
+  ansible.builtin.stat:
+    path: /Applications/DisplayLink Manager.app
   register: desktop_apps_displaylink_check
-  changed_when: false
-  failed_when: false
 
-- name: Install Displaylink via Homebrew
+- name: Install DisplayLink via Homebrew
   ansible.builtin.command: brew install --cask displaylink
   when:
     - desktop_apps_state == 'present'
-    - desktop_apps_displaylink_check.rc != 0
+    - desktop_apps_displaylink_enabled | default(true)
+    - not desktop_apps_displaylink_check.stat.exists
   register: desktop_apps_displaylink_install
   changed_when: desktop_apps_displaylink_install.rc == 0

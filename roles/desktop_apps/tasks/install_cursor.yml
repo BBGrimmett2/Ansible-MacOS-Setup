@@ -6,15 +6,15 @@
 # =============================================================================
 
 - name: Check if Cursor is installed
-  ansible.builtin.command: brew list --cask cursor
+  ansible.builtin.stat:
+    path: /Applications/Cursor.app
   register: desktop_apps_cursor_check
-  changed_when: false
-  failed_when: false
 
 - name: Install Cursor via Homebrew
   ansible.builtin.command: brew install --cask cursor
   when:
     - desktop_apps_state == 'present'
-    - desktop_apps_cursor_check.rc != 0
+    - desktop_apps_cursor_enabled | default(true)
+    - not desktop_apps_cursor_check.stat.exists
   register: desktop_apps_cursor_install
   changed_when: desktop_apps_cursor_install.rc == 0

@@ -6,15 +6,15 @@
 # =============================================================================
 
 - name: Check if Google Cloud SDK is installed
-  ansible.builtin.command: brew list --cask google-cloud-sdk
+  ansible.builtin.stat:
+    path: /usr/local/Caskroom/google-cloud-sdk
   register: cloud_cli_gcp_check
-  changed_when: false
-  failed_when: false
 
 - name: Install Google Cloud SDK via Homebrew
   ansible.builtin.command: brew install --cask google-cloud-sdk
   when:
     - cloud_cli_state == 'present'
-    - cloud_cli_gcp_check.rc != 0
+    - cloud_cli_gcp_enabled | default(true)
+    - not cloud_cli_gcp_check.stat.exists
   register: cloud_cli_gcp_install
   changed_when: cloud_cli_gcp_install.rc == 0

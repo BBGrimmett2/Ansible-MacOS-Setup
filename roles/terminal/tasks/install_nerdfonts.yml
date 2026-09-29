@@ -6,19 +6,22 @@
 # Note: Fonts are now in homebrew/cask (no separate tap needed)
 # =============================================================================
 
-- name: Check if each Nerd Font is installed
+- name: Check if each Nerd Font is installed via Homebrew
   ansible.builtin.command: brew list --cask {{ item }}
   loop: "{{ terminal_nerdfonts }}"
   register: terminal_nerdfonts_check
   changed_when: false
   failed_when: false
-  when: terminal_state == 'present'
+  when:
+    - terminal_state == 'present'
+    - terminal_install_nerdfonts | default(true)
 
 - name: Install Nerd Fonts via Homebrew
   ansible.builtin.command: brew install --cask {{ item.item }}
-  loop: "{{ terminal_nerdfonts_check.results }}"
+  loop: "{{ terminal_nerdfonts_check.results | default([]) }}"
   when:
     - terminal_state == 'present'
+    - terminal_install_nerdfonts | default(true)
     - item.rc != 0
   register: terminal_nerdfonts_install
   changed_when: terminal_nerdfonts_install.rc == 0

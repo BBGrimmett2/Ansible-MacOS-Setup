@@ -5,6 +5,17 @@
 # Override default role variables for localhost execution
 # =============================================================================
 
+# -----------------------------------------------------------------------------
+# PAM Security
+# -----------------------------------------------------------------------------
+
 # Disable Touch ID for sudo (requires sudo password during playbook run)
 # Set to true if you want Touch ID and run playbook with --ask-become-pass
 pam_touchid_enabled: false
+
+# -----------------------------------------------------------------------------
+# Desktop Applications
+# -----------------------------------------------------------------------------
+
+# Disable Google Chrome (already installed manually)
+desktop_apps_chrome_enabled: false

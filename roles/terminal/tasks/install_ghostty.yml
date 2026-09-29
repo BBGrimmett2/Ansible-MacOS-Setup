@@ -6,15 +6,15 @@
 # =============================================================================
 
 - name: Check if Ghostty is installed
-  ansible.builtin.command: brew list --cask ghostty
+  ansible.builtin.stat:
+    path: /Applications/Ghostty.app
   register: terminal_ghostty_check
-  changed_when: false
-  failed_when: false
 
 - name: Install Ghostty via Homebrew
   ansible.builtin.command: brew install --cask ghostty
   when:
     - terminal_state == 'present'
-    - terminal_ghostty_check.rc != 0
+    - terminal_ghostty_enabled | default(true)
+    - not terminal_ghostty_check.stat.exists
   register: terminal_ghostty_install
   changed_when: terminal_ghostty_install.rc == 0

@@ -6,15 +6,15 @@
 # =============================================================================
 
 - name: Check if iTerm2 is installed
-  ansible.builtin.command: brew list --cask iterm2
+  ansible.builtin.stat:
+    path: /Applications/iTerm.app
   register: terminal_iterm2_check
-  changed_when: false
-  failed_when: false
 
 - name: Install iTerm2 via Homebrew
   ansible.builtin.command: brew install --cask iterm2
   when:
     - terminal_state == 'present'
-    - terminal_iterm2_check.rc != 0
+    - terminal_iterm2_enabled | default(true)
+    - not terminal_iterm2_check.stat.exists
   register: terminal_iterm2_install
   changed_when: terminal_iterm2_install.rc == 0
