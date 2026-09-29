@@ -293,7 +293,16 @@ install_dashlane_cli() {
     brew install dashlane/tap/dashlane-cli &>/dev/null &
     spinner $! "Installing Dashlane CLI"
 
-    print_step "Dashlane CLI installed successfully"
+    # Ensure dcli is available in current shell
+    hash -r 2>/dev/null || true
+
+    # Verify installation
+    if ! command -v dcli &>/dev/null; then
+        print_warning "Dashlane CLI installed but not in PATH. You may need to restart your shell."
+        print_info "Try running: hash -r"
+    else
+        print_step "Dashlane CLI installed successfully"
+    fi
 }
 
 clone_repository() {
@@ -320,22 +329,41 @@ clone_repository() {
 authenticate_dashlane() {
     print_section "Authenticating Dashlane CLI"
 
-    # Check if already authenticated
-    if dcli whoami &>/dev/null; then
-        local dashlane_user=$(dcli whoami 2>/dev/null || echo "unknown")
-        print_step "Dashlane CLI already authenticated (user: ${dashlane_user})"
+    # Ensure dcli is available
+    if ! command -v dcli &>/dev/null; then
+        print_warning "Dashlane CLI not found in PATH"
+        print_warning "You can authenticate later by running: dcli sync"
         return 0
     fi
 
-    print_info "Dashlane authentication required for secret management"
-    print_info "Skip now and authenticate later by running: dcli sync"
-    echo ""
-    read -p "Authenticate now? (Y/n): " auth_choice
+    # Check if already authenticated
+    local already_authenticated=false
+    local dashlane_user=""
 
-    if [[ "$auth_choice" =~ ^[Nn]$ ]]; then
-        print_warning "Skipping Dashlane authentication"
-        print_warning "Run 'dcli sync' before running playbooks that need secrets"
-        return 0
+    if dcli whoami &>/dev/null; then
+        already_authenticated=true
+        dashlane_user=$(dcli whoami 2>/dev/null || echo "unknown")
+        print_step "Dashlane CLI already authenticated (user: ${dashlane_user})"
+        echo ""
+        read -p "Re-authenticate with different account? (y/N): " reauth_choice
+
+        if [[ ! "$reauth_choice" =~ ^[Yy]$ ]]; then
+            print_info "Keeping current Dashlane authentication"
+            return 0
+        fi
+
+        print_info "Proceeding with re-authentication..."
+    else
+        print_info "Dashlane authentication required for secret management"
+        print_info "Skip now and authenticate later by running: dcli sync"
+        echo ""
+        read -p "Authenticate now? (Y/n): " auth_choice
+
+        if [[ "$auth_choice" =~ ^[Nn]$ ]]; then
+            print_warning "Skipping Dashlane authentication"
+            print_warning "Run 'dcli sync' before running playbooks that need secrets"
+            return 0
+        fi
     fi
 
     # Run dcli sync - it will automatically open browser
