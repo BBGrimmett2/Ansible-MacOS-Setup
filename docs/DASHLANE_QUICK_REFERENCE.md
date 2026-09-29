@@ -16,6 +16,8 @@ Quick cheat sheet for creating and managing Dashlane secrets for workstation aut
 |------------|------|---------|------------------|
 | `ssh_key_work_gitlab` | Secure Note | GitLab SSH auth | `ssh-keygen -t ed25519 -C "work@company.com" -f ~/.ssh/id_work_gitlab` |
 | `ssh_key_shadowman_git` | Secure Note | Red Hat Shadowman SSH | `ssh-keygen -t ed25519 -C "you@redhat.com" -f ~/.ssh/id_shadowman` |
+| `vpn_shadowman_profile` | Secure Note | Shadowman VPN | Obtain from IT/admin (.ovpn file) |
+| `cert_shadowman_root_ca` | Secure Note | Shadowman CA cert | Obtain from IT/admin (PEM certificate) |
 
 ## Quick Setup Steps
 
@@ -71,6 +73,60 @@ dcli read ssh_key_personal_github --output raw
 # -----END OPENSSH PRIVATE KEY-----
 ```
 
+## Searching Secrets by Category
+
+Use grep to filter secrets by category prefix:
+
+```bash
+# Find all SSH keys
+dcli note list | grep "^ssh_key_"
+
+# Find all personal profile secrets
+dcli note list | grep "_personal"
+
+# Find all work profile secrets
+dcli note list | grep "_work"
+
+# Find all Shadowman-related secrets
+dcli note list | grep "shadowman"
+
+# Find all certificates
+dcli note list | grep -E "cert_|_ca$"
+
+# Find all VPN profiles
+dcli note list | grep "^vpn_"
+
+# Find all configuration files
+dcli note list | grep "config_"
+```
+
+## Shadowman Quick Setup
+
+Complete Shadowman infrastructure setup (work profile):
+
+```bash
+# 1. Generate SSH key
+ssh-keygen -t ed25519 -C "you@redhat.com" -f ~/.ssh/temp_shadowman -N ""
+
+# 2. Create secrets in Dashlane
+dcli note add --title "ssh_key_shadowman_git" --content "$(cat ~/.ssh/temp_shadowman)"
+dcli note add --title "vpn_shadowman_profile" --content "$(cat /path/to/shadowman.ovpn)"
+dcli note add --title "cert_shadowman_root_ca" --content "$(cat /path/to/shadowman-ca.pem)"
+
+# 3. Add SSH public key to Shadowman git server
+cat ~/.ssh/temp_shadowman.pub  # Copy and add to git server
+
+# 4. Clean up temporary key
+rm ~/.ssh/temp_shadowman*
+
+# 5. Run Ansible playbook
+ansible-playbook playbooks/bootstrap_workstation.yml \
+  -e workstation_profile=work \
+  --ask-become-pass
+```
+
+See [SHADOWMAN_SETUP.md](SHADOWMAN_SETUP.md) for complete documentation.
+
 ## Common Commands
 
 ```bash
@@ -85,6 +141,9 @@ dcli read <secret_name> --output raw
 # Listing secrets
 dcli note list             # List all secure notes
 dcli password list         # List all logins
+
+# Creating secrets (via CLI)
+dcli note add --title "<name>" --content "$(cat /path/to/file)"
 ```
 
 ## Troubleshooting

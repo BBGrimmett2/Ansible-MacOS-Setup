@@ -156,16 +156,18 @@ Instead of using templates or hardcoding configuration files, you can store comp
 For complete documentation including examples and troubleshooting, see:
 **[SENSITIVE_FILES_GUIDE.md](SENSITIVE_FILES_GUIDE.md)**
 
-## Optional Secrets
+## Shadowman Infrastructure Secrets (Work Profile)
 
-These secrets are documented for reference but **not currently used** by the automation. They are examples for future expansion.
+These secrets are **required for the work profile** to fully configure Red Hat Shadowman infrastructure access including VPN and certificate management.
 
 ### VPN Profiles
 
 #### `vpn_shadowman_profile`
 
+**Profile:** Work
 **Type:** Secure Note
 **Purpose:** OpenVPN profile for Red Hat Shadowman VPN
+**Status:** ✅ **ACTIVE** - Deployed to `~/.vpn/shadowman.ovpn`
 
 **Format:** Complete `.ovpn` file content including certificates
 
@@ -190,10 +192,12 @@ verb 3
 
 ### SSL/TLS Certificates
 
-#### `vpn_shadowman_root_ca`
+#### `cert_shadowman_root_ca`
 
+**Profile:** Work
 **Type:** Secure Note
-**Purpose:** Root CA certificate for Shadowman VPN
+**Purpose:** Root CA certificate for Shadowman infrastructure (HTTPS/TLS validation)
+**Status:** ✅ **ACTIVE** - Installed to system keychain
 
 **Format:** PEM-encoded certificate
 
@@ -269,7 +273,19 @@ dcli read ssh_key_personal_github --output raw
 
 ## Naming Conventions
 
-Following consistent naming makes secrets easy to find and maintain:
+Following consistent naming makes secrets easy to find, maintain, and extend. All secrets use a standardized pattern for maximum clarity and searchability.
+
+### Pattern Structure
+
+```
+<category>_<profile|purpose>_<service|resource>
+```
+
+**Principles:**
+- **Lowercase with underscores** (snake_case) for Ansible compatibility
+- **Searchable prefixes** for filtering: `dcli note list | grep <prefix>`
+- **Profile qualification**: `personal` / `work` / `shadowman`
+- **Clear service identification**
 
 ### SSH Keys
 **Format:** `ssh_key_<profile>_<service>`
@@ -280,28 +296,50 @@ Following consistent naming makes secrets easy to find and maintain:
 - `ssh_key_work_gitlab` - Work GitLab key
 - `ssh_key_shadowman_git` - Red Hat Shadowman git key
 
-### VPN Profiles
-**Format:** `vpn_<name>_profile`
+**Search:** `dcli note list | grep "^ssh_key_"`
+
+### Configuration Files
+**Format:** `<tool>config_<profile>`
 
 **Examples:**
-- `vpn_shadowman_profile` - Red Hat Shadowman VPN
-- `vpn_company_profile` - Company VPN
+- `ssh_config_personal` - Personal SSH client config
+- `ssh_config_work` - Work SSH client config
+- `gitconfig_personal` - Personal git config
+- `gitconfig_work` - Work git config
+- `zshrc_personal` - Personal shell config
+- `zshrc_work` - Work shell config
+
+**Search:** `dcli note list | grep "config_"`
+
+### VPN Profiles
+**Format:** `vpn_<environment>_profile`
+
+**Examples:**
+- `vpn_shadowman_profile` - Red Hat Shadowman VPN (.ovpn file)
+- `vpn_personal_nordvpn` - Personal VPN profile
+
+**Search:** `dcli note list | grep "^vpn_"`
 
 ### Certificates
-**Format:** `cert_<purpose>` or `<service>_root_ca`
+**Format:** `cert_<purpose>_<type>`
 
 **Examples:**
-- `vpn_shadowman_root_ca` - Shadowman VPN CA cert
-- `openshift_root_ca` - OpenShift cluster CA cert
-- `cert_internal_ca` - Internal company CA
+- `cert_shadowman_root_ca` - Shadowman root CA certificate
+- `openshift_root_ca` - OpenShift cluster root CA
+- `cert_company_signing` - Company code signing certificate
+
+**Search:** `dcli note list | grep -E "cert_|_ca$"`
 
 ### Credentials/Tokens
-**Format:** `<service>_<type>` or `<service>_<purpose>_<type>`
+**Format:** `<service>_<profile>_<type>` or `<service>_<type>`
 
 **Examples:**
-- `github_token` - GitHub personal access token
+- `github_personal_token` - Personal GitHub PAT
+- `github_work_token` - Work GitHub PAT
 - `aws_demo_credentials` - AWS demo environment
-- `api_service_login` - Generic service login
+- `vault_shadowman_token` - Shadowman Vault token
+
+**Search:** `dcli note list | grep "_token$\|_credentials$"`
 
 ### Best Practices
 
@@ -310,6 +348,8 @@ Following consistent naming makes secrets easy to find and maintain:
 3. **Include profile** (personal/work) when applicable
 4. **Include service** name for clarity
 5. **Be consistent** across your vault
+6. **Use searchable prefixes** to enable filtering by category
+7. **Follow the pattern** `<category>_<profile|purpose>_<service|resource>`
 
 ## Testing Secrets
 
@@ -478,15 +518,31 @@ For implementation details, see:
 
 ## Summary
 
-**Minimum required secrets for personal profile:**
-- `ssh_key_personal_github`
+### Complete Secrets Inventory
 
-**Minimum required secrets for work profile:**
-- `ssh_key_work_gitlab`
-- `ssh_key_shadowman_git`
+**Personal Profile (Minimum Required):**
+- `ssh_key_personal_github` - GitHub SSH key
 
-**Format:** All SSH keys are stored as **Secure Notes** with the complete private key as the content.
+**Work Profile (Minimum Required):**
+- `ssh_key_work_gitlab` - Work GitLab SSH key
+- `ssh_key_shadowman_git` - Shadowman git SSH key
+- `vpn_shadowman_profile` - Shadowman VPN .ovpn file
+- `cert_shadowman_root_ca` - Shadowman root CA certificate
 
-**Naming:** Use exact titles as documented - they are case-sensitive and must match the variable names in the code.
+**Optional (Both Profiles):**
+- `ssh_config_<profile>` - Complete SSH client configuration
+- `gitconfig_<profile>` - Complete git configuration
+- `zshrc_<profile>` - Complete shell configuration
+- `openshift_root_ca` - OpenShift cluster CA certificate
+
+### Key Points
+
+**Format:** All SSH keys, VPN profiles, and certificates are stored as **Secure Notes** with complete file content.
+
+**Naming:** Use exact titles as documented - they are case-sensitive and must match exactly.
+
+**Pattern:** Follow `<category>_<profile|purpose>_<service|resource>` for all new secrets.
 
 **Testing:** Always test with `dcli read <secret_name> --output raw` before running playbooks.
+
+**Search:** Use `dcli note list | grep <prefix>` to find secrets by category.
