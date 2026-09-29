@@ -20,5 +20,5 @@ galaxy_info:
     - dashlane
 
 dependencies: []
-# Note: Dashlane CLI should be installed by bootstrap.sh
+# Note: Dashlane CLI should be installed by install.sh
 # This role assumes dcli is already available

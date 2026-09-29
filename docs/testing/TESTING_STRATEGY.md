@@ -358,35 +358,35 @@ tar -czf ~/backup_manual_configs.tar.gz \
 3. Erase disk and reinstall macOS
 4. Complete minimal Apple Setup
 
-**Phase 3: Bootstrap Test**
+**Phase 3: Web Installer Test**
 
 ```bash
-# 1. Download bootstrap script
-curl -fsSL https://raw.githubusercontent.com/bgrimmet/Ansible-MacOS-Setup/main/scripts/bootstrap.sh -o bootstrap.sh
+# One-line installation (recommended)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh)" \
+  2>&1 | tee ~/install_test_log.txt
 
-# 2. Run bootstrap
-chmod +x bootstrap.sh
-./bootstrap.sh 2>&1 | tee ~/bootstrap_test_log.txt
-
-# 3. Authenticate Dashlane
-dcli login
+# The installer automatically:
+# - Installs all prerequisites
+# - Clones repository
+# - Authenticates Dashlane (prompts for credentials)
+# - Runs bootstrap_workstation.yml playbook
 ```
 
-**Phase 4: Full Automation Test**
+**Phase 4: Additional Testing**
+
+After installation completes:
 
 ```bash
 # Activate virtual environment
 source ~/venv-ansible/bin/activate
 cd ~/ansible-macos-setup
 
-# Test in check mode first
-ansible-playbook playbooks/tests/test_workstation_full.yml --check --diff \
-  2>&1 | tee ~/test_check_mode.log
+# Test specific categories
+ansible-playbook playbooks/install_cli_tools.yml --check
+ansible-playbook playbooks/install_cloud_cli.yml --check
 
-# Execute full automation
-time ansible-playbook playbooks/tests/test_workstation_full.yml \
-  -e "workstation_profile=personal" \
-  2>&1 | tee ~/test_full_run.log
+# Test demo environment setup
+ansible-playbook playbooks/setup_aws_demo.yml
 ```
 
 **Phase 5: Idempotency Test**

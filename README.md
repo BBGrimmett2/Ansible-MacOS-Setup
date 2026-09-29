@@ -130,8 +130,8 @@ cd Ansible-MacOS-Setup
 
 ```
 .
-├── scripts/                 # Bootstrap scripts
-│   └── bootstrap.sh         # Zero-to-Ansible setup
+├── scripts/                 # Installation scripts
+│   └── install.sh           # Zero-to-configured workstation automation
 ├── inventories/             # Inventory definitions
 │   └── localhost.yml        # Local macOS inventory
 ├── group_vars/              # Global variables

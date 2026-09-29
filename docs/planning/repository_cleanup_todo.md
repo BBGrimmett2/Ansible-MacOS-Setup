@@ -14,12 +14,12 @@
 - **Impact:** Users cannot run the primary automation
 - **Status:** ✅ COMPLETED - Created bootstrap_workstation.yml with profile support
 
-### 2. Git Clone Commented Out in bootstrap.sh
-- **File:** `scripts/bootstrap.sh:252-253`
-- **Current:** `# git clone "$REPO_URL" "$REPO_DIR"` (commented out)
-- **Issue:** Repository cloning is disabled with warning on line 250
-- **Action:** Uncomment and verify REPO_URL is correctly set
-- **Impact:** Users cannot automatically clone the repository
+### 2. Git Clone Commented Out in install.sh
+- **File:** `scripts/install.sh:374-375`
+- **Current:** Git clone is now enabled and functional
+- **Issue:** Repository cloning was disabled (now fixed)
+- **Action:** Verified REPO_URL is correctly set
+- **Impact:** Users can automatically clone the repository
 - **Status:** ✅ COMPLETED - Uncommented git clone and verified REPO_URL
 
 ### 3. Vault File Not Encrypted
@@ -33,8 +33,8 @@
 
 ## HIGH (Needs Attention Before First Run)
 
-### 4. REPO_URL Placeholder in bootstrap.sh
-- **File:** `scripts/bootstrap.sh:30`
+### 4. REPO_URL Placeholder in install.sh
+- **File:** `scripts/install.sh:27`
 - **Current:** `REPO_URL="https://github.com/BBGrimmett2/Ansible-MacOS-Setup.git"`
 - **Issue:** Comment says "Update with actual repo URL"
 - **Action:** Verify if this is the correct public GitHub URL
@@ -224,9 +224,9 @@
 
 ### Immediate (Before First Test)
 1. ✅ DONE - Create `playbooks/bootstrap_workstation.yml` (CRITICAL #1)
-2. ✅ DONE - Uncomment git clone in bootstrap.sh (CRITICAL #2)
+2. ✅ DONE - Uncomment git clone in install.sh (CRITICAL #2)
 3. ✅ DONE - Update all "yourusername" to "bgrimmet" (HIGH #5, #6)
-4. ✅ DONE - Verify/update REPO_URL in bootstrap.sh (HIGH #4)
+4. ✅ DONE - Verify/update REPO_URL in install.sh (HIGH #4)
 5. ✅ DONE - Add license to README.md (MEDIUM #15)
 
 ### Before Production

@@ -36,7 +36,7 @@
     fail_msg: |
       Apple Command Line Tools not installed. Please install them first:
         xcode-select --install
-      Or run the bootstrap script: ./scripts/bootstrap.sh
+      Or run the installer script: ./scripts/install.sh
     success_msg: "Command Line Tools are installed"
   when: homebrew_state == 'present'
 

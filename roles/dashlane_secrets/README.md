@@ -48,7 +48,7 @@ dashlane_no_log: true
 
 ## Dependencies
 
-- Dashlane CLI (installed by bootstrap.sh)
+- Dashlane CLI (installed by install.sh)
 
 ## Public Functions
 

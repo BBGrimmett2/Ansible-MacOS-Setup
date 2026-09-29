@@ -1,116 +1,169 @@
-# Bootstrap Scripts
+# Installation Scripts
 
-This directory contains the bootstrap script that prepares a fresh macOS system for Ansible automation.
+This directory contains the web installer script that automates complete macOS workstation setup from zero to fully configured.
 
-## bootstrap.sh
+## install.sh
 
-The main bootstrap script that installs all prerequisites needed to run Ansible playbooks.
+The main web installer that handles everything from prerequisites to complete workstation automation.
 
 ### What it does
 
-1. **Apple Command Line Tools** - Installs Xcode CLI tools (required for git, compilers, etc.)
-2. **Homebrew** - Installs the Homebrew package manager
-3. **Python 3** - Installs Python 3 via Homebrew
-4. **Ansible** - Creates a Python virtual environment and installs Ansible
-5. **Dashlane CLI** - Installs Dashlane CLI for secure secret management
-6. **Ansible Collections** - Installs required Galaxy collections
+1. **System Validation** - Checks macOS platform, admin rights, internet connection, disk space
+2. **Xcode Command Line Tools** - Installs Apple developer tools (required for git, compilers)
+3. **Homebrew** - Installs the Homebrew package manager
+4. **Python 3** - Installs Python 3 via Homebrew
+5. **Ansible Virtual Environment** - Creates Python venv and installs Ansible
+6. **Dashlane CLI** - Installs and configures Dashlane CLI for secret management
+7. **Repository Clone** - Clones this repository to `~/ansible-macos-setup`
+8. **Galaxy Collections** - Installs required Ansible collections
+9. **Workstation Bootstrap** - Automatically runs the full workstation setup playbook
 
-### Usage
+### One-Line Installation (Recommended)
 
-#### First-time setup (fresh Mac)
-
-```bash
-# Download the bootstrap script
-curl -fsSL https://raw.githubusercontent.com/bgrimmet/Ansible-MacOS-Setup/main/scripts/bootstrap.sh -o bootstrap.sh
-
-# Make it executable
-chmod +x bootstrap.sh
-
-# Run it
-./bootstrap.sh
-```
-
-#### From cloned repository
+Run this command on a fresh macOS machine:
 
 ```bash
-# Navigate to the repository
-cd /path/to/Ansible-MacOS-Setup
-
-# Run the bootstrap script
-./scripts/bootstrap.sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh)"
 ```
 
-### After Bootstrap
+**Alternative (shorter):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/BBGrimmett2/Ansible-MacOS-Setup/main/scripts/install.sh | bash
+```
 
-Once the bootstrap script completes successfully:
+### Manual Installation (From Cloned Repository)
 
-1. **Authenticate with Dashlane**:
-   ```bash
-   dcli login
-   ```
+If you prefer to clone first:
 
-2. **Activate the Ansible virtual environment**:
-   ```bash
-   source ~/venv-ansible/bin/activate
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/BBGrimmett2/Ansible-MacOS-Setup.git
+cd Ansible-MacOS-Setup
 
-3. **Run the main workstation setup**:
-   ```bash
-   cd /path/to/Ansible-MacOS-Setup
-   ansible-playbook playbooks/bootstrap_workstation.yml
-   ```
+# Run the installer
+./scripts/install.sh
+```
+
+### What Happens
+
+The script is fully automated and will:
+
+1. Validate your system meets requirements
+2. Install all prerequisites (Xcode CLI, Homebrew, Python, Ansible, Dashlane CLI)
+3. Clone the repository (if not already cloned)
+4. Attempt Dashlane authentication (`dcli configure`)
+5. Install required Ansible Galaxy collections
+6. Run the `bootstrap_workstation.yml` playbook with profile selection prompt
+7. Display next steps
+
+**No user interaction required** except:
+- Xcode CLI Tools installation popup (click "Install")
+- Dashlane authentication (follow prompts in browser)
+- Profile selection (personal/work)
+- Sudo password when prompted
 
 ### Configuration
 
-Before running, you may want to update these variables in `bootstrap.sh`:
+Constants defined in `install.sh`:
 
-- `REPO_URL` - Your repository URL (if different)
-- `REPO_DIR` - Where to clone the repository
-- `VENV_PATH` - Python virtual environment location
+- `REPO_URL` - Repository URL (`https://github.com/BBGrimmett2/Ansible-MacOS-Setup.git`)
+- `REPO_DIR` - Clone destination (`~/ansible-macos-setup`)
+- `VENV_DIR` - Python venv location (`~/venv-ansible`)
+- `PYTHON_MIN_VERSION` - Minimum Python version (`3.9`)
+- `ANSIBLE_MIN_VERSION` - Minimum Ansible version (`2.15`)
 
 ### Idempotency
 
-The bootstrap script is idempotent - it's safe to run multiple times. It will:
-- Skip installations if tools are already present
-- Update existing installations where appropriate
-- Not break existing configurations
+The installer is idempotent and safe to run multiple times:
+- Skips installations if tools are already present
+- Updates repository if already cloned
+- Reconfigures shell profiles if needed
+- Won't break existing configurations
 
 ### Troubleshooting
 
-#### Command Line Tools installation hangs
+#### Xcode Command Line Tools not installing
 
-If the Xcode Command Line Tools installation dialog doesn't appear:
+If the installation popup doesn't appear:
 ```bash
-# Cancel the script (Ctrl+C) and try manually:
+# Try manually:
 xcode-select --install
-# Then re-run the bootstrap script
+# Then re-run install.sh
 ```
 
-#### Homebrew not in PATH
+#### Homebrew not in PATH after installation
 
-If Homebrew installs but isn't found:
+The script configures your shell automatically, but for the current session:
 ```bash
-# Apple Silicon (M1/M2/M3)
+# Apple Silicon
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Intel
 eval "$(/usr/local/bin/brew shellenv)"
+
+# Or reload your shell
+source ~/.zshrc
 ```
 
-#### Dashlane CLI issues
+#### Dashlane authentication fails
 
-If Dashlane CLI doesn't install properly:
+If `dcli configure` doesn't complete:
 ```bash
-# Install manually:
-brew tap dashlane/tap
-brew install dashlane-cli
+# Try manually after installation:
+dcli configure
+
+# Then verify:
+dcli status
 ```
 
-### Future Enhancements
+#### Script interruption
 
-Planned improvements:
-- [ ] DMG installer package for easy distribution
-- [ ] Automatic git repository detection
-- [ ] Pre-flight network connectivity checks
-- [ ] Backup of existing configurations
-- [ ] Support for resuming interrupted installations
+If the script is interrupted (Ctrl+C), it's safe to re-run:
+```bash
+# Continue from where it left off
+./scripts/install.sh
+```
+
+The script will skip completed steps and continue.
+
+### After Installation
+
+Once complete, your workstation is fully configured. To use Homebrew tools in your current terminal session:
+
+```bash
+source ~/.zshrc
+```
+
+Or open a new terminal window.
+
+### Repository Location
+
+The repository is cloned to:
+```
+~/ansible-macos-setup
+```
+
+Ansible virtual environment is at:
+```
+~/venv-ansible
+```
+
+### Running Specific Playbooks
+
+After installation, you can run category-specific playbooks:
+
+```bash
+cd ~/ansible-macos-setup
+
+# Activate Ansible venv
+source ~/venv-ansible/bin/activate
+
+# Run specific categories
+ansible-playbook playbooks/install_cli_tools.yml
+ansible-playbook playbooks/install_cloud_cli.yml
+ansible-playbook playbooks/install_kubernetes_tools.yml
+
+# Setup cloud demo environments
+ansible-playbook playbooks/setup_aws_demo.yml
+ansible-playbook playbooks/setup_gcp_demo.yml
+```

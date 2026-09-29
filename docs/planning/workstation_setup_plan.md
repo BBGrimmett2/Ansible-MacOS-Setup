@@ -4,8 +4,8 @@
 The goal of this phase is to get the machine ready to run Ansible securely without hardcoding secrets, starting from absolute zero.
 
 *   [ ] **Create DMG Release Artifact:** Package the initial bootstrapping process into a downloadable macOS `.dmg` installer.
-    *   *Implementation Note:* This DMG should contain an executable application wrapper (e.g., an AppleScript applet) that automatically fetches the latest `bootstrap.sh` from the repository's `main` branch and runs it in the terminal. This allows you to download a single file from a GitHub Release on a fresh Mac to kick off the entire process.
-*   [ ] Create the remote `bootstrap.sh` script (triggered by the DMG) to automate initial installations:
+    *   *Implementation Note:* This DMG should contain an executable application wrapper (e.g., an AppleScript applet) that automatically fetches the latest `install.sh` from the repository's `main` branch and runs it in the terminal. This allows you to download a single file from a GitHub Release on a fresh Mac to kick off the entire process.
+*   [ ] Create the remote `install.sh` script (triggered by the DMG) to automate initial installations:
     *   [ ] Install Apple Command Line Tools (`xcode-select --install`).
     *   [ ] Install Homebrew.
     *   [ ] Install Python3 (via Homebrew).

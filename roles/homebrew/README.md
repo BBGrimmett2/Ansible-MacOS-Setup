@@ -232,9 +232,9 @@ Error: `Apple Command Line Tools not installed`
 xcode-select --install
 ```
 
-Or run the bootstrap script:
+Or run the installer script:
 ```bash
-./scripts/bootstrap.sh
+./scripts/install.sh
 ```
 
 ### Homebrew Not in PATH
