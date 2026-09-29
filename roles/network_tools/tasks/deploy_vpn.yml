@@ -8,7 +8,7 @@
 
 - name: Create VPN profiles directory
   ansible.builtin.file:
-    path: "{{ user_home }}/.vpn"
+    path: "{{ ansible_facts['env']['HOME'] }}/.vpn"
     state: directory
     mode: '0700'
   tags: [network, vpn]
