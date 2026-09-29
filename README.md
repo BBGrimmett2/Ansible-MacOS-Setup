@@ -66,9 +66,9 @@ cd Ansible-MacOS-Setup
 
 ### System Configuration
 - macOS defaults (Dock, Finder, keyboard, trackpad)
-- Touch ID for sudo authentication
-- YubiKey support (pam_u2f)
 - SSH configuration and keys (profile-specific)
+- Touch ID for sudo authentication (optional, requires manual setup)
+- YubiKey support (optional, pam_u2f)
 
 ### CLI Tools
 - jq, yq (JSON/YAML parsing)
