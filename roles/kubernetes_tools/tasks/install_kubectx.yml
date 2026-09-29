@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install kubectx (Public Function)
+# =============================================================================
+# Installs kubectx and kubens - Context and namespace switcher
+# =============================================================================
+
+- name: Install kubectx via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.kubectx }}"
+    state: "{{ kubernetes_tools_state }}"

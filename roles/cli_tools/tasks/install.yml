@@ -1,0 +1,38 @@
+---
+# =============================================================================
+# CLI Tools Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of all enabled CLI tools
+# =============================================================================
+
+- name: Install jq
+  ansible.builtin.include_tasks: install_jq.yml
+  when: cli_tools_install_all or cli_tools_jq_enabled
+
+- name: Install yq
+  ansible.builtin.include_tasks: install_yq.yml
+  when: cli_tools_install_all or cli_tools_yq_enabled
+
+- name: Install direnv
+  ansible.builtin.include_tasks: install_direnv.yml
+  when: cli_tools_install_all or cli_tools_direnv_enabled
+
+- name: Install eza
+  ansible.builtin.include_tasks: install_eza.yml
+  when: cli_tools_install_all or cli_tools_eza_enabled
+
+- name: Install bat
+  ansible.builtin.include_tasks: install_bat.yml
+  when: cli_tools_install_all or cli_tools_bat_enabled
+
+- name: Install fd
+  ansible.builtin.include_tasks: install_fd.yml
+  when: cli_tools_install_all or cli_tools_fd_enabled
+
+- name: Install fzf
+  ansible.builtin.include_tasks: install_fzf.yml
+  when: cli_tools_install_all or cli_tools_fzf_enabled
+
+- name: Install git-delta
+  ansible.builtin.include_tasks: install_git_delta.yml
+  when: cli_tools_install_all or cli_tools_git_delta_enabled

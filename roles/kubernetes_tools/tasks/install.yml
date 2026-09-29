@@ -1,0 +1,34 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of all enabled Kubernetes tools
+# =============================================================================
+
+- name: Install OpenShift CLI
+  ansible.builtin.include_tasks: install_oc.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_oc_enabled
+
+- name: Install Kubernetes CLI
+  ansible.builtin.include_tasks: install_kubectl.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_kubectl_enabled
+
+- name: Install Helm
+  ansible.builtin.include_tasks: install_helm.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_helm_enabled
+
+- name: Install K9s
+  ansible.builtin.include_tasks: install_k9s.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_k9s_enabled
+
+- name: Install kubectx
+  ansible.builtin.include_tasks: install_kubectx.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_kubectx_enabled
+
+- name: Install stern
+  ansible.builtin.include_tasks: install_stern.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_stern_enabled
+
+- name: Install kustomize
+  ansible.builtin.include_tasks: install_kustomize.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_kustomize_enabled

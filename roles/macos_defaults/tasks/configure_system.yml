@@ -1,0 +1,82 @@
+---
+# =============================================================================
+# macOS Defaults Role - Configure System Settings
+# =============================================================================
+# Public function: Configure general system preferences.
+# Can be called via: tasks_from: configure_system
+# =============================================================================
+
+- name: Expand save panel by default
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode
+    type: bool
+    value: "{{ macos_expand_save_panel }}"
+
+- name: Expand save panel by default (alternative key)
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode2
+    type: bool
+    value: "{{ macos_expand_save_panel }}"
+
+- name: Expand print panel by default
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: PMPrintingExpandedStateForPrint
+    type: bool
+    value: "{{ macos_expand_print_panel }}"
+
+- name: Expand print panel by default (alternative key)
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: PMPrintingExpandedStateForPrint2
+    type: bool
+    value: "{{ macos_expand_print_panel }}"
+
+- name: Disable automatic capitalization
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSAutomaticCapitalizationEnabled
+    type: bool
+    value: "{{ not macos_disable_auto_capitalize }}"
+
+- name: Disable automatic period substitution
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSAutomaticPeriodSubstitutionEnabled
+    type: bool
+    value: "{{ not macos_disable_auto_period }}"
+
+- name: Disable smart quotes
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSAutomaticQuoteSubstitutionEnabled
+    type: bool
+    value: "{{ not macos_disable_smart_quotes }}"
+
+- name: Disable smart dashes
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: NSAutomaticDashSubstitutionEnabled
+    type: bool
+    value: "{{ not macos_disable_smart_dashes }}"
+
+- name: Show battery percentage in menu bar
+  community.general.osx_defaults:
+    domain: com.apple.menuextra.battery
+    key: ShowPercent
+    type: string
+    value: "{{ 'YES' if macos_show_battery_percentage else 'NO' }}"
+  notify: Restart SystemUIServer
+
+- name: Require password after sleep (delay in seconds)
+  community.general.osx_defaults:
+    domain: com.apple.screensaver
+    key: askForPasswordDelay
+    type: int
+    value: "{{ macos_require_password_delay }}"
+
+- name: Display system configuration status
+  ansible.builtin.debug:
+    msg: "System configuration completed"

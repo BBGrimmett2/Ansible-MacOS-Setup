@@ -1,0 +1,61 @@
+---
+# =============================================================================
+# Test Playbook: Database Tools Role
+# =============================================================================
+# Purpose: Test database_tools role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_database_tools.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_database_tools.yml
+#   Verify:  ansible-playbook playbooks/tests/test_database_tools.yml (should show no changes)
+# =============================================================================
+
+- name: Test Database Tools Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    database_tools_install_all: true
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Database Tools Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Install all tools: {{ database_tools_install_all }}"
+
+    - name: Execute database_tools role
+      ansible.builtin.import_role:
+        name: database_tools
+      tags: database_tools
+
+    - name: Verify database tools installations
+      block:
+        - name: Check pgAdmin is installed
+          ansible.builtin.stat:
+            path: /Applications/pgAdmin 4.app
+          register: pgadmin_stat
+          failed_when: not pgadmin_stat.stat.exists
+
+        - name: Check Podman Desktop is installed
+          ansible.builtin.stat:
+            path: /Applications/Podman Desktop.app
+          register: podman_stat
+          failed_when: not podman_stat.stat.exists
+
+        - name: Check podman CLI is installed
+          ansible.builtin.command: which podman
+          register: podman_check
+          changed_when: false
+          failed_when: podman_check.rc != 0
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Database tools installed successfully"
+              - "pgAdmin: /Applications/pgAdmin 4.app"
+              - "Podman Desktop: /Applications/Podman Desktop.app"
+              - "podman CLI: {{ podman_check.stdout }}"
+      tags: verify
+      when: not ansible_check_mode

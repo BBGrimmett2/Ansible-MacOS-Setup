@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Configure Shell Environment Playbook
+# =============================================================================
+# Purpose: Deploy ZSH configuration with tool integrations
+# Usage: ansible-playbook playbooks/configure_shell.yml
+# =============================================================================
+
+- name: Configure Shell Environment
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: shell_environment
+      tags: [shell_environment]

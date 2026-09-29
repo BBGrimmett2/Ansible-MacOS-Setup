@@ -1,0 +1,22 @@
+---
+# =============================================================================
+# Cloud CLI Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of all enabled cloud CLIs
+# =============================================================================
+
+- name: Install AWS CLI
+  ansible.builtin.include_tasks: install_aws.yml
+  when: cloud_cli_install_all or cloud_cli_aws_enabled
+
+- name: Install GCP CLI
+  ansible.builtin.include_tasks: install_gcp.yml
+  when: cloud_cli_install_all or cloud_cli_gcp_enabled
+
+- name: Install Azure CLI
+  ansible.builtin.include_tasks: install_azure.yml
+  when: cloud_cli_install_all or cloud_cli_azure_enabled
+
+- name: Install GitHub CLI
+  ansible.builtin.include_tasks: install_github.yml
+  when: cloud_cli_install_all or cloud_cli_github_enabled

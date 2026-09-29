@@ -1,0 +1,62 @@
+---
+# =============================================================================
+# Homebrew Role - Validation Tasks
+# =============================================================================
+# Validates prerequisites and configuration before installation/configuration.
+# This is a private task file (called internally by main.yml).
+# =============================================================================
+
+- name: Validate platform is macOS
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Darwin'
+    fail_msg: "Homebrew can only be installed on macOS (Darwin). Detected: {{ ansible_os_family }}"
+    success_msg: "Platform validation passed: macOS detected"
+    quiet: true
+
+- name: Validate homebrew_state value
+  ansible.builtin.assert:
+    that:
+      - homebrew_state in ['present', 'absent']
+    fail_msg: "homebrew_state must be 'present' or 'absent', got: {{ homebrew_state }}"
+    success_msg: "State validation passed"
+    quiet: true
+
+- name: Validate Command Line Tools are installed
+  ansible.builtin.command: xcode-select -p
+  register: xcode_check
+  failed_when: false
+  changed_when: false
+  when: homebrew_state == 'present'
+
+- name: Assert Command Line Tools are installed
+  ansible.builtin.assert:
+    that:
+      - xcode_check.rc == 0
+    fail_msg: |
+      Apple Command Line Tools not installed. Please install them first:
+        xcode-select --install
+      Or run the bootstrap script: ./scripts/bootstrap.sh
+    success_msg: "Command Line Tools are installed"
+  when: homebrew_state == 'present'
+
+- name: Validate shell profiles exist (if configuring shell)
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  register: shell_profile_check
+  loop: "{{ homebrew_shell_profiles }}"
+  when:
+    - homebrew_configure_shell
+    - homebrew_state == 'present'
+
+- name: Create missing shell profile files
+  ansible.builtin.file:
+    path: "{{ item.item }}"
+    state: touch
+    mode: '0644'
+  loop: "{{ shell_profile_check.results | default([]) }}"
+  when:
+    - homebrew_configure_shell
+    - homebrew_state == 'present'
+    - not item.stat.exists
+  changed_when: true

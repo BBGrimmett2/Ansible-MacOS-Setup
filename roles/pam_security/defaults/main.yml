@@ -1,0 +1,57 @@
+---
+# =============================================================================
+# PAM Security Role - Default Variables
+# =============================================================================
+# Configure Touch ID and YubiKey authentication for sudo on macOS.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Touch ID Configuration
+# -----------------------------------------------------------------------------
+
+# Enable Touch ID for sudo
+pam_touchid_enabled: true
+
+# PAM configuration file for sudo
+pam_sudo_config: /etc/pam.d/sudo
+
+# PAM module for Touch ID
+pam_touchid_module: pam_tid.so
+
+# Backup original PAM configuration
+pam_backup_original: true
+
+# Location for PAM configuration backup
+pam_backup_dir: /etc/pam.d/backups
+
+# -----------------------------------------------------------------------------
+# YubiKey Configuration
+# -----------------------------------------------------------------------------
+
+# Enable YubiKey (U2F) authentication
+pam_yubikey_enabled: false
+
+# Install pam-u2f via Homebrew
+pam_yubikey_install_module: true
+
+# YubiKey authentication mode (required, sufficient, optional)
+# - required: YubiKey must be present and valid
+# - sufficient: YubiKey can authenticate alone, or fall through to password
+# - optional: YubiKey is checked but not required
+pam_yubikey_mode: sufficient
+
+# Location for U2F keys mapping file
+pam_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
+
+# Whether to prompt for Touch ID first, then YubiKey
+pam_touchid_priority: true
+
+# -----------------------------------------------------------------------------
+# Security Settings
+# -----------------------------------------------------------------------------
+
+# Validate PAM configuration before applying
+pam_validate_config: true
+
+# Require user confirmation before modifying PAM files
+pam_require_confirmation: false

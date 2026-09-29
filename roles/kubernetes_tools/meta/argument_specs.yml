@@ -1,0 +1,159 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure Kubernetes tools
+    description:
+      - Install Kubernetes and OpenShift CLI tools via Homebrew
+      - Configure shell completion
+      - Set up tooling for Red Hat OpenShift environments
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove Kubernetes tools
+
+      kubernetes_tools_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all tools or only enabled ones
+
+      kubernetes_tools_oc_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable OpenShift CLI installation
+
+      kubernetes_tools_kubectl_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Kubernetes CLI installation
+
+      kubernetes_tools_helm_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Helm installation
+
+      kubernetes_tools_k9s_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable K9s terminal UI installation
+
+      kubernetes_tools_kubectx_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable kubectx/kubens installation
+
+      kubernetes_tools_stern_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable stern log tailing installation
+
+      kubernetes_tools_kustomize_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable kustomize installation
+
+  install:
+    short_description: Install all Kubernetes tools
+    description: Install all enabled Kubernetes tools via Homebrew
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_oc:
+    short_description: Install OpenShift CLI
+    description: Install OpenShift CLI (oc)
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_kubectl:
+    short_description: Install Kubernetes CLI
+    description: Install Kubernetes CLI (kubectl)
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_helm:
+    short_description: Install Helm
+    description: Install Helm package manager
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_k9s:
+    short_description: Install K9s
+    description: Install K9s terminal UI
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_kubectx:
+    short_description: Install kubectx
+    description: Install kubectx and kubens context switcher
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_stern:
+    short_description: Install stern
+    description: Install stern multi-pod log tailing tool
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_kustomize:
+    short_description: Install kustomize
+    description: Install kustomize configuration management
+    author: Brian Grimmett
+
+    options:
+      kubernetes_tools_state:
+        type: str
+        required: false
+        default: present

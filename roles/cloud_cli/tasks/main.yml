@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Cloud CLI Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation and installation of cloud CLIs
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Install cloud CLIs
+  ansible.builtin.import_tasks: install.yml
+  tags: [install]
+  when: cloud_cli_state == 'present'

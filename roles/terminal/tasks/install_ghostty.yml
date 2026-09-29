@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Terminal Role - Install Ghostty (Public Function)
+# =============================================================================
+# Installs Ghostty terminal emulator (GPU-accelerated)
+# =============================================================================
+
+- name: Install Ghostty via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ terminal_packages.ghostty }}"
+    state: "{{ terminal_state }}"

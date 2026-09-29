@@ -1,0 +1,22 @@
+---
+# =============================================================================
+# Terminal Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of terminal emulator and fonts
+# =============================================================================
+
+- name: Install iTerm2
+  ansible.builtin.include_tasks: install_iterm2.yml
+  when:
+    - terminal_install_all or terminal_iterm2_enabled
+    - terminal_emulator == 'iterm2'
+
+- name: Install Ghostty
+  ansible.builtin.include_tasks: install_ghostty.yml
+  when:
+    - terminal_install_all or terminal_ghostty_enabled
+    - terminal_emulator == 'ghostty'
+
+- name: Install Nerd Fonts
+  ansible.builtin.include_tasks: install_nerdfonts.yml
+  when: terminal_install_all or terminal_install_nerdfonts

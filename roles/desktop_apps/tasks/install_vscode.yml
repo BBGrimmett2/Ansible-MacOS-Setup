@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Desktop Apps Role - Install Vscode (Public Function)
+# =============================================================================
+# Installs Vscode
+# =============================================================================
+
+- name: Install Vscode via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.vscode }}"
+    state: "{{ desktop_apps_state }}"

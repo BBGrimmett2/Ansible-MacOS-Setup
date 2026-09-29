@@ -1,0 +1,23 @@
+---
+# =============================================================================
+# Database Tools Role - Metadata
+# =============================================================================
+
+galaxy_info:
+  author: Brian Grimmett
+  description: Install and configure database and container tools
+  company: Starbase Engineering
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - macos
+    - database
+    - containers
+    - tools
+
+dependencies:
+  - role: homebrew

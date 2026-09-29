@@ -1,0 +1,98 @@
+---
+# =============================================================================
+# PAM Security Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Configure Touch ID and YubiKey for sudo
+    description:
+      - Enable Touch ID authentication for sudo commands
+      - Optionally configure YubiKey (U2F) hardware authentication
+      - Backs up original PAM configuration before modification
+      - Validates configuration before applying changes
+    author: Brian Grimmett
+
+    options:
+      pam_touchid_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Touch ID for sudo authentication
+
+      pam_yubikey_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Enable YubiKey (U2F) hardware authentication
+
+      pam_yubikey_mode:
+        type: str
+        required: false
+        default: sufficient
+        choices:
+          - required
+          - sufficient
+          - optional
+        description: |
+          YubiKey authentication mode:
+          - required: Must have YubiKey
+          - sufficient: YubiKey OR password
+          - optional: YubiKey checked but not required
+
+      pam_backup_original:
+        type: bool
+        required: false
+        default: true
+        description: Backup original PAM configuration before changes
+
+      pam_validate_config:
+        type: bool
+        required: false
+        default: true
+        description: Validate PAM configuration before applying
+
+  configure_touchid:
+    short_description: Configure Touch ID only
+    description:
+      - Enable Touch ID authentication for sudo
+      - Can be called independently via tasks_from
+    author: Brian Grimmett
+
+    options:
+      pam_touchid_enabled:
+        type: bool
+        required: false
+        default: true
+
+      pam_backup_original:
+        type: bool
+        required: false
+        default: true
+
+  configure_yubikey:
+    short_description: Configure YubiKey only
+    description:
+      - Enable YubiKey hardware authentication
+      - Can be called independently via tasks_from
+    author: Brian Grimmett
+
+    options:
+      pam_yubikey_enabled:
+        type: bool
+        required: false
+        default: true
+
+      pam_yubikey_mode:
+        type: str
+        required: false
+        default: sufficient
+        choices:
+          - required
+          - sufficient
+          - optional
+
+      pam_backup_original:
+        type: bool
+        required: false
+        default: true

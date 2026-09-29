@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Desktop Apps Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation and installation of desktop apps
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Install desktop apps
+  ansible.builtin.import_tasks: install.yml
+  tags: [install]
+  when: desktop_apps_state == 'present'

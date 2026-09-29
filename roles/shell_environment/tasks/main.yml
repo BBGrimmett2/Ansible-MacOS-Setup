@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Shell Environment Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation and configuration of shell environment
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Configure shell environment
+  ansible.builtin.import_tasks: configure.yml
+  tags: [configure]
+  when: shell_environment_state == 'present'

@@ -1,0 +1,26 @@
+---
+# =============================================================================
+# Shell Environment Role - Metadata
+# =============================================================================
+
+galaxy_info:
+  author: Brian Grimmett
+  description: Configure ZSH shell environment with dotfiles and tool integrations
+  company: Starbase Engineering
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - macos
+    - shell
+    - zsh
+    - dotfiles
+    - environment
+
+dependencies:
+  - role: homebrew
+  - role: cli_tools
+  - role: terminal

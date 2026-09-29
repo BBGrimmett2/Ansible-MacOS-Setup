@@ -1,0 +1,41 @@
+---
+# =============================================================================
+# SSH Config Role - Manage Known Hosts
+# =============================================================================
+# Public function: Populate SSH known_hosts file.
+# Can be called via: tasks_from: manage_known_hosts
+# =============================================================================
+
+- name: Ensure known_hosts file exists
+  ansible.builtin.file:
+    path: "{{ ssh_config_dir }}/known_hosts"
+    state: touch
+    mode: '0644'
+    modification_time: preserve
+    access_time: preserve
+
+- name: Pre-populate known_hosts for common services
+  ansible.builtin.command: ssh-keyscan -H {{ item }}
+  register: ssh_keyscan_result
+  loop: "{{ ssh_known_hosts }}"
+  changed_when: false
+  when: ssh_prepopulate_known_hosts
+
+- name: Add hosts to known_hosts file
+  ansible.builtin.lineinfile:
+    path: "{{ ssh_config_dir }}/known_hosts"
+    line: "{{ item.stdout }}"
+    create: true
+    mode: '0644'
+  loop: "{{ ssh_keyscan_result.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when:
+    - ssh_prepopulate_known_hosts
+    - item.stdout is defined
+    - item.stdout | length > 0
+
+- name: Display known_hosts management status
+  ansible.builtin.debug:
+    msg: "Known hosts populated for {{ ssh_known_hosts | join(', ') }}"
+  when: ssh_prepopulate_known_hosts

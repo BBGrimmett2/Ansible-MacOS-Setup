@@ -1,0 +1,107 @@
+---
+# =============================================================================
+# SSH Config Role - Default Variables
+# =============================================================================
+# Deploy SSH configuration and keys based on workstation profile.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# SSH Directory Configuration
+# -----------------------------------------------------------------------------
+
+# SSH configuration directory
+ssh_config_dir: "{{ ansible_env.HOME }}/.ssh"
+
+# SSH configuration file
+ssh_config_file: "{{ ssh_config_dir }}/config"
+
+# SSH directory permissions
+ssh_dir_permissions: "0700"
+
+# SSH config file permissions
+ssh_config_permissions: "0600"
+
+# SSH key permissions
+ssh_key_permissions: "0600"
+
+# SSH public key permissions
+ssh_pubkey_permissions: "0644"
+
+# -----------------------------------------------------------------------------
+# Profile Configuration
+# -----------------------------------------------------------------------------
+
+# Workstation profile (personal or work)
+# This should be set via vars_prompt in the main playbook
+# workstation_profile: personal
+
+# -----------------------------------------------------------------------------
+# Personal Profile SSH Keys
+# -----------------------------------------------------------------------------
+
+# Personal SSH keys to deploy (fetched from Dashlane)
+ssh_personal_keys:
+  - name: github
+    dashlane_secret: ssh_key_personal_github
+    file: "{{ ssh_config_dir }}/id_personal_github"
+    host_pattern: "github.com"
+
+# Example additional personal key:
+#   - name: gitlab_personal
+#     dashlane_secret: ssh_key_personal_gitlab
+#     file: "{{ ssh_config_dir }}/id_personal_gitlab"
+#     host_pattern: "gitlab.com"
+
+# -----------------------------------------------------------------------------
+# Work Profile SSH Keys
+# -----------------------------------------------------------------------------
+
+# Work SSH keys to deploy (fetched from Dashlane)
+ssh_work_keys:
+  - name: work_gitlab
+    dashlane_secret: ssh_key_work_gitlab
+    file: "{{ ssh_config_dir }}/id_work_gitlab"
+    host_pattern: "gitlab.yourcompany.com"
+
+  - name: shadowman_git
+    dashlane_secret: ssh_key_shadowman_git
+    file: "{{ ssh_config_dir }}/id_shadowman"
+    host_pattern: "git.shadowman.dev"
+
+# -----------------------------------------------------------------------------
+# SSH Config Template Settings
+# -----------------------------------------------------------------------------
+
+# Whether to deploy SSH config file
+ssh_deploy_config: true
+
+# Whether to backup existing SSH config
+ssh_backup_existing: true
+
+# SSH client options (applied globally)
+ssh_global_options:
+  AddKeysToAgent: "yes"
+  UseKeychain: "yes"
+  IdentitiesOnly: "yes"
+  ServerAliveInterval: 60
+  ServerAliveCountMax: 3
+
+# Compression (useful for slow connections)
+ssh_compression: false
+
+# -----------------------------------------------------------------------------
+# Known Hosts
+# -----------------------------------------------------------------------------
+
+# Manage known_hosts file
+ssh_manage_known_hosts: true
+
+# Strict host key checking (yes, no, ask, accept-new)
+ssh_strict_host_key_checking: accept-new
+
+# Pre-populate known hosts for common services
+ssh_prepopulate_known_hosts: true
+
+ssh_known_hosts:
+  - github.com
+  - gitlab.com

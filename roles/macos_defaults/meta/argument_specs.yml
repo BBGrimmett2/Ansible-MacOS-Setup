@@ -1,0 +1,118 @@
+---
+# =============================================================================
+# macOS Defaults Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Configure macOS system preferences
+    description:
+      - Configure Dock, Finder, keyboard, trackpad, and other system settings
+      - Uses the macOS defaults command for persistent configuration
+      - Optionally restarts affected applications to apply changes
+    author: Brian Grimmett
+
+    options:
+      # Dock Settings
+      macos_dock_autohide:
+        type: bool
+        required: false
+        default: true
+        description: Automatically hide and show the Dock
+
+      macos_dock_position:
+        type: str
+        required: false
+        default: bottom
+        choices:
+          - bottom
+          - left
+          - right
+        description: Dock position on screen
+
+      macos_dock_tilesize:
+        type: int
+        required: false
+        default: 48
+        description: Icon size of Dock items (16-128)
+
+      # Finder Settings
+      macos_finder_show_hidden_files:
+        type: bool
+        required: false
+        default: true
+        description: Show hidden files in Finder
+
+      macos_finder_show_extensions:
+        type: bool
+        required: false
+        default: true
+        description: Show all filename extensions
+
+      macos_finder_default_view:
+        type: str
+        required: false
+        default: clmv
+        choices:
+          - icnv  # Icon view
+          - Nlsv  # List view
+          - clmv  # Column view
+          - Flwv  # Gallery view
+        description: Default Finder view style
+
+      # Keyboard Settings
+      macos_keyboard_key_repeat:
+        type: int
+        required: false
+        default: 2
+        description: Key repeat rate (1=slow, 2=fast)
+
+      macos_keyboard_initial_key_repeat:
+        type: int
+        required: false
+        default: 15
+        description: Delay until key repeat (15=long, 1=short)
+
+      # Trackpad Settings
+      macos_trackpad_tap_to_click:
+        type: bool
+        required: false
+        default: true
+        description: Enable tap to click
+
+      macos_trackpad_tracking_speed:
+        type: float
+        required: false
+        default: 1.5
+        description: Tracking speed (0.0=slow, 3.0=fast)
+
+      # Screenshot Settings
+      macos_screenshots_location:
+        type: str
+        required: false
+        description: Screenshot save location
+
+      macos_screenshots_format:
+        type: str
+        required: false
+        default: png
+        choices:
+          - png
+          - jpg
+          - gif
+          - pdf
+          - tiff
+        description: Screenshot file format
+
+      # System Settings
+      macos_restart_affected_apps:
+        type: bool
+        required: false
+        default: true
+        description: Restart affected applications after changes
+
+      macos_apps_to_restart:
+        type: list
+        elements: str
+        required: false
+        description: List of applications to restart

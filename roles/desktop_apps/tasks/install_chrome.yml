@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Desktop Apps Role - Install Google Chrome (Public Function)
+# =============================================================================
+# Installs Google Chrome web browser
+# =============================================================================
+
+- name: Install Google Chrome via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.chrome }}"
+    state: "{{ desktop_apps_state }}"

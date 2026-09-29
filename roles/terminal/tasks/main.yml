@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Terminal Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation, installation, and configuration of terminal
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Install terminal emulator and fonts
+  ansible.builtin.import_tasks: install.yml
+  tags: [install]
+  when: terminal_state == 'present'

@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Network Tools Role - Install mtr (Public Function)
+# =============================================================================
+# Installs mtr - network diagnostic tool (traceroute + ping)
+# =============================================================================
+
+- name: Install mtr via Homebrew
+  community.general.homebrew:
+    name: "{{ network_tools_packages.mtr }}"
+    state: "{{ network_tools_state }}"

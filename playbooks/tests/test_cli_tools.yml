@@ -1,0 +1,113 @@
+---
+# =============================================================================
+# Test Playbook: CLI Tools Role
+# =============================================================================
+# Purpose: Test cli_tools role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_cli_tools.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_cli_tools.yml
+#   Verify:  ansible-playbook playbooks/tests/test_cli_tools.yml (should show no changes)
+# =============================================================================
+
+- name: Test CLI Tools Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    cli_tools_install_all: true
+    cli_tools_direnv_safety_enabled: true
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== CLI Tools Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "User: {{ ansible_env.USER }}"
+          - "Architecture: {{ ansible_architecture }}"
+          - "Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else 'disabled' }}"
+
+    - name: Execute cli_tools role
+      ansible.builtin.import_role:
+        name: cli_tools
+      tags: cli_tools
+
+    - name: Verify CLI tools installation
+      block:
+        - name: Check jq is installed
+          ansible.builtin.command: which jq
+          register: jq_check
+          changed_when: false
+          failed_when: jq_check.rc != 0
+
+        - name: Check yq is installed
+          ansible.builtin.command: which yq
+          register: yq_check
+          changed_when: false
+          failed_when: yq_check.rc != 0
+
+        - name: Check direnv is installed
+          ansible.builtin.command: which direnv
+          register: direnv_check
+          changed_when: false
+          failed_when: direnv_check.rc != 0
+
+        - name: Check eza is installed
+          ansible.builtin.command: which eza
+          register: eza_check
+          changed_when: false
+          failed_when: eza_check.rc != 0
+
+        - name: Check bat is installed
+          ansible.builtin.command: which bat
+          register: bat_check
+          changed_when: false
+          failed_when: bat_check.rc != 0
+
+        - name: Check fd is installed
+          ansible.builtin.command: which fd
+          register: fd_check
+          changed_when: false
+          failed_when: fd_check.rc != 0
+
+        - name: Check fzf is installed
+          ansible.builtin.command: which fzf
+          register: fzf_check
+          changed_when: false
+          failed_when: fzf_check.rc != 0
+
+        - name: Check git-delta is installed
+          ansible.builtin.command: which delta
+          register: delta_check
+          changed_when: false
+          failed_when: delta_check.rc != 0
+
+        - name: Verify direnvrc exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.config/direnv/direnvrc"
+          register: direnvrc_stat
+          failed_when: not direnvrc_stat.stat.exists
+
+        - name: Verify Projects directory exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/Projects"
+          register: projects_stat
+          failed_when: not projects_stat.stat.exists
+          when: cli_tools_direnv_safety_enabled
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ All CLI tools installed successfully"
+              - "jq: {{ jq_check.stdout }}"
+              - "yq: {{ yq_check.stdout }}"
+              - "direnv: {{ direnv_check.stdout }}"
+              - "eza: {{ eza_check.stdout }}"
+              - "bat: {{ bat_check.stdout }}"
+              - "fd: {{ fd_check.stdout }}"
+              - "fzf: {{ fzf_check.stdout }}"
+              - "delta: {{ delta_check.stdout }}"
+              - "direnvrc: {{ direnvrc_stat.stat.path }}"
+      tags: verify
+      when: not ansible_check_mode

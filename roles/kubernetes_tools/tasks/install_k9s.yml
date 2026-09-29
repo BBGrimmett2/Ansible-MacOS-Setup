@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install K9s (Public Function)
+# =============================================================================
+# Installs K9s - Terminal UI for Kubernetes
+# =============================================================================
+
+- name: Install K9s via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.k9s }}"
+    state: "{{ kubernetes_tools_state }}"

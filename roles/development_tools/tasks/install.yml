@@ -1,0 +1,26 @@
+---
+# =============================================================================
+# Development Tools Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of all enabled development tools
+# =============================================================================
+
+- name: Install pre-commit
+  ansible.builtin.include_tasks: install_precommit.yml
+  when: development_tools_install_all or development_tools_precommit_enabled
+
+- name: Install custom scripts
+  ansible.builtin.include_tasks: install_custom_scripts.yml
+  when: development_tools_install_all or development_tools_custom_scripts_enabled
+
+- name: Install Claude Code CLI
+  ansible.builtin.include_tasks: install_claude_code.yml
+  when:
+    - development_tools_claude_code_enabled
+    - workstation_profile == 'work'
+
+- name: Install AAP demo tools
+  ansible.builtin.include_tasks: install_aap_demo.yml
+  when:
+    - development_tools_aap_demo_enabled
+    - workstation_profile == 'work'

@@ -1,0 +1,18 @@
+---
+# =============================================================================
+# Development Tools Role - Install AAP Demo Tools (Public Function)
+# =============================================================================
+# Installs Ansible Automation Platform demo environment tools
+# =============================================================================
+
+- name: TODO - Install AAP demo tools
+  ansible.builtin.debug:
+    msg:
+      - "AAP demo tools installation not yet implemented"
+      - "Tools to install: {{ development_tools_aap_demo_tools }}"
+
+# TODO: Implement actual AAP demo tools installation
+# - Install ansible-navigator
+# - Install ansible-builder
+# - Configure execution environments
+# - Set up demo project templates

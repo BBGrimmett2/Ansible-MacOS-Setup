@@ -1,0 +1,77 @@
+---
+# =============================================================================
+# SSH Config Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Deploy SSH configuration and keys
+    description:
+      - Deploy SSH keys from Dashlane based on profile
+      - Configure SSH client settings
+      - Manage known_hosts
+      - Profile-aware (personal vs work)
+    author: Brian Grimmett
+
+    options:
+      workstation_profile:
+        type: str
+        required: true
+        choices:
+          - personal
+          - work
+        description: Workstation profile (determines which SSH keys to deploy)
+
+      ssh_deploy_config:
+        type: bool
+        required: false
+        default: true
+        description: Whether to deploy SSH config file
+
+      ssh_backup_existing:
+        type: bool
+        required: false
+        default: true
+        description: Backup existing SSH config before overwriting
+
+      ssh_personal_keys:
+        type: list
+        required: false
+        description: List of personal SSH keys to deploy
+
+      ssh_work_keys:
+        type: list
+        required: false
+        description: List of work SSH keys to deploy
+
+      ssh_manage_known_hosts:
+        type: bool
+        required: false
+        default: true
+        description: Manage SSH known_hosts file
+
+  deploy_personal_keys:
+    short_description: Deploy personal SSH keys only
+    description:
+      - Deploy SSH keys for personal profile
+      - Can be called via tasks_from
+    author: Brian Grimmett
+
+    options:
+      ssh_personal_keys:
+        type: list
+        required: false
+        description: List of personal SSH keys
+
+  deploy_work_keys:
+    short_description: Deploy work SSH keys only
+    description:
+      - Deploy SSH keys for work profile
+      - Can be called via tasks_from
+    author: Brian Grimmett
+
+    options:
+      ssh_work_keys:
+        type: list
+        required: false
+        description: List of work SSH keys

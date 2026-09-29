@@ -1,0 +1,65 @@
+---
+# =============================================================================
+# Setup GCP Demo Environment Playbook
+# =============================================================================
+# Purpose: Quick import of GCP demo environment credentials
+# Usage: ansible-playbook playbooks/setup_gcp_demo.yml
+# =============================================================================
+
+- name: Setup GCP Demo Environment
+  hosts: localhost
+  gather_facts: true
+
+  vars_prompt:
+    - name: gcp_demo_project_id
+      prompt: "GCP Project ID"
+      private: false
+
+    - name: gcp_demo_region
+      prompt: "GCP Region"
+      private: false
+      default: "us-central1"
+
+    - name: gcp_demo_credentials_json
+      prompt: "Service Account JSON (paste entire contents)"
+      private: true
+
+    - name: gcp_demo_config_name
+      prompt: "Configuration name"
+      private: false
+      default: "demo-{{ ansible_date_time.date }}"
+
+  tasks:
+    - name: Display demo setup information
+      ansible.builtin.debug:
+        msg:
+          - "=== GCP Demo Environment Setup ==="
+          - "Project: {{ gcp_demo_project_id }}"
+          - "Region: {{ gcp_demo_region }}"
+          - "Configuration: {{ gcp_demo_config_name }}"
+          - ""
+          - "This will create a new gcloud configuration without modifying existing ones."
+
+    - name: Configure GCP demo environment
+      ansible.builtin.import_role:
+        name: cloud_cli
+        tasks_from: configure_gcp_demo
+
+    - name: Display usage instructions
+      ansible.builtin.debug:
+        msg:
+          - ""
+          - "=== GCP Demo Environment Ready ==="
+          - ""
+          - "To use this demo environment:"
+          - "  gcloud config configurations activate {{ gcp_demo_config_name }}"
+          - ""
+          - "Or with individual commands:"
+          - "  gcloud --configuration={{ gcp_demo_config_name }} compute instances list"
+          - "  gcloud --configuration={{ gcp_demo_config_name }} storage ls"
+          - ""
+          - "To switch back to default configuration:"
+          - "  gcloud config configurations activate default"
+          - ""
+          - "To list all configurations:"
+          - "  gcloud config configurations list"

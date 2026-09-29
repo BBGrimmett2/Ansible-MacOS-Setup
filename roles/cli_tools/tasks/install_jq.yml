@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install jq (Public Function)
+# =============================================================================
+# Installs jq JSON processor
+# =============================================================================
+
+- name: Install jq via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.jq }}"
+    state: "{{ cli_tools_state }}"

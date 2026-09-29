@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install fd (Public Function)
+# =============================================================================
+# Installs fd - modern find replacement with better performance
+# =============================================================================
+
+- name: Install fd via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.fd }}"
+    state: "{{ cli_tools_state }}"

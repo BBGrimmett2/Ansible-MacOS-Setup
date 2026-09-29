@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install OpenShift CLI (Public Function)
+# =============================================================================
+# Installs OpenShift CLI (oc) for Red Hat OpenShift
+# =============================================================================
+
+- name: Install OpenShift CLI via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.oc }}"
+    state: "{{ kubernetes_tools_state }}"

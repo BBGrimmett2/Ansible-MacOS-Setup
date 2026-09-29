@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install git-delta (Public Function)
+# =============================================================================
+# Installs git-delta - git diff pager with syntax highlighting
+# =============================================================================
+
+- name: Install git-delta via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.git_delta }}"
+    state: "{{ cli_tools_state }}"

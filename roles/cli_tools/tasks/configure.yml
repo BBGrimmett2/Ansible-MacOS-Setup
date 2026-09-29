@@ -1,0 +1,12 @@
+---
+# =============================================================================
+# CLI Tools Role - Configuration Tasks
+# =============================================================================
+# Configures installed CLI tools
+# =============================================================================
+
+- name: Configure direnv with safety checks
+  ansible.builtin.include_tasks: configure_direnv.yml
+  when:
+    - cli_tools_direnv_enabled
+    - cli_tools_direnv_configure

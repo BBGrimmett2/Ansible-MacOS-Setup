@@ -1,0 +1,93 @@
+---
+# =============================================================================
+# CLI Tools Role - Default Variables
+# =============================================================================
+# Install and configure essential CLI quality-of-life tools.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) CLI tools
+cli_tools_state: present
+
+# Install all tools (if false, only install enabled tools)
+cli_tools_install_all: true
+
+# -----------------------------------------------------------------------------
+# Individual Tool Control
+# -----------------------------------------------------------------------------
+
+# jq - JSON processor
+cli_tools_jq_enabled: true
+
+# yq - YAML processor
+cli_tools_yq_enabled: true
+
+# direnv - Per-directory environment variables
+cli_tools_direnv_enabled: true
+
+# eza - Modern ls replacement
+cli_tools_eza_enabled: true
+
+# bat - Modern cat replacement with syntax highlighting
+cli_tools_bat_enabled: true
+
+# fd - Modern find replacement
+cli_tools_fd_enabled: true
+
+# fzf - Fuzzy finder
+cli_tools_fzf_enabled: true
+
+# git-delta - Git diff pager with syntax highlighting
+cli_tools_git_delta_enabled: true
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew package names)
+# -----------------------------------------------------------------------------
+
+cli_tools_packages:
+  jq: jq
+  yq: yq
+  direnv: direnv
+  eza: eza
+  bat: bat
+  fd: fd
+  fzf: fzf
+  git_delta: git-delta
+
+# -----------------------------------------------------------------------------
+# direnv Configuration (Special - Safety Checks)
+# -----------------------------------------------------------------------------
+
+# Configure direnv with safety checks for Projects/ directory
+cli_tools_direnv_configure: true
+
+# Enable safety prompts when in Projects/ directory
+cli_tools_direnv_safety_enabled: true
+
+# Projects directory path for safety checks
+cli_tools_direnv_projects_path: "{{ ansible_env.HOME }}/Projects"
+
+# direnv configuration directory
+cli_tools_direnv_config_dir: "{{ ansible_env.HOME }}/.config/direnv"
+
+# direnv configuration file
+cli_tools_direnv_config_file: "{{ cli_tools_direnv_config_dir }}/direnvrc"
+
+# -----------------------------------------------------------------------------
+# Tool-Specific Configuration
+# -----------------------------------------------------------------------------
+
+# bat theme (for syntax highlighting)
+cli_tools_bat_theme: "TwoDark"
+
+# fd - respect .gitignore by default
+cli_tools_fd_respect_gitignore: true
+
+# fzf - default options
+cli_tools_fzf_default_opts: "--height 40% --layout=reverse --border"
+
+# git-delta - side-by-side diffs
+cli_tools_git_delta_side_by_side: true

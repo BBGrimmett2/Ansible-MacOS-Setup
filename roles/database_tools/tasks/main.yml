@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Database Tools Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation and installation of database tools
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Install database tools
+  ansible.builtin.import_tasks: install.yml
+  tags: [install]
+  when: database_tools_state == 'present'

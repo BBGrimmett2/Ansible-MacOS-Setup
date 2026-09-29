@@ -1,0 +1,122 @@
+---
+# =============================================================================
+# Homebrew Role - Installation Tasks
+# =============================================================================
+# Public function: Install or remove Homebrew package manager.
+# Can be called via: tasks_from: install
+# =============================================================================
+
+- name: Check if Homebrew is already installed
+  ansible.builtin.stat:
+    path: "{{ homebrew_bin }}"
+  register: homebrew_installed
+
+- name: Display Homebrew installation status
+  ansible.builtin.debug:
+    msg: "Homebrew is {{ 'already installed' if homebrew_installed.stat.exists else 'not installed' }}"
+
+# ---------------------------------------------------------------------------
+# Install Homebrew
+# ---------------------------------------------------------------------------
+
+- name: Install Homebrew
+  when:
+    - homebrew_state == 'present'
+    - not homebrew_installed.stat.exists
+  block:
+    - name: Download Homebrew installation script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+        dest: /tmp/homebrew-install.sh
+        mode: '0755'
+      register: homebrew_download
+
+    - name: Run Homebrew installation script
+      ansible.builtin.command: /bin/bash /tmp/homebrew-install.sh
+      environment:
+        NONINTERACTIVE: "1"
+      register: homebrew_install_result
+      changed_when: true
+
+    - name: Remove Homebrew installation script
+      ansible.builtin.file:
+        path: /tmp/homebrew-install.sh
+        state: absent
+
+    - name: Verify Homebrew installation
+      ansible.builtin.stat:
+        path: "{{ homebrew_bin }}"
+      register: homebrew_verify
+
+    - name: Assert Homebrew was installed successfully
+      ansible.builtin.assert:
+        that:
+          - homebrew_verify.stat.exists
+        fail_msg: "Homebrew installation failed - binary not found at {{ homebrew_bin }}"
+        success_msg: "Homebrew installed successfully"
+
+# ---------------------------------------------------------------------------
+# Update Homebrew
+# ---------------------------------------------------------------------------
+
+- name: Update Homebrew
+  community.general.homebrew:
+    update_homebrew: true
+  when:
+    - homebrew_state == 'present'
+    - homebrew_installed.stat.exists or homebrew_install_result is defined
+    - homebrew_update
+  register: homebrew_update_result
+
+# ---------------------------------------------------------------------------
+# Upgrade All Packages (Optional)
+# ---------------------------------------------------------------------------
+
+- name: Upgrade all Homebrew packages
+  community.general.homebrew:
+    upgrade_all: true
+  when:
+    - homebrew_state == 'present'
+    - homebrew_installed.stat.exists or homebrew_install_result is defined
+    - homebrew_upgrade_all
+  register: homebrew_upgrade_result
+
+# ---------------------------------------------------------------------------
+# Uninstall Homebrew
+# ---------------------------------------------------------------------------
+
+- name: Uninstall Homebrew
+  when:
+    - homebrew_state == 'absent'
+    - homebrew_installed.stat.exists
+  block:
+    - name: Download Homebrew uninstall script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh
+        dest: /tmp/homebrew-uninstall.sh
+        mode: '0755'
+
+    - name: Run Homebrew uninstall script
+      ansible.builtin.command: /bin/bash /tmp/homebrew-uninstall.sh --force
+      environment:
+        NONINTERACTIVE: "1"
+      register: homebrew_uninstall_result
+      changed_when: true
+
+    - name: Remove Homebrew uninstall script
+      ansible.builtin.file:
+        path: /tmp/homebrew-uninstall.sh
+        state: absent
+
+    - name: Remove Homebrew directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ homebrew_prefix }}"
+        - "{{ ansible_env.HOME }}/Library/Caches/Homebrew"
+        - "{{ ansible_env.HOME }}/Library/Logs/Homebrew"
+
+    - name: Display Homebrew uninstall completion
+      ansible.builtin.debug:
+        msg: "Homebrew has been uninstalled"

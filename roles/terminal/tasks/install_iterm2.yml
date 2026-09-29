@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Terminal Role - Install iTerm2 (Public Function)
+# =============================================================================
+# Installs iTerm2 terminal emulator
+# =============================================================================
+
+- name: Install iTerm2 via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ terminal_packages.iterm2 }}"
+    state: "{{ terminal_state }}"

@@ -1,0 +1,26 @@
+---
+# =============================================================================
+# macOS Defaults Role - Validation Tasks
+# =============================================================================
+
+- name: Validate platform is macOS
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Darwin'
+    fail_msg: "This role only works on macOS (Darwin). Detected: {{ ansible_os_family }}"
+    success_msg: "Platform validation passed: macOS detected"
+    quiet: true
+
+- name: Check if defaults command is available
+  ansible.builtin.command: which defaults
+  register: defaults_cmd_check
+  failed_when: false
+  changed_when: false
+
+- name: Assert defaults command is available
+  ansible.builtin.assert:
+    that:
+      - defaults_cmd_check.rc == 0
+    fail_msg: "defaults command not found - this should be available on all macOS systems"
+    success_msg: "defaults command is available"
+    quiet: true

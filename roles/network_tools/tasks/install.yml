@@ -1,0 +1,30 @@
+---
+# =============================================================================
+# Network Tools Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of all enabled network tools
+# =============================================================================
+
+- name: Install Bruno
+  ansible.builtin.include_tasks: install_bruno.yml
+  when: network_tools_install_all or network_tools_bruno_enabled
+
+- name: Install OpenVPN
+  ansible.builtin.include_tasks: install_openvpn.yml
+  when: network_tools_install_all or network_tools_openvpn_enabled
+
+- name: Install BIND tools
+  ansible.builtin.include_tasks: install_bind.yml
+  when: network_tools_install_all or network_tools_bind_enabled
+
+- name: Install Wireshark
+  ansible.builtin.include_tasks: install_wireshark.yml
+  when: network_tools_install_all or network_tools_wireshark_enabled
+
+- name: Install mtr
+  ansible.builtin.include_tasks: install_mtr.yml
+  when: network_tools_install_all or network_tools_mtr_enabled
+
+- name: Install nmap
+  ansible.builtin.include_tasks: install_nmap.yml
+  when: network_tools_install_all or network_tools_nmap_enabled

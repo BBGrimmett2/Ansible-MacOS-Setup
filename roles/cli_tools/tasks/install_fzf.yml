@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install fzf (Public Function)
+# =============================================================================
+# Installs fzf - command-line fuzzy finder
+# =============================================================================
+
+- name: Install fzf via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.fzf }}"
+    state: "{{ cli_tools_state }}"

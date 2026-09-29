@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install kustomize (Public Function)
+# =============================================================================
+# Installs kustomize - Kubernetes native configuration management
+# =============================================================================
+
+- name: Install kustomize via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.kustomize }}"
+    state: "{{ kubernetes_tools_state }}"

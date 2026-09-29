@@ -1,0 +1,66 @@
+---
+# =============================================================================
+# Setup AWS Demo Environment Playbook
+# =============================================================================
+# Purpose: Quick import of AWS demo environment credentials
+# Usage: ansible-playbook playbooks/setup_aws_demo.yml
+# =============================================================================
+
+- name: Setup AWS Demo Environment
+  hosts: localhost
+  gather_facts: true
+
+  vars_prompt:
+    - name: aws_demo_account_id
+      prompt: "AWS Account ID"
+      private: false
+
+    - name: aws_demo_region
+      prompt: "AWS Region"
+      private: false
+      default: "us-east-1"
+
+    - name: aws_demo_access_key
+      prompt: "AWS Access Key ID"
+      private: false
+
+    - name: aws_demo_secret_key
+      prompt: "AWS Secret Access Key"
+      private: true
+
+    - name: aws_demo_profile_name
+      prompt: "Profile name"
+      private: false
+      default: "demo-{{ ansible_date_time.date }}"
+
+  tasks:
+    - name: Display demo setup information
+      ansible.builtin.debug:
+        msg:
+          - "=== AWS Demo Environment Setup ==="
+          - "Account: {{ aws_demo_account_id }}"
+          - "Region: {{ aws_demo_region }}"
+          - "Profile: {{ aws_demo_profile_name }}"
+          - ""
+          - "This will create a new AWS CLI profile without modifying existing configurations."
+
+    - name: Configure AWS demo environment
+      ansible.builtin.import_role:
+        name: cloud_cli
+        tasks_from: configure_aws_demo
+
+    - name: Display usage instructions
+      ansible.builtin.debug:
+        msg:
+          - ""
+          - "=== AWS Demo Environment Ready ==="
+          - ""
+          - "To use this demo environment:"
+          - "  export AWS_PROFILE={{ aws_demo_profile_name }}"
+          - ""
+          - "Or with individual commands:"
+          - "  aws --profile {{ aws_demo_profile_name }} s3 ls"
+          - "  aws --profile {{ aws_demo_profile_name }} ec2 describe-instances"
+          - ""
+          - "To switch back to default profile:"
+          - "  unset AWS_PROFILE"

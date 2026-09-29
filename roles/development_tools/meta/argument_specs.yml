@@ -1,0 +1,58 @@
+---
+# =============================================================================
+# Development Tools Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure development tools
+    description:
+      - Install development and automation tools
+      - Configure git with profile-specific settings
+      - Set up pre-commit hooks framework
+      - Install Claude Code CLI (work profile)
+      - Install custom shell scripts
+    author: Brian Grimmett
+
+    options:
+      development_tools_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove development tools
+
+      development_tools_configure_git:
+        type: bool
+        required: false
+        default: true
+        description: Configure git globally
+
+      development_tools_precommit_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable pre-commit installation
+
+      development_tools_claude_code_enabled:
+        type: bool
+        required: false
+        description: Enable Claude Code CLI (defaults based on profile)
+
+  configure_git:
+    short_description: Configure git globally
+    description: Set up git user name, email, and preferences
+    author: Brian Grimmett
+
+    options:
+      development_tools_git_user_name:
+        type: str
+        required: true
+        description: Git user name
+
+      development_tools_git_user_email:
+        type: str
+        required: true
+        description: Git user email

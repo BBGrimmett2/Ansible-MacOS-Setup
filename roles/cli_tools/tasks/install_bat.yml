@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install bat (Public Function)
+# =============================================================================
+# Installs bat - modern cat replacement with syntax highlighting
+# =============================================================================
+
+- name: Install bat via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.bat }}"
+    state: "{{ cli_tools_state }}"

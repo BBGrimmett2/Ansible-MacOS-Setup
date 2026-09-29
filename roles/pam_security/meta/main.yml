@@ -1,0 +1,26 @@
+---
+# =============================================================================
+# PAM Security Role - Metadata
+# =============================================================================
+
+galaxy_info:
+  author: Brian Grimmett
+  description: Configure Touch ID and YubiKey authentication for sudo on macOS
+  company: Starbase Engineering
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - macos
+    - security
+    - pam
+    - touchid
+    - yubikey
+    - authentication
+
+dependencies:
+  - role: homebrew
+    when: pam_yubikey_enabled and pam_yubikey_install_module

@@ -1,0 +1,68 @@
+---
+# =============================================================================
+# Setup Azure Demo Environment Playbook
+# =============================================================================
+# Purpose: Quick import of Azure demo environment credentials
+# Usage: ansible-playbook playbooks/setup_azure_demo.yml
+# =============================================================================
+
+- name: Setup Azure Demo Environment
+  hosts: localhost
+  gather_facts: true
+
+  vars_prompt:
+    - name: azure_demo_subscription_id
+      prompt: "Azure Subscription ID"
+      private: false
+
+    - name: azure_demo_tenant_id
+      prompt: "Azure Tenant ID"
+      private: false
+
+    - name: azure_demo_client_id
+      prompt: "Azure Client ID (Service Principal)"
+      private: false
+
+    - name: azure_demo_client_secret
+      prompt: "Azure Client Secret"
+      private: true
+
+    - name: azure_demo_location
+      prompt: "Azure Location"
+      private: false
+      default: "eastus"
+
+  tasks:
+    - name: Display demo setup information
+      ansible.builtin.debug:
+        msg:
+          - "=== Azure Demo Environment Setup ==="
+          - "Subscription: {{ azure_demo_subscription_id }}"
+          - "Tenant: {{ azure_demo_tenant_id }}"
+          - "Location: {{ azure_demo_location }}"
+          - ""
+          - "This will authenticate Azure CLI with the provided service principal."
+
+    - name: Configure Azure demo environment
+      ansible.builtin.import_role:
+        name: cloud_cli
+        tasks_from: configure_azure_demo
+
+    - name: Display usage instructions
+      ansible.builtin.debug:
+        msg:
+          - ""
+          - "=== Azure Demo Environment Ready ==="
+          - ""
+          - "Azure CLI is now authenticated with the demo subscription."
+          - ""
+          - "Example commands:"
+          - "  az vm list"
+          - "  az group list"
+          - "  az account show"
+          - ""
+          - "To logout from this demo environment:"
+          - "  az logout"
+          - ""
+          - "To list all subscriptions:"
+          - "  az account list"

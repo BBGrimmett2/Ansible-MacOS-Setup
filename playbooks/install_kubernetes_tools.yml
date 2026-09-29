@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Install Kubernetes Tools Playbook
+# =============================================================================
+# Purpose: Install Kubernetes and OpenShift tooling
+# Usage: ansible-playbook playbooks/install_kubernetes_tools.yml
+# =============================================================================
+
+- name: Install Kubernetes Tools
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: kubernetes_tools
+      tags: [kubernetes_tools]

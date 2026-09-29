@@ -1,0 +1,74 @@
+---
+# =============================================================================
+# Terminal Role - Default Variables
+# =============================================================================
+# Install and configure terminal emulator and fonts
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) terminal tools
+terminal_state: present
+
+# Install all components (if false, only install enabled components)
+terminal_install_all: true
+
+# -----------------------------------------------------------------------------
+# Terminal Emulator Selection
+# -----------------------------------------------------------------------------
+
+# Terminal emulator to install (iterm2 or ghostty)
+terminal_emulator: iterm2
+
+# Enable iTerm2 installation
+terminal_iterm2_enabled: true
+
+# Enable Ghostty installation (newer, GPU-accelerated terminal)
+terminal_ghostty_enabled: false
+
+# -----------------------------------------------------------------------------
+# Font Configuration
+# -----------------------------------------------------------------------------
+
+# Install Nerd Fonts for terminal icons and glyphs
+terminal_install_nerdfonts: true
+
+# Nerd Fonts to install (Homebrew cask names)
+terminal_nerdfonts:
+  - font-meslo-lg-nerd-font
+  - font-hack-nerd-font
+  - font-fira-code-nerd-font
+  - font-jetbrains-mono-nerd-font
+
+# Default font to recommend
+terminal_default_font: "MesloLGS Nerd Font"
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew cask names)
+# -----------------------------------------------------------------------------
+
+terminal_packages:
+  iterm2: iterm2
+  ghostty: ghostty
+
+# -----------------------------------------------------------------------------
+# iTerm2 Configuration
+# -----------------------------------------------------------------------------
+
+# Configure iTerm2 preferences (future enhancement)
+terminal_iterm2_configure: false
+
+# iTerm2 preferences directory
+terminal_iterm2_prefs_dir: "{{ ansible_env.HOME }}/.config/iterm2"
+
+# -----------------------------------------------------------------------------
+# Ghostty Configuration
+# -----------------------------------------------------------------------------
+
+# Configure Ghostty preferences (future enhancement)
+terminal_ghostty_configure: false
+
+# Ghostty configuration file
+terminal_ghostty_config_file: "{{ ansible_env.HOME }}/.config/ghostty/config"

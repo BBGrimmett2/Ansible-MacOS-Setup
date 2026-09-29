@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Database Tools Role - Install pgAdmin (Public Function)
+# =============================================================================
+# Installs pgAdmin PostgreSQL management tool
+# =============================================================================
+
+- name: Install pgAdmin via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ database_tools_packages.pgadmin }}"
+    state: "{{ database_tools_state }}"

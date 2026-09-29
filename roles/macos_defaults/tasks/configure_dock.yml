@@ -1,0 +1,76 @@
+---
+# =============================================================================
+# macOS Defaults Role - Configure Dock
+# =============================================================================
+# Public function: Configure Dock preferences.
+# Can be called via: tasks_from: configure_dock
+# =============================================================================
+
+- name: Set Dock autohide
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: autohide
+    type: bool
+    value: "{{ macos_dock_autohide }}"
+  notify: Restart Dock
+
+- name: Set Dock position
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: orientation
+    type: string
+    value: "{{ macos_dock_position }}"
+  notify: Restart Dock
+
+- name: Set Dock tile size
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: tilesize
+    type: int
+    value: "{{ macos_dock_tilesize }}"
+  notify: Restart Dock
+
+- name: Set Dock magnification
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: magnification
+    type: bool
+    value: "{{ macos_dock_magnification }}"
+  notify: Restart Dock
+
+- name: Set Dock magnification size
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: largesize
+    type: int
+    value: "{{ macos_dock_largesize }}"
+  when: macos_dock_magnification
+  notify: Restart Dock
+
+- name: Set Dock minimize effect
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: mineffect
+    type: string
+    value: "{{ macos_dock_mineffect }}"
+  notify: Restart Dock
+
+- name: Set show recent applications in Dock
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: show-recents
+    type: bool
+    value: "{{ macos_dock_show_recents }}"
+  notify: Restart Dock
+
+- name: Set auto-rearrange Spaces based on recent use
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: mru-spaces
+    type: bool
+    value: "{{ macos_dock_mru_spaces }}"
+  notify: Restart Dock
+
+- name: Display Dock configuration status
+  ansible.builtin.debug:
+    msg: "Dock configuration completed"

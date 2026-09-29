@@ -1,0 +1,74 @@
+---
+# =============================================================================
+# Database Tools Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure database tools
+    description:
+      - Install database management and container tools via Homebrew
+      - pgAdmin for PostgreSQL management
+      - Podman Desktop for container management
+    author: Brian Grimmett
+
+    options:
+      database_tools_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove database tools
+
+      database_tools_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all tools or only enabled ones
+
+      database_tools_pgadmin_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable pgAdmin installation
+
+      database_tools_podman_desktop_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Podman Desktop installation
+
+  install:
+    short_description: Install all database tools
+    description: Install all enabled database tools via Homebrew
+    author: Brian Grimmett
+
+    options:
+      database_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_pgadmin:
+    short_description: Install pgAdmin
+    description: Install pgAdmin PostgreSQL management tool
+    author: Brian Grimmett
+
+    options:
+      database_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_podman_desktop:
+    short_description: Install Podman Desktop
+    description: Install Podman Desktop container management GUI
+    author: Brian Grimmett
+
+    options:
+      database_tools_state:
+        type: str
+        required: false
+        default: present

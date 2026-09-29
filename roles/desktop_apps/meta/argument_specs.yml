@@ -1,0 +1,64 @@
+---
+# =============================================================================
+# Desktop Apps Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure desktop applications
+    description:
+      - Install desktop applications via Homebrew cask
+      - Configure default applications
+      - Set file associations
+    author: Brian Grimmett
+
+    options:
+      desktop_apps_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove desktop apps
+
+      desktop_apps_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all apps or only enabled ones
+
+      desktop_apps_chrome_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Chrome installation
+
+      desktop_apps_vscode_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable VS Code installation
+
+      desktop_apps_cursor_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Cursor installation
+
+      desktop_apps_configure_defaults:
+        type: bool
+        required: false
+        default: true
+        description: Configure default applications
+
+  install:
+    short_description: Install all desktop apps
+    description: Install all enabled desktop apps via Homebrew
+    author: Brian Grimmett
+
+    options:
+      desktop_apps_state:
+        type: str
+        required: false
+        default: present

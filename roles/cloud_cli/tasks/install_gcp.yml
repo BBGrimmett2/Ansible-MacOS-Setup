@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Cloud CLI Role - Install GCP CLI (Public Function)
+# =============================================================================
+# Installs Google Cloud SDK (gcloud)
+# =============================================================================
+
+- name: Install Google Cloud SDK via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ cloud_cli_packages.gcp }}"
+    state: "{{ cloud_cli_state }}"

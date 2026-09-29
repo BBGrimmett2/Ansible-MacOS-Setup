@@ -1,0 +1,101 @@
+---
+# =============================================================================
+# Cloud CLI Role - Default Variables
+# =============================================================================
+# Install and configure cloud provider CLI tools
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) cloud CLIs
+cloud_cli_state: present
+
+# Install all CLIs (if false, only install enabled CLIs)
+cloud_cli_install_all: true
+
+# -----------------------------------------------------------------------------
+# Individual CLI Control
+# -----------------------------------------------------------------------------
+
+# AWS CLI
+cloud_cli_aws_enabled: true
+
+# Google Cloud CLI (gcloud)
+cloud_cli_gcp_enabled: true
+
+# Azure CLI
+cloud_cli_azure_enabled: true
+
+# GitHub CLI (gh)
+cloud_cli_github_enabled: true
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew package names)
+# -----------------------------------------------------------------------------
+
+cloud_cli_packages:
+  aws: awscli
+  gcp: google-cloud-sdk
+  azure: azure-cli
+  github: gh
+
+# -----------------------------------------------------------------------------
+# AWS CLI Configuration
+# -----------------------------------------------------------------------------
+
+# Configure AWS CLI
+cloud_cli_aws_configure: false
+
+# AWS default region
+cloud_cli_aws_default_region: us-east-1
+
+# AWS default output format
+cloud_cli_aws_default_output: json
+
+# -----------------------------------------------------------------------------
+# GCP CLI Configuration
+# -----------------------------------------------------------------------------
+
+# Configure GCP CLI
+cloud_cli_gcp_configure: false
+
+# GCP default region
+cloud_cli_gcp_default_region: us-central1
+
+# GCP default zone
+cloud_cli_gcp_default_zone: us-central1-a
+
+# -----------------------------------------------------------------------------
+# Azure CLI Configuration
+# -----------------------------------------------------------------------------
+
+# Configure Azure CLI
+cloud_cli_azure_configure: false
+
+# Azure default location
+cloud_cli_azure_default_location: eastus
+
+# Azure default output format
+cloud_cli_azure_default_output: json
+
+# -----------------------------------------------------------------------------
+# GitHub CLI Configuration
+# -----------------------------------------------------------------------------
+
+# Configure GitHub CLI
+cloud_cli_github_configure: false
+
+# GitHub default protocol
+cloud_cli_github_default_protocol: ssh
+
+# -----------------------------------------------------------------------------
+# Demo Environment Setup
+# -----------------------------------------------------------------------------
+
+# Enable demo environment helpers
+cloud_cli_demo_mode: false
+
+# Demo environment profile name (auto-generated if not set)
+cloud_cli_demo_profile_name: "demo-{{ ansible_date_time.date }}"

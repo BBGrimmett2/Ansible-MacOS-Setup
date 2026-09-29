@@ -1,0 +1,117 @@
+---
+# =============================================================================
+# Homebrew Role - Configuration Tasks
+# =============================================================================
+# Public function: Configure Homebrew environment and settings.
+# Can be called via: tasks_from: configure
+# =============================================================================
+
+- name: Check if Homebrew is installed
+  ansible.builtin.stat:
+    path: "{{ homebrew_bin }}"
+  register: homebrew_check
+
+- name: Skip configuration if Homebrew not installed
+  ansible.builtin.debug:
+    msg: "Homebrew not installed at {{ homebrew_bin }}, skipping configuration"
+  when: not homebrew_check.stat.exists
+
+- name: Configure Homebrew environment
+  when:
+    - homebrew_check.stat.exists
+    - homebrew_state == 'present'
+  block:
+    # -------------------------------------------------------------------------
+    # Shell Environment Configuration
+    # -------------------------------------------------------------------------
+
+    - name: Add Homebrew to shell environment
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'eval "$({{ homebrew_bin }} shellenv)"'
+        create: true
+        mode: '0644'
+        state: present
+      loop: "{{ homebrew_shell_profiles }}"
+      when: homebrew_configure_shell
+
+    # -------------------------------------------------------------------------
+    # Homebrew Taps
+    # -------------------------------------------------------------------------
+
+    - name: Add Homebrew taps
+      community.general.homebrew_tap:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ homebrew_taps }}"
+      when: homebrew_taps | length > 0
+
+    # -------------------------------------------------------------------------
+    # Homebrew Settings
+    # -------------------------------------------------------------------------
+
+    - name: Disable Homebrew analytics
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'export HOMEBREW_NO_ANALYTICS=1'
+        create: true
+        mode: '0644'
+        state: present
+      loop: "{{ homebrew_shell_profiles }}"
+      when:
+        - homebrew_disable_analytics
+        - homebrew_configure_shell
+
+    - name: Set Homebrew auto-update behavior
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: "export HOMEBREW_NO_AUTO_UPDATE={{ '0' if homebrew_auto_update else '1' }}"
+        create: true
+        mode: '0644'
+        state: present
+      loop: "{{ homebrew_shell_profiles }}"
+      when: homebrew_configure_shell
+
+    - name: Set Homebrew Cask application directory
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        line: 'export HOMEBREW_CASK_OPTS="--appdir={{ homebrew_cask_appdir }}"'
+        create: true
+        mode: '0644'
+        state: present
+      loop: "{{ homebrew_shell_profiles }}"
+      when: homebrew_configure_shell
+
+    - name: Display Homebrew configuration status
+      ansible.builtin.debug:
+        msg: "Homebrew configuration completed successfully"
+
+# ---------------------------------------------------------------------------
+# Remove Configuration (when state is absent)
+# ---------------------------------------------------------------------------
+
+- name: Remove Homebrew from shell environment
+  ansible.builtin.lineinfile:
+    path: "{{ item }}"
+    line: 'eval "$({{ homebrew_bin }} shellenv)"'
+    state: absent
+  loop: "{{ homebrew_shell_profiles }}"
+  when:
+    - homebrew_state == 'absent'
+    - homebrew_configure_shell
+
+- name: Remove Homebrew environment variables
+  ansible.builtin.lineinfile:
+    path: "{{ item.0 }}"
+    line: "{{ item.1 }}"
+    state: absent
+  loop: "{{ homebrew_shell_profiles | product(homebrew_env_vars) }}"
+  vars:
+    homebrew_env_vars:
+      - 'export HOMEBREW_NO_ANALYTICS=1'
+      - 'export HOMEBREW_NO_AUTO_UPDATE=1'
+      - 'export HOMEBREW_NO_AUTO_UPDATE=0'
+      - 'export HOMEBREW_CASK_OPTS="--appdir={{ homebrew_cask_appdir }}"'
+  when:
+    - homebrew_state == 'absent'
+    - homebrew_configure_shell

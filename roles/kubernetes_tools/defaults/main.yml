@@ -1,0 +1,70 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Default Variables
+# =============================================================================
+# Install and configure Kubernetes and OpenShift tooling
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) Kubernetes tools
+kubernetes_tools_state: present
+
+# Install all tools (if false, only install enabled tools)
+kubernetes_tools_install_all: true
+
+# -----------------------------------------------------------------------------
+# Individual Tool Control
+# -----------------------------------------------------------------------------
+
+# OpenShift CLI (oc)
+kubernetes_tools_oc_enabled: true
+
+# Kubernetes CLI (kubectl)
+kubernetes_tools_kubectl_enabled: true
+
+# Helm - Kubernetes package manager
+kubernetes_tools_helm_enabled: true
+
+# K9s - Terminal UI for Kubernetes
+kubernetes_tools_k9s_enabled: true
+
+# kubectx/kubens - Context and namespace switcher
+kubernetes_tools_kubectx_enabled: true
+
+# stern - Multi-pod log tailing
+kubernetes_tools_stern_enabled: true
+
+# kustomize - Kubernetes native configuration management
+kubernetes_tools_kustomize_enabled: true
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew package names)
+# -----------------------------------------------------------------------------
+
+kubernetes_tools_packages:
+  oc: openshift-cli
+  kubectl: kubectl
+  helm: helm
+  k9s: k9s
+  kubectx: kubectx
+  stern: stern
+  kustomize: kustomize
+
+# -----------------------------------------------------------------------------
+# Configuration
+# -----------------------------------------------------------------------------
+
+# Configure kubectl/oc completion
+kubernetes_tools_configure_completion: true
+
+# Configure k9s
+kubernetes_tools_k9s_configure: false
+
+# k9s configuration directory
+kubernetes_tools_k9s_config_dir: "{{ ansible_env.HOME }}/.config/k9s"
+
+# k9s skin/theme
+kubernetes_tools_k9s_skin: "nord"

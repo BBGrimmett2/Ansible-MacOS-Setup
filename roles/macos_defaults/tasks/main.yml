@@ -1,0 +1,48 @@
+---
+# =============================================================================
+# macOS Defaults Role - Main Tasks
+# =============================================================================
+# Orchestrates macOS system preference configuration.
+# =============================================================================
+
+- name: Validate macOS platform and tools
+  ansible.builtin.import_tasks: validate.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:validate
+
+- name: Configure Dock preferences
+  ansible.builtin.import_tasks: configure_dock.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:dock
+
+- name: Configure Finder preferences
+  ansible.builtin.import_tasks: configure_finder.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:finder
+
+- name: Configure keyboard preferences
+  ansible.builtin.import_tasks: configure_keyboard.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:keyboard
+
+- name: Configure trackpad preferences
+  ansible.builtin.import_tasks: configure_trackpad.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:trackpad
+
+- name: Configure screenshot preferences
+  ansible.builtin.import_tasks: configure_screenshots.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:screenshots
+
+- name: Configure system preferences
+  ansible.builtin.import_tasks: configure_system.yml
+  tags:
+    - macos_defaults
+    - macos_defaults:system

@@ -1,0 +1,75 @@
+---
+# =============================================================================
+# Homebrew Role - Default Variables
+# =============================================================================
+# This role manages the Homebrew package manager installation and configuration
+# on macOS systems. Homebrew is the foundation for all package-based roles.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation Settings
+# -----------------------------------------------------------------------------
+
+# Whether to install Homebrew (present) or remove it (absent)
+homebrew_state: present
+
+# Whether to update Homebrew after installation
+homebrew_update: true
+
+# Whether to upgrade all installed packages
+homebrew_upgrade_all: false
+
+# -----------------------------------------------------------------------------
+# Path Configuration
+# -----------------------------------------------------------------------------
+
+# Homebrew installation prefix (auto-detected based on architecture)
+# Apple Silicon (arm64): /opt/homebrew
+# Intel (x86_64): /usr/local
+homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+# Homebrew binary path
+homebrew_bin: "{{ homebrew_prefix }}/bin/brew"
+
+# -----------------------------------------------------------------------------
+# Shell Integration
+# -----------------------------------------------------------------------------
+
+# Whether to add Homebrew to shell environment
+homebrew_configure_shell: true
+
+# Shell profile files to update
+homebrew_shell_profiles:
+  - "{{ ansible_env.HOME }}/.zprofile"
+  - "{{ ansible_env.HOME }}/.zshrc"
+
+# -----------------------------------------------------------------------------
+# Repository Settings
+# -----------------------------------------------------------------------------
+
+# Homebrew taps to add (custom formula repositories)
+homebrew_taps: []
+# Example:
+# homebrew_taps:
+#   - homebrew/cask-fonts
+#   - dashlane/tap
+
+# -----------------------------------------------------------------------------
+# Performance Settings
+# -----------------------------------------------------------------------------
+
+# Disable Homebrew analytics
+homebrew_disable_analytics: true
+
+# Auto-update behavior (when running brew install)
+homebrew_auto_update: true
+
+# -----------------------------------------------------------------------------
+# Cask Settings
+# -----------------------------------------------------------------------------
+
+# Directory for Homebrew Cask applications
+homebrew_cask_appdir: /Applications
+
+# Whether to require SHA256 checksums for casks
+homebrew_cask_require_sha: true

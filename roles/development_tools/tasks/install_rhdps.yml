@@ -1,0 +1,41 @@
+---
+# =============================================================================
+# Development Tools Role - Install RHDPS Tool (Public Function)
+# =============================================================================
+# Installs rhdps custom shell command for Red Hat Demo Platform Services
+# Quick setup of cloud demo environments with direnv integration
+# =============================================================================
+
+- name: Create local bin directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: "0755"
+
+- name: Install rhdps script
+  ansible.builtin.copy:
+    src: custom_scripts/rhdps
+    dest: "{{ ansible_env.HOME }}/.local/bin/rhdps"
+    mode: "0755"
+
+- name: Verify rhdps installation
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.local/bin/rhdps version"
+  register: rhdps_version
+  changed_when: false
+
+- name: Display rhdps installation info
+  ansible.builtin.debug:
+    msg:
+      - "rhdps installed successfully"
+      - "Version: {{ rhdps_version.stdout }}"
+      - "Location: {{ ansible_env.HOME }}/.local/bin/rhdps"
+      - ""
+      - "Usage:"
+      - "  rhdps setup aws    - Setup AWS demo environment"
+      - "  rhdps setup gcp    - Setup GCP demo environment"
+      - "  rhdps setup azure  - Setup Azure demo environment"
+      - "  rhdps list         - Show current environment"
+      - "  rhdps clean        - Remove .envrc"
+      - "  rhdps help         - Full help"
+      - ""
+      - "Ensure ~/.local/bin is in your PATH"

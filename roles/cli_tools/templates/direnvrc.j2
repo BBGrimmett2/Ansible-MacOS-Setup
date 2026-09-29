@@ -1,0 +1,70 @@
+# =============================================================================
+# direnv Configuration with Safety Checks
+# =============================================================================
+# Managed by Ansible - Do not edit manually
+# Generated: {{ ansible_date_time.iso8601 }}
+# =============================================================================
+#
+# This configuration adds safety checks when loading environment variables
+# in project directories to prevent accidentally using the wrong environment.
+#
+# Usage in .envrc files:
+#   use_project_env
+#   export AWS_PROFILE=demo-aws-project
+#   export ENV=staging
+# =============================================================================
+
+{% if cli_tools_direnv_safety_enabled %}
+# use_project_env - Load environment with safety confirmation
+#
+# When called in a {{ cli_tools_direnv_projects_path }}/* directory, prompts for
+# confirmation before loading environment variables. This prevents accidentally
+# loading the wrong environment when switching between similar projects.
+#
+# Example .envrc:
+#   use_project_env
+#   export AWS_PROFILE=my-demo-project
+#   export DATABASE_URL=postgres://localhost/demo
+#
+use_project_env() {
+  # Check if we're in the Projects directory
+  if [[ "$PWD" == {{ cli_tools_direnv_projects_path }}/* ]]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "⚠️  direnv: Project environment detection"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Current directory: $PWD"
+    echo "Project: $(basename "$PWD")"
+    echo ""
+
+    # Prompt for confirmation
+    read -p "Are you in the correct project? (y/N): " confirm
+
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      echo "❌ Environment not loaded. Change to correct directory."
+      echo ""
+      return 1
+    fi
+
+    echo "✅ Loading environment variables..."
+    echo ""
+  fi
+
+  # Load .envrc file
+  dotenv_if_exists
+}
+{% else %}
+# Safety checks disabled - use_project_env behaves like standard dotenv
+use_project_env() {
+  dotenv_if_exists
+}
+{% endif %}
+
+# Helper function to load .envrc if it exists
+dotenv_if_exists() {
+  if [ -f .envrc ]; then
+    dotenv
+  fi
+}
+
+# Standard direnv functions remain available
+# You can still use: dotenv, layout, use, etc.

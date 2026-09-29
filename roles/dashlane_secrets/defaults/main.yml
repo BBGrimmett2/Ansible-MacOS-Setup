@@ -1,0 +1,40 @@
+---
+# =============================================================================
+# Dashlane Secrets Role - Default Variables
+# =============================================================================
+# This role provides functions to fetch secrets from Dashlane CLI securely.
+# No secrets are hardcoded - all retrieved at runtime from Dashlane.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Dashlane CLI Configuration
+# -----------------------------------------------------------------------------
+
+# Dashlane CLI command
+dashlane_cli: dcli
+
+# Timeout for Dashlane CLI commands (seconds)
+dashlane_timeout: 30
+
+# -----------------------------------------------------------------------------
+# Secret Retrieval Settings
+# -----------------------------------------------------------------------------
+
+# Default permissions for fetched secrets
+dashlane_default_permissions: "0600"
+
+# Whether to validate Dashlane authentication before fetching
+dashlane_validate_auth: true
+
+# Whether to fail if secret not found
+dashlane_fail_on_missing: true
+
+# -----------------------------------------------------------------------------
+# Logging and Security
+# -----------------------------------------------------------------------------
+
+# Whether to log secret retrieval (names only, not values)
+dashlane_log_retrievals: false
+
+# Whether to use no_log for sensitive tasks
+dashlane_no_log: true

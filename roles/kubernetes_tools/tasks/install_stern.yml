@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install stern (Public Function)
+# =============================================================================
+# Installs stern - Multi-pod log tailing tool
+# =============================================================================
+
+- name: Install stern via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.stern }}"
+    state: "{{ kubernetes_tools_state }}"

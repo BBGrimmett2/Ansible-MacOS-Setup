@@ -1,0 +1,76 @@
+---
+# =============================================================================
+# Dashlane Secrets Role - Fetch File
+# =============================================================================
+# Public function: Fetch file content from Dashlane (certificates, configs, etc.)
+# Can be called via: tasks_from: fetch_file
+#
+# Required variables:
+#   - dashlane_secret_name: Name of the file/note in Dashlane
+#   - dashlane_secret_output_path: Where to save the file
+#
+# Optional variables:
+#   - dashlane_secret_permissions: File permissions (default: 0600)
+# =============================================================================
+
+- name: Validate required variables for file fetch
+  ansible.builtin.assert:
+    that:
+      - dashlane_secret_name is defined
+      - dashlane_secret_name | length > 0
+      - dashlane_secret_output_path is defined
+      - dashlane_secret_output_path | length > 0
+    fail_msg: "Required variables: dashlane_secret_name and dashlane_secret_output_path"
+    quiet: true
+
+- name: Validate Dashlane CLI
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Log file retrieval attempt
+  ansible.builtin.debug:
+    msg: "Fetching file '{{ dashlane_secret_name }}' from Dashlane"
+  when: dashlane_log_retrievals
+
+- name: Ensure output directory exists
+  ansible.builtin.file:
+    path: "{{ dashlane_secret_output_path | dirname }}"
+    state: directory
+    mode: '0755'
+
+- name: Fetch file content from Dashlane
+  ansible.builtin.shell: |
+    {{ dashlane_cli }} read "{{ dashlane_secret_name }}" --output raw
+  register: dashlane_file_content
+  failed_when:
+    - dashlane_file_content.rc != 0
+    - dashlane_fail_on_missing
+  changed_when: false
+  no_log: "{{ dashlane_no_log }}"
+  timeout: "{{ dashlane_timeout }}"
+
+- name: Check if file content was retrieved
+  ansible.builtin.set_fact:
+    dashlane_file_retrieved: "{{ dashlane_file_content.rc == 0 }}"
+
+- name: Deploy file content to filesystem
+  ansible.builtin.copy:
+    content: "{{ dashlane_file_content.stdout }}"
+    dest: "{{ dashlane_secret_output_path }}"
+    mode: "{{ dashlane_secret_permissions | default(dashlane_default_permissions) }}"
+    owner: "{{ ansible_env.USER }}"
+  when: dashlane_file_retrieved
+  no_log: "{{ dashlane_no_log }}"
+
+- name: Display file deployment status
+  ansible.builtin.debug:
+    msg: "File deployed to {{ dashlane_secret_output_path }}"
+  when:
+    - dashlane_file_retrieved
+    - dashlane_log_retrievals
+
+- name: Warn if file not found
+  ansible.builtin.debug:
+    msg: "File '{{ dashlane_secret_name }}' not found in Dashlane"
+  when:
+    - not dashlane_file_retrieved
+    - not dashlane_fail_on_missing

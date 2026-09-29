@@ -1,0 +1,254 @@
+# =============================================================================
+# ZSH Configuration
+# =============================================================================
+# Managed by Ansible - {{ ansible_managed }}
+# Generated: {{ ansible_date_time.iso8601 }}
+# Profile: {{ workstation_profile | default('personal') }}
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Environment Variables
+# -----------------------------------------------------------------------------
+
+# Editor
+export EDITOR="{{ shell_environment_editor }}"
+export VISUAL="{{ shell_environment_editor }}"
+
+# Language
+export LANG="{{ shell_environment_lang }}"
+export LC_ALL="{{ shell_environment_lang }}"
+
+{% if shell_environment_extra_vars %}
+# Additional environment variables
+{% for key, value in shell_environment_extra_vars.items() %}
+export {{ key }}="{{ value }}"
+{% endfor %}
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# PATH Configuration
+# -----------------------------------------------------------------------------
+
+# Custom PATH entries
+{% for path_entry in shell_environment_path_entries %}
+export PATH="{{ path_entry }}:$PATH"
+{% endfor %}
+
+# -----------------------------------------------------------------------------
+# History Configuration
+# -----------------------------------------------------------------------------
+
+HISTFILE=~/.zsh_history
+HISTSIZE={{ shell_environment_histsize }}
+SAVEHIST={{ shell_environment_savehist }}
+
+{% if shell_environment_share_history %}
+setopt SHARE_HISTORY
+{% endif %}
+{% if shell_environment_hist_ignore_dups %}
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+{% endif %}
+setopt HIST_REDUCE_BLANKS
+setopt HIST_VERIFY
+
+# -----------------------------------------------------------------------------
+# Completion System
+# -----------------------------------------------------------------------------
+
+autoload -Uz compinit
+compinit
+
+# Case-insensitive completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# Menu selection
+zstyle ':completion:*' menu select
+
+# Colors in completion
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+{% if shell_environment_kubectl_completion %}
+# Kubectl completion
+source <(kubectl completion zsh)
+{% endif %}
+
+{% if shell_environment_helm_completion %}
+# Helm completion
+source <(helm completion zsh)
+{% endif %}
+
+{% if shell_environment_gh_completion %}
+# GitHub CLI completion
+eval "$(gh completion -s zsh)"
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# Aliases
+# -----------------------------------------------------------------------------
+
+{% if shell_environment_modern_aliases %}
+# Modern tool replacements (eza, bat, etc.)
+{% for alias_name, alias_cmd in shell_environment_aliases.items() %}
+alias {{ alias_name }}='{{ alias_cmd }}'
+{% endfor %}
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# Tool Integrations
+# -----------------------------------------------------------------------------
+
+{% if shell_environment_direnv_enabled %}
+# direnv - per-directory environment variables
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
+{% endif %}
+
+{% if shell_environment_fzf_enabled %}
+# fzf - fuzzy finder
+if command -v fzf >/dev/null 2>&1; then
+  # Key bindings
+  source <(fzf --zsh)
+
+  # Options
+  export FZF_DEFAULT_OPTS="{{ shell_environment_fzf_opts }}"
+
+  # Use fd if available
+  if command -v fd >/dev/null 2>&1; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  fi
+fi
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# Prompt Configuration
+# -----------------------------------------------------------------------------
+
+{% if shell_environment_custom_prompt %}
+# Enable prompt substitution
+setopt PROMPT_SUBST
+
+# Git prompt function
+git_prompt() {
+  local branch=""
+  if git rev-parse --git-dir > /dev/null 2>&1; then
+    branch=$(git branch --show-current 2>/dev/null)
+    if [ -n "$branch" ]; then
+      # Check for uncommitted changes
+      if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+        echo " %F{yellow}git:($branch*)%f"
+      else
+        echo " %F{green}git:($branch)%f"
+      fi
+    fi
+  fi
+}
+
+{% if shell_environment_prompt_kubectl %}
+# Kubectl context prompt function
+k8s_prompt() {
+  if command -v kubectl >/dev/null 2>&1; then
+    local context=$(kubectl config current-context 2>/dev/null)
+    local namespace=$(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)
+    namespace=${namespace:-default}
+    if [ -n "$context" ]; then
+      echo " %F{cyan}k8s:($context/$namespace)%f"
+    fi
+  fi
+}
+{% endif %}
+
+{% if shell_environment_prompt_style == 'detailed' %}
+# Detailed prompt with git and k8s context
+PROMPT='%F{blue}%~%f$(git_prompt){% if shell_environment_prompt_kubectl %}$(k8s_prompt){% endif %}
+%F{magenta}❯%f '
+{% else %}
+# Simple prompt
+PROMPT='%F{blue}%~%f$(git_prompt)
+%F{magenta}❯%f '
+{% endif %}
+
+# Right prompt with timestamp
+RPROMPT='%F{244}%T%f'
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# Additional Settings
+# -----------------------------------------------------------------------------
+
+# Auto-cd into directories
+setopt AUTO_CD
+
+# Correct command typos
+setopt CORRECT
+
+# Better globbing
+setopt EXTENDED_GLOB
+
+# No beep
+unsetopt BEEP
+
+# -----------------------------------------------------------------------------
+# Custom Functions
+# -----------------------------------------------------------------------------
+
+# Quick directory navigation
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+# Extract various archive formats
+extract() {
+  if [ -f "$1" ]; then
+    case "$1" in
+      *.tar.bz2) tar xjf "$1" ;;
+      *.tar.gz) tar xzf "$1" ;;
+      *.bz2) bunzip2 "$1" ;;
+      *.gz) gunzip "$1" ;;
+      *.tar) tar xf "$1" ;;
+      *.tbz2) tar xjf "$1" ;;
+      *.tgz) tar xzf "$1" ;;
+      *.zip) unzip "$1" ;;
+      *.Z) uncompress "$1" ;;
+      *.7z) 7z x "$1" ;;
+      *) echo "'$1' cannot be extracted via extract()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# Find and kill process by name
+killport() {
+  if [ -z "$1" ]; then
+    echo "Usage: killport <port>"
+    return 1
+  fi
+  lsof -ti:$1 | xargs kill -9
+}
+
+# -----------------------------------------------------------------------------
+# Profile-Specific Configuration
+# -----------------------------------------------------------------------------
+
+{% if workstation_profile == 'work' %}
+# Work profile customizations
+export WORK_MODE=true
+
+# Add work-specific aliases or functions here
+{% endif %}
+
+# -----------------------------------------------------------------------------
+# Local Customizations
+# -----------------------------------------------------------------------------
+
+# Source local overrides if they exist
+if [ -f ~/.zshrc.local ]; then
+  source ~/.zshrc.local
+fi
+
+# =============================================================================
+# End of Ansible-managed configuration
+# =============================================================================

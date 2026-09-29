@@ -1,0 +1,75 @@
+---
+# =============================================================================
+# Test Playbook: Desktop Apps Role
+# =============================================================================
+# Purpose: Test desktop_apps role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_desktop_apps.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_desktop_apps.yml
+#   Verify:  ansible-playbook playbooks/tests/test_desktop_apps.yml (should show no changes)
+# =============================================================================
+
+- name: Test Desktop Apps Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    desktop_apps_install_all: true
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Desktop Apps Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Install all apps: {{ desktop_apps_install_all }}"
+
+    - name: Execute desktop_apps role
+      ansible.builtin.import_role:
+        name: desktop_apps
+      tags: desktop_apps
+
+    - name: Verify desktop apps installations
+      block:
+        - name: Check Google Chrome is installed
+          ansible.builtin.stat:
+            path: /Applications/Google Chrome.app
+          register: chrome_stat
+          failed_when: not chrome_stat.stat.exists
+
+        - name: Check VS Code is installed
+          ansible.builtin.stat:
+            path: /Applications/Visual Studio Code.app
+          register: vscode_stat
+          failed_when: not vscode_stat.stat.exists
+
+        - name: Check Cursor is installed
+          ansible.builtin.stat:
+            path: /Applications/Cursor.app
+          register: cursor_stat
+          failed_when: not cursor_stat.stat.exists
+
+        - name: Check Rectangle is installed
+          ansible.builtin.stat:
+            path: /Applications/Rectangle.app
+          register: rectangle_stat
+          failed_when: not rectangle_stat.stat.exists
+
+        - name: Check Obsidian is installed
+          ansible.builtin.stat:
+            path: /Applications/Obsidian.app
+          register: obsidian_stat
+          failed_when: not obsidian_stat.stat.exists
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Desktop apps installed successfully"
+              - "Google Chrome: /Applications/Google Chrome.app"
+              - "VS Code: /Applications/Visual Studio Code.app"
+              - "Cursor: /Applications/Cursor.app"
+              - "Rectangle: /Applications/Rectangle.app"
+              - "Obsidian: /Applications/Obsidian.app"
+      tags: verify
+      when: not ansible_check_mode

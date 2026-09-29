@@ -1,0 +1,137 @@
+---
+# =============================================================================
+# Homebrew Role - Argument Specifications
+# =============================================================================
+# Defines the contract for this role's public interfaces.
+# Provides schema validation and documentation for role consumers.
+# =============================================================================
+
+argument_specs:
+  # ---------------------------------------------------------------------------
+  # Main Entry Point
+  # ---------------------------------------------------------------------------
+  main:
+    short_description: Install and configure Homebrew package manager
+    description:
+      - Installs Homebrew package manager on macOS systems
+      - Configures shell environment for Homebrew
+      - Manages Homebrew taps and settings
+      - Foundation role for all package-based installations
+    author: Brian Grimmett
+
+    options:
+      homebrew_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Whether to install or remove Homebrew
+
+      homebrew_update:
+        type: bool
+        required: false
+        default: true
+        description: Whether to update Homebrew after installation
+
+      homebrew_upgrade_all:
+        type: bool
+        required: false
+        default: false
+        description: Whether to upgrade all installed packages
+
+      homebrew_prefix:
+        type: str
+        required: false
+        description: >
+          Homebrew installation prefix.
+          Auto-detected: /opt/homebrew (Apple Silicon) or /usr/local (Intel)
+
+      homebrew_configure_shell:
+        type: bool
+        required: false
+        default: true
+        description: Whether to add Homebrew to shell environment
+
+      homebrew_shell_profiles:
+        type: list
+        elements: str
+        required: false
+        description: Shell profile files to update with Homebrew environment
+
+      homebrew_taps:
+        type: list
+        elements: str
+        required: false
+        default: []
+        description: List of Homebrew taps to add
+
+      homebrew_disable_analytics:
+        type: bool
+        required: false
+        default: true
+        description: Disable Homebrew analytics
+
+      homebrew_cask_appdir:
+        type: str
+        required: false
+        default: /Applications
+        description: Directory for Homebrew Cask applications
+
+  # ---------------------------------------------------------------------------
+  # Install Entry Point
+  # ---------------------------------------------------------------------------
+  install:
+    short_description: Install Homebrew only
+    description:
+      - Install Homebrew package manager
+      - Called via tasks_from for granular installation
+    author: Brian Grimmett
+
+    options:
+      homebrew_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+
+      homebrew_prefix:
+        type: str
+        required: false
+        description: Homebrew installation prefix
+
+  # ---------------------------------------------------------------------------
+  # Configure Entry Point
+  # ---------------------------------------------------------------------------
+  configure:
+    short_description: Configure Homebrew environment
+    description:
+      - Configure shell environment for Homebrew
+      - Add Homebrew taps
+      - Set Homebrew preferences
+    author: Brian Grimmett
+
+    options:
+      homebrew_prefix:
+        type: str
+        required: false
+        description: Homebrew installation prefix
+
+      homebrew_configure_shell:
+        type: bool
+        required: false
+        default: true
+
+      homebrew_taps:
+        type: list
+        elements: str
+        required: false
+        default: []
+
+      homebrew_disable_analytics:
+        type: bool
+        required: false
+        default: true

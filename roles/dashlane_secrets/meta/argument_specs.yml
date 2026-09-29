@@ -1,0 +1,132 @@
+---
+# =============================================================================
+# Dashlane Secrets Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  # ---------------------------------------------------------------------------
+  # Main Entry Point
+  # ---------------------------------------------------------------------------
+  main:
+    short_description: Validate Dashlane CLI authentication
+    description:
+      - Validates that Dashlane CLI is installed and authenticated
+      - Does not fetch secrets - use public functions for that
+    author: Brian Grimmett
+
+    options:
+      dashlane_cli:
+        type: str
+        required: false
+        default: dcli
+        description: Dashlane CLI command
+
+      dashlane_validate_auth:
+        type: bool
+        required: false
+        default: true
+        description: Whether to validate Dashlane authentication
+
+  # ---------------------------------------------------------------------------
+  # Fetch SSH Key
+  # ---------------------------------------------------------------------------
+  fetch_ssh_key:
+    short_description: Fetch SSH private key from Dashlane
+    description:
+      - Retrieves an SSH private key from Dashlane
+      - Saves to specified path with secure permissions
+      - Use for deploying SSH keys without hardcoding
+    author: Brian Grimmett
+
+    options:
+      dashlane_secret_name:
+        type: str
+        required: true
+        description: Name of the secret in Dashlane (e.g., 'ssh_key_personal_github')
+
+      dashlane_secret_output_path:
+        type: str
+        required: true
+        description: Where to save the SSH key (e.g., '{{ ansible_env.HOME }}/.ssh/id_github')
+
+      dashlane_secret_permissions:
+        type: str
+        required: false
+        default: "0600"
+        description: File permissions for the SSH key
+
+      dashlane_cli:
+        type: str
+        required: false
+        default: dcli
+
+      dashlane_fail_on_missing:
+        type: bool
+        required: false
+        default: true
+        description: Fail if secret not found in Dashlane
+
+  # ---------------------------------------------------------------------------
+  # Fetch Credential
+  # ---------------------------------------------------------------------------
+  fetch_credential:
+    short_description: Fetch username/password credential from Dashlane
+    description:
+      - Retrieves a username/password credential from Dashlane
+      - Returns credential in registered variable
+      - Does not write to disk by default
+    author: Brian Grimmett
+
+    options:
+      dashlane_secret_name:
+        type: str
+        required: true
+        description: Name of the credential in Dashlane
+
+      dashlane_cli:
+        type: str
+        required: false
+        default: dcli
+
+      dashlane_fail_on_missing:
+        type: bool
+        required: false
+        default: true
+
+  # ---------------------------------------------------------------------------
+  # Fetch File
+  # ---------------------------------------------------------------------------
+  fetch_file:
+    short_description: Fetch arbitrary file content from Dashlane
+    description:
+      - Retrieves file content from Dashlane (certificates, configs, etc.)
+      - Saves to specified path
+      - Use for VPN profiles, root CAs, configuration files
+    author: Brian Grimmett
+
+    options:
+      dashlane_secret_name:
+        type: str
+        required: true
+        description: Name of the file/note in Dashlane
+
+      dashlane_secret_output_path:
+        type: str
+        required: true
+        description: Where to save the file
+
+      dashlane_secret_permissions:
+        type: str
+        required: false
+        default: "0600"
+        description: File permissions
+
+      dashlane_cli:
+        type: str
+        required: false
+        default: dcli
+
+      dashlane_fail_on_missing:
+        type: bool
+        required: false
+        default: true

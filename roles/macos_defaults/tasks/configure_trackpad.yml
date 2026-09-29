@@ -1,0 +1,39 @@
+---
+# =============================================================================
+# macOS Defaults Role - Configure Trackpad
+# =============================================================================
+# Public function: Configure trackpad preferences.
+# Can be called via: tasks_from: configure_trackpad
+# =============================================================================
+
+- name: Enable tap to click
+  community.general.osx_defaults:
+    domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: Clicking
+    type: bool
+    value: "{{ macos_trackpad_tap_to_click }}"
+
+- name: Enable tap to click for login screen
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: com.apple.mouse.tapBehavior
+    type: int
+    value: "{{ 1 if macos_trackpad_tap_to_click else 0 }}"
+
+- name: Set trackpad tracking speed
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: com.apple.trackpad.scaling
+    type: float
+    value: "{{ macos_trackpad_tracking_speed }}"
+
+- name: Set natural scrolling
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: com.apple.swipescrolldirection
+    type: bool
+    value: "{{ macos_trackpad_natural_scrolling }}"
+
+- name: Display trackpad configuration status
+  ansible.builtin.debug:
+    msg: "Trackpad configuration completed"

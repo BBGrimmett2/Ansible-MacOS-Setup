@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Network Tools Role - Install OpenVPN (Public Function)
+# =============================================================================
+# Installs OpenVPN client
+# =============================================================================
+
+- name: Install OpenVPN via Homebrew
+  community.general.homebrew:
+    name: "{{ network_tools_packages.openvpn }}"
+    state: "{{ network_tools_state }}"

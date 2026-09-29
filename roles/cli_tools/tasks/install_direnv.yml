@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install direnv (Public Function)
+# =============================================================================
+# Installs direnv for per-directory environment variables
+# =============================================================================
+
+- name: Install direnv via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.direnv }}"
+    state: "{{ cli_tools_state }}"

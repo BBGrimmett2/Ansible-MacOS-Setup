@@ -1,0 +1,50 @@
+---
+# =============================================================================
+# Dashlane Secrets Role - Main Tasks
+# =============================================================================
+# Main entry point: Validates Dashlane CLI is installed and authenticated.
+#
+# This role does not fetch secrets by default - use public functions:
+#   - tasks_from: fetch_ssh_key
+#   - tasks_from: fetch_credential
+#   - tasks_from: fetch_file
+# =============================================================================
+
+- name: Validate Dashlane CLI installation and authentication
+  ansible.builtin.import_tasks: validate.yml
+  tags:
+    - dashlane
+    - dashlane:validate
+
+- name: Display Dashlane role information
+  ansible.builtin.debug:
+    msg: |
+      Dashlane CLI validated successfully.
+
+      Use the following public functions to fetch secrets:
+
+      1. Fetch SSH Key:
+         ansible.builtin.import_role:
+           name: dashlane_secrets
+           tasks_from: fetch_ssh_key
+         vars:
+           dashlane_secret_name: "ssh_key_github"
+           dashlane_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_github"
+
+      2. Fetch Credential:
+         ansible.builtin.import_role:
+           name: dashlane_secrets
+           tasks_from: fetch_credential
+         vars:
+           dashlane_secret_name: "my_service_creds"
+
+      3. Fetch File:
+         ansible.builtin.import_role:
+           name: dashlane_secrets
+           tasks_from: fetch_file
+         vars:
+           dashlane_secret_name: "vpn_profile"
+           dashlane_secret_output_path: "/tmp/vpn.ovpn"
+  tags:
+    - dashlane
+    - dashlane:info

@@ -1,0 +1,62 @@
+---
+# =============================================================================
+# Global Variables - Applied to All Hosts
+# =============================================================================
+# This file contains global defaults for the entire project.
+# Since this is a local-only macOS automation project, most configuration
+# is minimal. Host-specific and profile-specific variables are handled
+# elsewhere (inventory, vars_prompt, role defaults).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Ansible Execution Settings
+# -----------------------------------------------------------------------------
+
+# Python interpreter - uses system Python or venv if in activated session
+# Note: The bootstrap script creates a venv at ~/venv-ansible for initial setup,
+# but it should be deleted after Ansible is installed globally or in a project-specific location
+ansible_python_interpreter: auto
+
+# -----------------------------------------------------------------------------
+# Homebrew Configuration
+# -----------------------------------------------------------------------------
+
+# Homebrew prefix varies by architecture
+homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+# -----------------------------------------------------------------------------
+# User Information
+# -----------------------------------------------------------------------------
+
+# Current user's home directory (commonly used across roles)
+user_home: "{{ ansible_env.HOME }}"
+user_name: "{{ ansible_env.USER }}"
+
+# -----------------------------------------------------------------------------
+# Project Paths
+# -----------------------------------------------------------------------------
+
+# Projects directory for direnv safety checks
+projects_directory: "{{ user_home }}/Projects"
+
+# Configuration directories
+config_directory: "{{ user_home }}/.config"
+ssh_directory: "{{ user_home }}/.ssh"
+
+# -----------------------------------------------------------------------------
+# Secrets Management
+# -----------------------------------------------------------------------------
+
+# Dashlane CLI executable
+dashlane_cli: dcli
+
+# Default secret permissions
+default_secret_permissions: "0600"
+
+# -----------------------------------------------------------------------------
+# Common Tool State
+# -----------------------------------------------------------------------------
+
+# Default installation state for all tools (can be overridden per-role)
+# Options: present, absent
+default_tool_state: present

@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Cloud CLI Role - Install AWS CLI (Public Function)
+# =============================================================================
+# Installs AWS CLI for Amazon Web Services
+# =============================================================================
+
+- name: Install AWS CLI via Homebrew
+  community.general.homebrew:
+    name: "{{ cloud_cli_packages.aws }}"
+    state: "{{ cloud_cli_state }}"

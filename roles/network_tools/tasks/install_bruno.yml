@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Network Tools Role - Install Bruno (Public Function)
+# =============================================================================
+# Installs Bruno API client (Postman/Insomnia alternative)
+# =============================================================================
+
+- name: Install Bruno via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ network_tools_packages.bruno }}"
+    state: "{{ network_tools_state }}"

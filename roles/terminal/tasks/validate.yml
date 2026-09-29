@@ -1,0 +1,37 @@
+---
+# =============================================================================
+# Terminal Role - Validation Tasks
+# =============================================================================
+# Validates prerequisites before installing terminal components
+# =============================================================================
+
+- name: Validate Homebrew is installed
+  ansible.builtin.stat:
+    path: "{{ homebrew_prefix }}/bin/brew"
+  register: brew_binary
+  failed_when: not brew_binary.stat.exists
+  vars:
+    homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+- name: Validate macOS platform
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Darwin'
+    fail_msg: "This role is designed for macOS only"
+    quiet: true
+
+- name: Validate terminal emulator selection
+  ansible.builtin.assert:
+    that:
+      - terminal_emulator in ['iterm2', 'ghostty']
+    fail_msg: "terminal_emulator must be 'iterm2' or 'ghostty'"
+    quiet: true
+
+- name: Validate Nerd Fonts list
+  ansible.builtin.assert:
+    that:
+      - terminal_nerdfonts is defined
+      - terminal_nerdfonts | length > 0
+    fail_msg: "terminal_nerdfonts must be defined and non-empty when terminal_install_nerdfonts is true"
+    quiet: true
+  when: terminal_install_nerdfonts

@@ -1,0 +1,208 @@
+---
+# =============================================================================
+# Cloud CLI Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure cloud CLI tools
+    description:
+      - Install cloud provider CLIs via Homebrew
+      - Configure default profiles and settings
+      - Support demo environment credential import
+    author: Brian Grimmett
+
+    options:
+      cloud_cli_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove cloud CLIs
+
+      cloud_cli_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all CLIs or only enabled ones
+
+      cloud_cli_aws_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable AWS CLI installation
+
+      cloud_cli_gcp_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable GCP CLI installation
+
+      cloud_cli_azure_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Azure CLI installation
+
+      cloud_cli_github_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable GitHub CLI installation
+
+  install:
+    short_description: Install all cloud CLIs
+    description: Install all enabled cloud CLIs via Homebrew
+    author: Brian Grimmett
+
+    options:
+      cloud_cli_state:
+        type: str
+        required: false
+        default: present
+
+  install_aws:
+    short_description: Install AWS CLI
+    description: Install AWS CLI via Homebrew
+    author: Brian Grimmett
+
+    options:
+      cloud_cli_state:
+        type: str
+        required: false
+        default: present
+
+  install_gcp:
+    short_description: Install GCP CLI
+    description: Install Google Cloud SDK via Homebrew
+    author: Brian Grimmett
+
+    options:
+      cloud_cli_state:
+        type: str
+        required: false
+        default: present
+
+  install_azure:
+    short_description: Install Azure CLI
+    description: Install Azure CLI via Homebrew
+    author: Brian Grimmett
+
+    options:
+      cloud_cli_state:
+        type: str
+        required: false
+        default: present
+
+  install_github:
+    short_description: Install GitHub CLI
+    description: Install GitHub CLI via Homebrew
+    author: Brian Grimmett
+
+    options:
+      cloud_cli_state:
+        type: str
+        required: false
+        default: present
+
+  configure_aws_demo:
+    short_description: Configure AWS demo environment
+    description:
+      - Quick setup for AWS demo/test environments
+      - Import credentials from demo provisioning
+      - Create new profile without disrupting existing config
+    author: Brian Grimmett
+
+    options:
+      aws_demo_account_id:
+        type: str
+        required: true
+        description: AWS Account ID
+
+      aws_demo_region:
+        type: str
+        required: false
+        default: us-east-1
+        description: AWS Region
+
+      aws_demo_access_key:
+        type: str
+        required: true
+        description: AWS Access Key ID
+
+      aws_demo_secret_key:
+        type: str
+        required: true
+        description: AWS Secret Access Key
+
+      aws_demo_profile_name:
+        type: str
+        required: false
+        description: Profile name (auto-generated if not set)
+
+  configure_gcp_demo:
+    short_description: Configure GCP demo environment
+    description:
+      - Quick setup for GCP demo/test environments
+      - Import service account credentials
+      - Create new configuration without disrupting existing setup
+    author: Brian Grimmett
+
+    options:
+      gcp_demo_project_id:
+        type: str
+        required: true
+        description: GCP Project ID
+
+      gcp_demo_region:
+        type: str
+        required: false
+        default: us-central1
+        description: GCP Region
+
+      gcp_demo_credentials_json:
+        type: str
+        required: true
+        description: Service account JSON credentials
+
+      gcp_demo_config_name:
+        type: str
+        required: false
+        description: Configuration name (auto-generated if not set)
+
+  configure_azure_demo:
+    short_description: Configure Azure demo environment
+    description:
+      - Quick setup for Azure demo/test environments
+      - Import service principal credentials
+      - Create new configuration without disrupting existing setup
+    author: Brian Grimmett
+
+    options:
+      azure_demo_subscription_id:
+        type: str
+        required: true
+        description: Azure Subscription ID
+
+      azure_demo_tenant_id:
+        type: str
+        required: true
+        description: Azure Tenant ID
+
+      azure_demo_client_id:
+        type: str
+        required: true
+        description: Azure Client ID (service principal)
+
+      azure_demo_client_secret:
+        type: str
+        required: true
+        description: Azure Client Secret
+
+      azure_demo_location:
+        type: str
+        required: false
+        default: eastus
+        description: Azure Location

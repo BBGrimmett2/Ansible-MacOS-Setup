@@ -1,0 +1,180 @@
+---
+# =============================================================================
+# Verify Workstation State Playbook
+# =============================================================================
+# Purpose: Check status of all components and write state file for GUI app
+# Usage: ansible-playbook playbooks/verify_state.yml
+# =============================================================================
+
+- name: Verify Workstation State
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    state_dir: "{{ ansible_env.HOME }}/.config/workstation-manager"
+    state_file: "{{ state_dir }}/state.json"
+
+  tasks:
+    - name: Create state directory
+      ansible.builtin.file:
+        path: "{{ state_dir }}"
+        state: directory
+        mode: "0755"
+
+    # =========================================================================
+    # Homebrew
+    # =========================================================================
+
+    - name: Check Homebrew installation
+      ansible.builtin.stat:
+        path: "{{ homebrew_prefix }}/bin/brew"
+      register: homebrew_binary
+      vars:
+        homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+    - name: Get Homebrew version
+      ansible.builtin.command: brew --version
+      register: homebrew_version
+      changed_when: false
+      failed_when: false
+      when: homebrew_binary.stat.exists
+
+    # =========================================================================
+    # CLI Tools
+    # =========================================================================
+
+    - name: Check CLI tools installation
+      ansible.builtin.command: which {{ item }}
+      loop:
+        - jq
+        - yq
+        - direnv
+        - eza
+        - bat
+        - fd
+        - fzf
+        - delta
+      register: cli_tools_check
+      failed_when: false
+      changed_when: false
+
+    - name: Check direnv configuration
+      ansible.builtin.stat:
+        path: "{{ ansible_env.HOME }}/.config/direnv/direnvrc"
+      register: direnvrc_stat
+
+    # =========================================================================
+    # Terminal
+    # =========================================================================
+
+    - name: Check iTerm2 installation
+      ansible.builtin.stat:
+        path: /Applications/iTerm.app
+      register: iterm2_stat
+
+    - name: Check Ghostty installation
+      ansible.builtin.stat:
+        path: /Applications/Ghostty.app
+      register: ghostty_stat
+
+    - name: Check Nerd Fonts installation
+      ansible.builtin.command: fc-list | grep -i "nerd font"
+      register: nerdfonts_check
+      failed_when: false
+      changed_when: false
+
+    # =========================================================================
+    # Cloud CLI
+    # =========================================================================
+
+    - name: Check cloud CLIs installation
+      ansible.builtin.command: which {{ item }}
+      loop:
+        - aws
+        - gcloud
+        - az
+        - gh
+      register: cloud_cli_check
+      failed_when: false
+      changed_when: false
+
+    # =========================================================================
+    # Custom Scripts
+    # =========================================================================
+
+    - name: Check rhdps installation
+      ansible.builtin.command: which rhdps
+      register: rhdps_check
+      failed_when: false
+      changed_when: false
+
+    # =========================================================================
+    # Build State Data
+    # =========================================================================
+
+    - name: Build component state
+      ansible.builtin.set_fact:
+        component_state:
+          homebrew:
+            installed: "{{ homebrew_binary.stat.exists }}"
+            version: "{{ homebrew_version.stdout_lines[0] if homebrew_binary.stat.exists else 'not installed' }}"
+            status: "{{ 'pass' if homebrew_binary.stat.exists else 'fail' }}"
+          cli_tools:
+            installed: "{{ cli_tools_check.results | selectattr('rc', 'equalto', 0) | list | length == 8 }}"
+            packages:
+              jq: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'jq') | first).rc == 0 }}"
+              yq: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'yq') | first).rc == 0 }}"
+              direnv: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'direnv') | first).rc == 0 }}"
+              eza: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'eza') | first).rc == 0 }}"
+              bat: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'bat') | first).rc == 0 }}"
+              fd: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'fd') | first).rc == 0 }}"
+              fzf: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'fzf') | first).rc == 0 }}"
+              git_delta: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'delta') | first).rc == 0 }}"
+            direnv_configured: "{{ direnvrc_stat.stat.exists }}"
+            status: "{{ 'pass' if (cli_tools_check.results | selectattr('rc', 'equalto', 0) | list | length == 8) else 'partial' }}"
+          terminal:
+            installed: "{{ iterm2_stat.stat.exists or ghostty_stat.stat.exists }}"
+            emulator: "{{ 'iterm2' if iterm2_stat.stat.exists else ('ghostty' if ghostty_stat.stat.exists else 'none') }}"
+            nerdfonts_installed: "{{ nerdfonts_check.rc == 0 }}"
+            status: "{{ 'pass' if (iterm2_stat.stat.exists or ghostty_stat.stat.exists) else 'fail' }}"
+          cloud_cli:
+            installed: "{{ cloud_cli_check.results | selectattr('rc', 'equalto', 0) | list | length > 0 }}"
+            clis:
+              aws: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'aws') | first).rc == 0 }}"
+              gcp: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'gcloud') | first).rc == 0 }}"
+              azure: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'az') | first).rc == 0 }}"
+              github: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'gh') | first).rc == 0 }}"
+            status: "{{ 'pass' if (cloud_cli_check.results | selectattr('rc', 'equalto', 0) | list | length > 0) else 'fail' }}"
+          custom_scripts:
+            rhdps_installed: "{{ rhdps_check.rc == 0 }}"
+            status: "{{ 'pass' if rhdps_check.rc == 0 else 'partial' }}"
+
+    - name: Build full state data
+      ansible.builtin.set_fact:
+        full_state:
+          last_verified: "{{ ansible_date_time.iso8601 }}"
+          hostname: "{{ ansible_hostname }}"
+          username: "{{ ansible_env.USER }}"
+          profile: "{{ workstation_profile | default('unknown') }}"
+          os_version: "{{ ansible_distribution_version }}"
+          architecture: "{{ ansible_architecture }}"
+          components: "{{ component_state }}"
+
+    - name: Write state file
+      ansible.builtin.copy:
+        content: "{{ full_state | to_nice_json }}"
+        dest: "{{ state_file }}"
+        mode: "0644"
+
+    - name: Display state summary
+      ansible.builtin.debug:
+        msg:
+          - "=== Workstation State Verification Complete ==="
+          - "State file: {{ state_file }}"
+          - ""
+          - "Component Status:"
+          - "  Homebrew: {{ component_state.homebrew.status }}"
+          - "  CLI Tools: {{ component_state.cli_tools.status }}"
+          - "  Terminal: {{ component_state.terminal.status }}"
+          - "  Cloud CLI: {{ component_state.cloud_cli.status }}"
+          - "  Custom Scripts: {{ component_state.custom_scripts.status }}"

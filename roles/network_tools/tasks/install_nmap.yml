@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Network Tools Role - Install nmap (Public Function)
+# =============================================================================
+# Installs nmap - network scanner
+# =============================================================================
+
+- name: Install nmap via Homebrew
+  community.general.homebrew:
+    name: "{{ network_tools_packages.nmap }}"
+    state: "{{ network_tools_state }}"

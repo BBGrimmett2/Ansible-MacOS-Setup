@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install eza (Public Function)
+# =============================================================================
+# Installs eza - modern ls replacement with color and icons
+# =============================================================================
+
+- name: Install eza via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.eza }}"
+    state: "{{ cli_tools_state }}"

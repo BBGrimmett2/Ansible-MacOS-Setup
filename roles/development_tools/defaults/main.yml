@@ -1,0 +1,114 @@
+---
+# =============================================================================
+# Development Tools Role - Default Variables
+# =============================================================================
+# Install and configure development and automation tools
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) development tools
+development_tools_state: present
+
+# Install all tools (if false, only install enabled tools)
+development_tools_install_all: true
+
+# -----------------------------------------------------------------------------
+# Individual Tool Control
+# -----------------------------------------------------------------------------
+
+# pre-commit - Git hooks framework
+development_tools_precommit_enabled: true
+
+# Claude Code CLI - AI coding assistant (work profile only by default)
+development_tools_claude_code_enabled: "{{ true if workstation_profile == 'work' else false }}"
+
+# AAP demo environment tools (work profile only)
+development_tools_aap_demo_enabled: "{{ true if workstation_profile == 'work' else false }}"
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew/pip packages)
+# -----------------------------------------------------------------------------
+
+development_tools_packages:
+  precommit: pre-commit
+
+# -----------------------------------------------------------------------------
+# Git Configuration
+# -----------------------------------------------------------------------------
+
+# Configure git globally
+development_tools_configure_git: true
+
+# Git user name (profile-specific)
+development_tools_git_user_name: "{{ git_user_name_personal if workstation_profile == 'personal' else git_user_name_work }}"
+
+# Git user email (profile-specific)
+development_tools_git_user_email: "{{ git_user_email_personal if workstation_profile == 'personal' else git_user_email_work }}"
+
+# Personal git config
+git_user_name_personal: "{{ ansible_env.USER | title }}"
+git_user_email_personal: ""  # Set in group_vars or override
+
+# Work git config
+git_user_name_work: "{{ ansible_env.USER | title }}"
+git_user_email_work: ""  # Set in group_vars or override
+
+# Git default branch
+development_tools_git_default_branch: main
+
+# Git editor
+development_tools_git_editor: vim
+
+# -----------------------------------------------------------------------------
+# pre-commit Configuration
+# -----------------------------------------------------------------------------
+
+# Configure pre-commit globally
+development_tools_precommit_configure: true
+
+# Global pre-commit hooks
+development_tools_precommit_global_hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-added-large-files
+
+# Ansible-specific hooks (work profile)
+development_tools_precommit_ansible_hooks:
+  - id: ansible-lint
+  - id: yamllint
+
+# -----------------------------------------------------------------------------
+# Claude Code Configuration (Work Profile)
+# -----------------------------------------------------------------------------
+
+# Claude Code installation method
+development_tools_claude_code_install_method: npm  # or 'manual'
+
+# Claude Code organization (for work)
+development_tools_claude_code_org: ""  # Set via Dashlane secret
+
+# Claude Code API key source
+development_tools_claude_code_api_key_source: dashlane
+
+# -----------------------------------------------------------------------------
+# AAP Demo Environment (Work Profile)
+# -----------------------------------------------------------------------------
+
+# AAP demo tools to install
+development_tools_aap_demo_tools:
+  - ansible-navigator
+  - ansible-builder
+
+# -----------------------------------------------------------------------------
+# Custom Scripts
+# -----------------------------------------------------------------------------
+
+# Install custom scripts
+development_tools_custom_scripts_enabled: true
+
+# Custom scripts directory
+development_tools_custom_scripts_dir: "{{ role_path }}/files/custom_scripts"

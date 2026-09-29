@@ -1,0 +1,75 @@
+---
+# =============================================================================
+# macOS Defaults Role - Configure Finder
+# =============================================================================
+# Public function: Configure Finder preferences.
+# Can be called via: tasks_from: configure_finder
+# =============================================================================
+
+- name: Show hidden files in Finder
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: AppleShowAllFiles
+    type: bool
+    value: "{{ macos_finder_show_hidden_files }}"
+  notify: Restart Finder
+
+- name: Show all filename extensions
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: AppleShowAllExtensions
+    type: bool
+    value: "{{ macos_finder_show_extensions }}"
+  notify: Restart Finder
+
+- name: Show path bar in Finder
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: ShowPathbar
+    type: bool
+    value: "{{ macos_finder_show_path_bar }}"
+  notify: Restart Finder
+
+- name: Show status bar in Finder
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: ShowStatusBar
+    type: bool
+    value: "{{ macos_finder_show_status_bar }}"
+  notify: Restart Finder
+
+- name: Set default Finder view style
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXPreferredViewStyle
+    type: string
+    value: "{{ macos_finder_default_view }}"
+  notify: Restart Finder
+
+- name: Set Finder search scope
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXDefaultSearchScope
+    type: string
+    value: "{{ macos_finder_search_scope }}"
+  notify: Restart Finder
+
+- name: Set warning before changing extension
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: FXEnableExtensionChangeWarning
+    type: bool
+    value: "{{ macos_finder_warn_on_extension_change }}"
+  notify: Restart Finder
+
+- name: Set warning before emptying Trash
+  community.general.osx_defaults:
+    domain: com.apple.finder
+    key: WarnOnEmptyTrash
+    type: bool
+    value: "{{ macos_finder_warn_on_empty_trash }}"
+  notify: Restart Finder
+
+- name: Display Finder configuration status
+  ansible.builtin.debug:
+    msg: "Finder configuration completed"

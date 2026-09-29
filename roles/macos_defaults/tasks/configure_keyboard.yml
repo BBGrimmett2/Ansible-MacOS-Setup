@@ -1,0 +1,32 @@
+---
+# =============================================================================
+# macOS Defaults Role - Configure Keyboard
+# =============================================================================
+# Public function: Configure keyboard preferences.
+# Can be called via: tasks_from: configure_keyboard
+# =============================================================================
+
+- name: Set key repeat rate
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: KeyRepeat
+    type: int
+    value: "{{ macos_keyboard_key_repeat }}"
+
+- name: Set initial key repeat delay
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: InitialKeyRepeat
+    type: int
+    value: "{{ macos_keyboard_initial_key_repeat }}"
+
+- name: Set press-and-hold for special characters
+  community.general.osx_defaults:
+    domain: NSGlobalDomain
+    key: ApplePressAndHoldEnabled
+    type: bool
+    value: "{{ macos_keyboard_press_and_hold }}"
+
+- name: Display keyboard configuration status
+  ansible.builtin.debug:
+    msg: "Keyboard configuration completed"

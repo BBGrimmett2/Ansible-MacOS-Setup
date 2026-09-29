@@ -1,0 +1,37 @@
+---
+# =============================================================================
+# Homebrew Role - Main Tasks
+# =============================================================================
+# Orchestrates the installation and configuration of Homebrew.
+# This is the default entry point when including the role.
+# =============================================================================
+
+- name: Validate Homebrew configuration
+  ansible.builtin.import_tasks: validate.yml
+  tags:
+    - homebrew
+    - homebrew:validate
+
+- name: Install Homebrew
+  ansible.builtin.import_tasks: install.yml
+  tags:
+    - homebrew
+    - homebrew:install
+
+- name: Configure Homebrew environment
+  ansible.builtin.import_tasks: configure.yml
+  tags:
+    - homebrew
+    - homebrew:configure
+
+- name: Display Homebrew information
+  when: homebrew_state == 'present'
+  block:
+    - name: Get Homebrew version
+      ansible.builtin.command: "{{ homebrew_bin }} --version"
+      register: homebrew_version
+      changed_when: false
+
+    - name: Display Homebrew version
+      ansible.builtin.debug:
+        msg: "{{ homebrew_version.stdout_lines[0] }}"

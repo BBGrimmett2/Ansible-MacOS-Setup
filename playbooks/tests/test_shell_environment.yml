@@ -1,0 +1,74 @@
+---
+# =============================================================================
+# Test Playbook: Shell Environment Role
+# =============================================================================
+# Purpose: Test shell_environment role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_shell_environment.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_shell_environment.yml
+#   Verify:  ansible-playbook playbooks/tests/test_shell_environment.yml (should show no changes)
+# =============================================================================
+
+- name: Test Shell Environment Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    shell_environment_enable_custom_prompt: true
+    shell_environment_enable_tool_integrations: true
+    workstation_profile: personal
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Shell Environment Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Profile: {{ workstation_profile }}"
+          - "Custom prompt: {{ 'enabled' if shell_environment_enable_custom_prompt else 'disabled' }}"
+          - "Tool integrations: {{ 'enabled' if shell_environment_enable_tool_integrations else 'disabled' }}"
+
+    - name: Execute shell_environment role
+      ansible.builtin.import_role:
+        name: shell_environment
+      tags: shell_environment
+
+    - name: Verify shell environment configuration
+      block:
+        - name: Check .zshrc exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.zshrc"
+          register: zshrc_stat
+          failed_when: not zshrc_stat.stat.exists
+
+        - name: Check .zshrc contains tool integrations
+          ansible.builtin.command: grep -q "eval.*direnv hook zsh" {{ ansible_env.HOME }}/.zshrc
+          register: direnv_integration
+          changed_when: false
+          failed_when: direnv_integration.rc != 0
+          when: shell_environment_enable_tool_integrations
+
+        - name: Check .zshrc contains modern aliases
+          ansible.builtin.command: grep -q "alias ls='eza" {{ ansible_env.HOME }}/.zshrc
+          register: eza_alias
+          changed_when: false
+          failed_when: eza_alias.rc != 0
+
+        - name: Check .zshrc contains custom prompt
+          ansible.builtin.command: grep -q "PROMPT=" {{ ansible_env.HOME }}/.zshrc
+          register: custom_prompt
+          changed_when: false
+          failed_when: custom_prompt.rc != 0
+          when: shell_environment_enable_custom_prompt
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Shell environment configured successfully"
+              - ".zshrc: {{ zshrc_stat.stat.path }}"
+              - "Modern aliases: configured"
+              - "{% if shell_environment_enable_tool_integrations %}Tool integrations: configured{% endif %}"
+              - "{% if shell_environment_enable_custom_prompt %}Custom prompt: configured{% endif %}"
+      tags: verify
+      when: not ansible_check_mode

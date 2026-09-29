@@ -1,0 +1,41 @@
+---
+# =============================================================================
+# CLI Tools Role - Validation Tasks
+# =============================================================================
+# Validates prerequisites before installing CLI tools
+# =============================================================================
+
+- name: Validate Homebrew is installed
+  ansible.builtin.stat:
+    path: "{{ homebrew_prefix }}/bin/brew"
+  register: brew_binary
+  failed_when: not brew_binary.stat.exists
+  vars:
+    homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+- name: Validate macOS platform
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Darwin'
+    fail_msg: "This role is designed for macOS only"
+    quiet: true
+
+- name: Validate direnv configuration directory path
+  ansible.builtin.assert:
+    that:
+      - cli_tools_direnv_config_dir is defined
+      - cli_tools_direnv_config_dir | length > 0
+    fail_msg: "cli_tools_direnv_config_dir must be defined"
+    quiet: true
+  when: cli_tools_direnv_enabled
+
+- name: Validate Projects directory path for direnv safety
+  ansible.builtin.assert:
+    that:
+      - cli_tools_direnv_projects_path is defined
+      - cli_tools_direnv_projects_path | length > 0
+    fail_msg: "cli_tools_direnv_projects_path must be defined when safety is enabled"
+    quiet: true
+  when:
+    - cli_tools_direnv_enabled
+    - cli_tools_direnv_safety_enabled

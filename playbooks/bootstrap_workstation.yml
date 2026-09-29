@@ -1,0 +1,108 @@
+---
+# =============================================================================
+# Bootstrap Workstation - Main Playbook
+# =============================================================================
+# Purpose: Complete macOS workstation setup with profile-based configuration
+# Usage: ansible-playbook playbooks/bootstrap_workstation.yml
+#
+# This is the main entry point for setting up a macOS workstation from scratch.
+# It supports both personal and work (Red Hat) profiles with different tools
+# and configurations for each.
+# =============================================================================
+
+- name: Bootstrap macOS Workstation
+  hosts: localhost
+  gather_facts: true
+
+  vars_prompt:
+    - name: workstation_profile
+      prompt: "Select workstation profile (personal/work)"
+      private: false
+      default: "personal"
+
+  pre_tasks:
+    - name: Validate profile selection
+      ansible.builtin.assert:
+        that:
+          - workstation_profile in ['personal', 'work']
+        fail_msg: "Profile must be 'personal' or 'work', got '{{ workstation_profile }}'"
+        success_msg: "Profile '{{ workstation_profile }}' selected"
+
+    - name: Display profile information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Workstation Profile: {{ workstation_profile }}"
+          - "=========================================="
+          - "{% if workstation_profile == 'work' %}Work profile includes Red Hat-specific tools and configurations{% else %}Personal profile with standard development tools{% endif %}"
+
+  roles:
+    # Foundation - Required for all profiles
+    - role: homebrew
+      tags: [foundation, homebrew]
+
+    - role: dashlane_secrets
+      tags: [foundation, secrets]
+
+    # System Configuration
+    - role: macos_defaults
+      tags: [system, macos_defaults]
+
+    - role: pam_security
+      tags: [system, security, pam]
+
+    - role: ssh_config
+      tags: [system, ssh]
+
+    # CLI Tools
+    - role: cli_tools
+      tags: [tools, cli]
+
+    - role: terminal
+      tags: [tools, terminal]
+
+    - role: cloud_cli
+      tags: [tools, cloud]
+
+    - role: kubernetes_tools
+      tags: [tools, kubernetes]
+
+    # Network Tools
+    - role: network_tools
+      tags: [tools, network]
+
+    # Database and Container Tools
+    - role: database_tools
+      tags: [tools, database]
+
+    # Desktop Applications
+    - role: desktop_apps
+      tags: [tools, desktop]
+
+    # Development Tools (includes work-specific tools like Claude Code)
+    - role: development_tools
+      tags: [tools, development]
+
+    # Shell Environment - Must be LAST as it integrates all installed tools
+    - role: shell_environment
+      tags: [config, shell]
+
+  post_tasks:
+    - name: Display completion message
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Workstation Bootstrap Complete!"
+          - "=========================================="
+          - "Profile: {{ workstation_profile }}"
+          - ""
+          - "Next steps:"
+          - "  1. Restart your terminal (or run 'source ~/.zshrc') to load shell environment"
+          - "  2. Verify tool installations: brew list, kubectl version, etc."
+          - "  3. Configure any remaining profile-specific settings"
+          - "  {% if workstation_profile == 'work' %}4. Verify Red Hat VPN and AAP access{% endif %}"
+          - ""
+          - "For cloud demo environments, run:"
+          - "  ansible-playbook playbooks/setup_aws_demo.yml"
+          - "  ansible-playbook playbooks/setup_gcp_demo.yml"
+          - "  ansible-playbook playbooks/setup_azure_demo.yml"

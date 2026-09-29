@@ -1,0 +1,142 @@
+---
+# =============================================================================
+# Network Tools Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure network tools
+    description:
+      - Install network and VPN tools via Homebrew
+      - Configure VPN profiles for Personal/Work
+      - Set up Red Hat Shadowman VPN for work profile
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove network tools
+
+      network_tools_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all tools or only enabled ones
+
+      network_tools_bruno_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Bruno API client installation
+
+      network_tools_openvpn_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable OpenVPN installation
+
+      network_tools_bind_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable BIND tools installation
+
+      network_tools_wireshark_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Enable Wireshark installation
+
+      network_tools_mtr_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable mtr installation
+
+      network_tools_nmap_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Enable nmap installation
+
+  install:
+    short_description: Install all network tools
+    description: Install all enabled network tools via Homebrew
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_bruno:
+    short_description: Install Bruno
+    description: Install Bruno API client
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_openvpn:
+    short_description: Install OpenVPN
+    description: Install OpenVPN client
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_bind:
+    short_description: Install BIND tools
+    description: Install BIND DNS tools (dig, nslookup, host)
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_wireshark:
+    short_description: Install Wireshark
+    description: Install Wireshark network analyzer
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_mtr:
+    short_description: Install mtr
+    description: Install mtr network diagnostic tool
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present
+
+  install_nmap:
+    short_description: Install nmap
+    description: Install nmap network scanner
+    author: Brian Grimmett
+
+    options:
+      network_tools_state:
+        type: str
+        required: false
+        default: present

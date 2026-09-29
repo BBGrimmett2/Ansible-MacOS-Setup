@@ -1,0 +1,78 @@
+---
+# =============================================================================
+# Test Playbook: Cloud CLI Role
+# =============================================================================
+# Purpose: Test cloud_cli role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_cloud_cli.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_cloud_cli.yml
+#   Verify:  ansible-playbook playbooks/tests/test_cloud_cli.yml (should show no changes)
+# =============================================================================
+
+- name: Test Cloud CLI Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    cloud_cli_aws_enabled: true
+    cloud_cli_gcp_enabled: true
+    cloud_cli_azure_enabled: true
+    cloud_cli_github_enabled: true
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Cloud CLI Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "AWS CLI: {{ 'enabled' if cloud_cli_aws_enabled else 'disabled' }}"
+          - "GCP CLI: {{ 'enabled' if cloud_cli_gcp_enabled else 'disabled' }}"
+          - "Azure CLI: {{ 'enabled' if cloud_cli_azure_enabled else 'disabled' }}"
+          - "GitHub CLI: {{ 'enabled' if cloud_cli_github_enabled else 'disabled' }}"
+
+    - name: Execute cloud_cli role
+      ansible.builtin.import_role:
+        name: cloud_cli
+      tags: cloud_cli
+
+    - name: Verify cloud CLI installations
+      block:
+        - name: Check AWS CLI is installed
+          ansible.builtin.command: which aws
+          register: aws_check
+          changed_when: false
+          failed_when: aws_check.rc != 0
+          when: cloud_cli_aws_enabled
+
+        - name: Check GCP CLI is installed
+          ansible.builtin.command: which gcloud
+          register: gcloud_check
+          changed_when: false
+          failed_when: gcloud_check.rc != 0
+          when: cloud_cli_gcp_enabled
+
+        - name: Check Azure CLI is installed
+          ansible.builtin.command: which az
+          register: az_check
+          changed_when: false
+          failed_when: az_check.rc != 0
+          when: cloud_cli_azure_enabled
+
+        - name: Check GitHub CLI is installed
+          ansible.builtin.command: which gh
+          register: gh_check
+          changed_when: false
+          failed_when: gh_check.rc != 0
+          when: cloud_cli_github_enabled
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Cloud CLIs installed successfully"
+              - "{% if cloud_cli_aws_enabled %}AWS CLI: {{ aws_check.stdout }}{% endif %}"
+              - "{% if cloud_cli_gcp_enabled %}GCP CLI: {{ gcloud_check.stdout }}{% endif %}"
+              - "{% if cloud_cli_azure_enabled %}Azure CLI: {{ az_check.stdout }}{% endif %}"
+              - "{% if cloud_cli_github_enabled %}GitHub CLI: {{ gh_check.stdout }}{% endif %}"
+      tags: verify
+      when: not ansible_check_mode

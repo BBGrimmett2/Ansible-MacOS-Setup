@@ -1,0 +1,33 @@
+---
+# =============================================================================
+# SSH Config Role - Deploy SSH Config File
+# =============================================================================
+# Public function: Deploy SSH client configuration.
+# Can be called via: tasks_from: deploy_config
+# =============================================================================
+
+- name: Check if SSH config exists
+  ansible.builtin.stat:
+    path: "{{ ssh_config_file }}"
+  register: ssh_config_stat
+
+- name: Backup existing SSH config
+  ansible.builtin.copy:
+    src: "{{ ssh_config_file }}"
+    dest: "{{ ssh_config_file }}.backup.{{ ansible_date_time.epoch }}"
+    remote_src: true
+    mode: "{{ ssh_config_permissions }}"
+  when:
+    - ssh_backup_existing
+    - ssh_config_stat.stat.exists
+
+- name: Deploy SSH config from template
+  ansible.builtin.template:
+    src: "ssh_config_{{ workstation_profile }}.j2"
+    dest: "{{ ssh_config_file }}"
+    mode: "{{ ssh_config_permissions }}"
+    backup: "{{ ssh_backup_existing }}"
+
+- name: Display SSH config deployment status
+  ansible.builtin.debug:
+    msg: "SSH config deployed for {{ workstation_profile }} profile"

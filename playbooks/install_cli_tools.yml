@@ -1,0 +1,15 @@
+---
+# =============================================================================
+# Install CLI Tools Playbook
+# =============================================================================
+# Purpose: Install and configure CLI quality-of-life tools
+# Usage: ansible-playbook playbooks/install_cli_tools.yml
+# =============================================================================
+
+- name: Install CLI Tools
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - role: cli_tools
+      tags: [cli_tools]

@@ -1,0 +1,38 @@
+---
+# =============================================================================
+# PAM Security Role - Main Tasks
+# =============================================================================
+# Configure Touch ID and YubiKey authentication for sudo.
+# =============================================================================
+
+- name: Validate PAM security prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags:
+    - pam_security
+    - pam_security:validate
+
+- name: Configure Touch ID for sudo
+  ansible.builtin.import_tasks: configure_touchid.yml
+  tags:
+    - pam_security
+    - pam_security:touchid
+  when: pam_touchid_enabled
+
+- name: Configure YubiKey for sudo
+  ansible.builtin.import_tasks: configure_yubikey.yml
+  tags:
+    - pam_security
+    - pam_security:yubikey
+  when: pam_yubikey_enabled
+
+- name: Display PAM security configuration summary
+  ansible.builtin.debug:
+    msg: |
+      PAM Security Configuration Summary:
+      - Touch ID: {{ 'ENABLED' if pam_touchid_enabled else 'DISABLED' }}
+      - YubiKey: {{ 'ENABLED' if pam_yubikey_enabled else 'DISABLED' }}
+
+      {{ 'Test with: sudo -k && sudo ls' if (pam_touchid_enabled or pam_yubikey_enabled) else '' }}
+  tags:
+    - pam_security
+    - pam_security:summary

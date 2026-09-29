@@ -1,0 +1,82 @@
+---
+# =============================================================================
+# Test Playbook: Kubernetes Tools Role
+# =============================================================================
+# Purpose: Test kubernetes_tools role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_kubernetes_tools.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_kubernetes_tools.yml
+#   Verify:  ansible-playbook playbooks/tests/test_kubernetes_tools.yml (should show no changes)
+# =============================================================================
+
+- name: Test Kubernetes Tools Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    kubernetes_tools_install_all: true
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Kubernetes Tools Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Install all tools: {{ kubernetes_tools_install_all }}"
+
+    - name: Execute kubernetes_tools role
+      ansible.builtin.import_role:
+        name: kubernetes_tools
+      tags: kubernetes_tools
+
+    - name: Verify Kubernetes tools installations
+      block:
+        - name: Check kubectl is installed
+          ansible.builtin.command: which kubectl
+          register: kubectl_check
+          changed_when: false
+          failed_when: kubectl_check.rc != 0
+
+        - name: Check oc is installed
+          ansible.builtin.command: which oc
+          register: oc_check
+          changed_when: false
+          failed_when: oc_check.rc != 0
+
+        - name: Check helm is installed
+          ansible.builtin.command: which helm
+          register: helm_check
+          changed_when: false
+          failed_when: helm_check.rc != 0
+
+        - name: Check k9s is installed
+          ansible.builtin.command: which k9s
+          register: k9s_check
+          changed_when: false
+          failed_when: k9s_check.rc != 0
+
+        - name: Check kubectx is installed
+          ansible.builtin.command: which kubectx
+          register: kubectx_check
+          changed_when: false
+          failed_when: kubectx_check.rc != 0
+
+        - name: Check stern is installed
+          ansible.builtin.command: which stern
+          register: stern_check
+          changed_when: false
+          failed_when: stern_check.rc != 0
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Kubernetes tools installed successfully"
+              - "kubectl: {{ kubectl_check.stdout }}"
+              - "oc: {{ oc_check.stdout }}"
+              - "helm: {{ helm_check.stdout }}"
+              - "k9s: {{ k9s_check.stdout }}"
+              - "kubectx: {{ kubectx_check.stdout }}"
+              - "stern: {{ stern_check.stdout }}"
+      tags: verify
+      when: not ansible_check_mode

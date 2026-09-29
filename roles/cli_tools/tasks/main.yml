@@ -1,0 +1,22 @@
+---
+# =============================================================================
+# CLI Tools Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation, installation, and configuration of CLI tools
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Install CLI tools
+  ansible.builtin.import_tasks: install.yml
+  tags: [install]
+  when: cli_tools_state == 'present'
+
+- name: Configure CLI tools
+  ansible.builtin.import_tasks: configure.yml
+  tags: [configure]
+  when:
+    - cli_tools_state == 'present'
+    - cli_tools_direnv_configure

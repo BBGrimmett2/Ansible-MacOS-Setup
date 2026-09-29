@@ -1,0 +1,65 @@
+---
+# =============================================================================
+# Test Playbook: Terminal Role
+# =============================================================================
+# Purpose: Test terminal role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_terminal.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_terminal.yml
+#   Verify:  ansible-playbook playbooks/tests/test_terminal.yml (should show no changes)
+# =============================================================================
+
+- name: Test Terminal Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    terminal_emulator: iterm2
+    terminal_install_nerdfonts: true
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Terminal Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Terminal emulator: {{ terminal_emulator }}"
+          - "Install Nerd Fonts: {{ terminal_install_nerdfonts }}"
+
+    - name: Execute terminal role
+      ansible.builtin.import_role:
+        name: terminal
+      tags: terminal
+
+    - name: Verify terminal installation
+      block:
+        - name: Check iTerm2 application exists
+          ansible.builtin.stat:
+            path: /Applications/iTerm.app
+          register: iterm_stat
+          failed_when: not iterm_stat.stat.exists
+          when: terminal_emulator == 'iterm2'
+
+        - name: Check Ghostty application exists
+          ansible.builtin.stat:
+            path: /Applications/Ghostty.app
+          register: ghostty_stat
+          failed_when: not ghostty_stat.stat.exists
+          when: terminal_emulator == 'ghostty'
+
+        - name: Check Nerd Fonts installed
+          ansible.builtin.command: brew list --cask font-hack-nerd-font
+          register: nerdfonts_check
+          changed_when: false
+          failed_when: nerdfonts_check.rc != 0
+          when: terminal_install_nerdfonts
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Terminal emulator installed successfully"
+              - "Emulator: {{ terminal_emulator }}"
+              - "{% if terminal_install_nerdfonts %}Nerd Fonts: installed{% endif %}"
+      tags: verify
+      when: not ansible_check_mode

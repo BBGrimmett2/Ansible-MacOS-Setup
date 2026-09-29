@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Network Tools Role - Install BIND tools (Public Function)
+# =============================================================================
+# Installs BIND DNS tools (dig, nslookup, host)
+# =============================================================================
+
+- name: Install BIND tools via Homebrew
+  community.general.homebrew:
+    name: "{{ network_tools_packages.bind }}"
+    state: "{{ network_tools_state }}"

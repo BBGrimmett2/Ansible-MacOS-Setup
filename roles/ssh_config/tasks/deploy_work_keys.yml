@@ -1,0 +1,45 @@
+---
+# =============================================================================
+# SSH Config Role - Deploy Work SSH Keys
+# =============================================================================
+# Public function: Deploy SSH keys for work profile.
+# Can be called via: tasks_from: deploy_work_keys
+# =============================================================================
+
+- name: Display work keys deployment
+  ansible.builtin.debug:
+    msg: "Deploying {{ ssh_work_keys | length }} work SSH key(s)"
+
+- name: Deploy work SSH keys from Dashlane
+  ansible.builtin.include_role:
+    name: dashlane_secrets
+    tasks_from: fetch_ssh_key
+  vars:
+    dashlane_secret_name: "{{ item.dashlane_secret }}"
+    dashlane_secret_output_path: "{{ item.file }}"
+    dashlane_secret_permissions: "{{ ssh_key_permissions }}"
+  loop: "{{ ssh_work_keys }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Set SSH key file permissions
+  ansible.builtin.file:
+    path: "{{ item.file }}"
+    mode: "{{ ssh_key_permissions }}"
+    state: file
+  loop: "{{ ssh_work_keys }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Add SSH keys to ssh-agent (macOS Keychain)
+  ansible.builtin.command: ssh-add --apple-use-keychain {{ item.file }}
+  loop: "{{ ssh_work_keys }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: ssh_add_result
+  failed_when: false
+  changed_when: ssh_add_result.rc == 0
+
+- name: Display work SSH keys deployment status
+  ansible.builtin.debug:
+    msg: "Work SSH keys deployed successfully"

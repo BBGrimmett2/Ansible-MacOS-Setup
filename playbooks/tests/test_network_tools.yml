@@ -1,0 +1,56 @@
+---
+# =============================================================================
+# Test Playbook: Network Tools Role
+# =============================================================================
+# Purpose: Test network_tools role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_network_tools.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_network_tools.yml
+#   Verify:  ansible-playbook playbooks/tests/test_network_tools.yml (should show no changes)
+# =============================================================================
+
+- name: Test Network Tools Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    network_tools_install_all: true
+    workstation_profile: personal
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Network Tools Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Profile: {{ workstation_profile }}"
+          - "Install all tools: {{ network_tools_install_all }}"
+
+    - name: Execute network_tools role
+      ansible.builtin.import_role:
+        name: network_tools
+      tags: network_tools
+
+    - name: Verify network tools installations
+      block:
+        - name: Check Bruno is installed
+          ansible.builtin.stat:
+            path: /Applications/Bruno.app
+          register: bruno_stat
+          failed_when: not bruno_stat.stat.exists
+
+        - name: Check bind (dig) is installed
+          ansible.builtin.command: which dig
+          register: dig_check
+          changed_when: false
+          failed_when: dig_check.rc != 0
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Network tools installed successfully"
+              - "Bruno: /Applications/Bruno.app"
+              - "dig: {{ dig_check.stdout }}"
+      tags: verify
+      when: not ansible_check_mode

@@ -1,0 +1,54 @@
+# =============================================================================
+# SSH Client Configuration - Personal Profile
+# =============================================================================
+# Managed by Ansible - Do not edit manually
+# Generated: {{ ansible_date_time.iso8601 }}
+# =============================================================================
+
+# Global SSH client options
+Host *
+{% for key, value in ssh_global_options.items() %}
+    {{ key }} {{ value }}
+{% endfor %}
+    StrictHostKeyChecking {{ ssh_strict_host_key_checking }}
+{% if ssh_compression %}
+    Compression yes
+{% endif %}
+
+# =============================================================================
+# Personal GitHub
+# =============================================================================
+{% for key in ssh_personal_keys %}
+{% if 'github.com' in key.host_pattern %}
+Host {{ key.host_pattern }}
+    HostName {{ key.host_pattern }}
+    User git
+    IdentityFile {{ key.file }}
+    IdentitiesOnly yes
+{% endif %}
+{% endfor %}
+
+# =============================================================================
+# Personal GitLab (if configured)
+# =============================================================================
+{% for key in ssh_personal_keys %}
+{% if 'gitlab.com' in key.host_pattern %}
+Host {{ key.host_pattern }}
+    HostName {{ key.host_pattern }}
+    User git
+    IdentityFile {{ key.file }}
+    IdentitiesOnly yes
+{% endif %}
+{% endfor %}
+
+# =============================================================================
+# Custom Personal Hosts
+# =============================================================================
+{% for key in ssh_personal_keys %}
+{% if 'github.com' not in key.host_pattern and 'gitlab.com' not in key.host_pattern %}
+Host {{ key.host_pattern }}
+    HostName {{ key.host_pattern }}
+    IdentityFile {{ key.file }}
+    IdentitiesOnly yes
+{% endif %}
+{% endfor %}

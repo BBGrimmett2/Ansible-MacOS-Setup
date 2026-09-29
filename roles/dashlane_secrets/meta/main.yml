@@ -1,0 +1,24 @@
+---
+# =============================================================================
+# Dashlane Secrets Role - Metadata
+# =============================================================================
+
+galaxy_info:
+  author: Brian Grimmett
+  description: Fetch secrets from Dashlane CLI securely without hardcoding
+  company: Starbase Engineering
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - macos
+    - secrets
+    - security
+    - dashlane
+
+dependencies: []
+# Note: Dashlane CLI should be installed by bootstrap.sh
+# This role assumes dcli is already available

@@ -1,0 +1,54 @@
+---
+# =============================================================================
+# SSH Config Role - Main Tasks
+# =============================================================================
+# Orchestrates SSH configuration and key deployment based on profile.
+# =============================================================================
+
+- name: Validate SSH configuration
+  ansible.builtin.import_tasks: validate.yml
+  tags:
+    - ssh_config
+    - ssh_config:validate
+
+- name: Deploy personal SSH keys
+  ansible.builtin.import_tasks: deploy_personal_keys.yml
+  when: workstation_profile == 'personal'
+  tags:
+    - ssh_config
+    - ssh_config:keys
+    - ssh_config:personal
+
+- name: Deploy work SSH keys
+  ansible.builtin.import_tasks: deploy_work_keys.yml
+  when: workstation_profile == 'work'
+  tags:
+    - ssh_config
+    - ssh_config:keys
+    - ssh_config:work
+
+- name: Deploy SSH config file
+  ansible.builtin.import_tasks: deploy_config.yml
+  when: ssh_deploy_config
+  tags:
+    - ssh_config
+    - ssh_config:config
+
+- name: Manage SSH known_hosts
+  ansible.builtin.import_tasks: manage_known_hosts.yml
+  when: ssh_manage_known_hosts
+  tags:
+    - ssh_config
+    - ssh_config:known_hosts
+
+- name: Display SSH configuration summary
+  ansible.builtin.debug:
+    msg: |
+      SSH Configuration Summary:
+      - Profile: {{ workstation_profile }}
+      - Keys deployed: {{ (ssh_personal_keys if workstation_profile == 'personal' else ssh_work_keys) | length }}
+      - Config file: {{ 'deployed' if ssh_deploy_config else 'skipped' }}
+      - Known hosts: {{ 'managed' if ssh_manage_known_hosts else 'skipped' }}
+  tags:
+    - ssh_config
+    - ssh_config:summary

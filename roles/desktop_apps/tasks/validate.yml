@@ -1,0 +1,21 @@
+---
+# =============================================================================
+# Desktop Apps Role - Validation Tasks
+# =============================================================================
+# Validates prerequisites before installing desktop apps
+# =============================================================================
+
+- name: Validate Homebrew is installed
+  ansible.builtin.stat:
+    path: "{{ homebrew_prefix }}/bin/brew"
+  register: brew_binary
+  failed_when: not brew_binary.stat.exists
+  vars:
+    homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+- name: Validate macOS platform
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Darwin'
+    fail_msg: "This role is designed for macOS only"
+    quiet: true

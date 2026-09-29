@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Database Tools Role - Install Podman Desktop (Public Function)
+# =============================================================================
+# Installs Podman Desktop container management GUI
+# =============================================================================
+
+- name: Install Podman Desktop via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ database_tools_packages.podman_desktop }}"
+    state: "{{ database_tools_state }}"

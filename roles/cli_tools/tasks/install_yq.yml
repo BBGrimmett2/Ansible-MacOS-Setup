@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# CLI Tools Role - Install yq (Public Function)
+# =============================================================================
+# Installs yq YAML processor
+# =============================================================================
+
+- name: Install yq via Homebrew
+  community.general.homebrew:
+    name: "{{ cli_tools_packages.yq }}"
+    state: "{{ cli_tools_state }}"

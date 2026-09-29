@@ -1,0 +1,134 @@
+---
+# =============================================================================
+# CLI Tools Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure CLI tools
+    description:
+      - Install essential CLI quality-of-life tools via Homebrew
+      - Configure direnv with safety checks for Projects/ directory
+      - Set up tool-specific configurations
+    author: Brian Grimmett
+
+    options:
+      cli_tools_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove CLI tools
+
+      cli_tools_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all tools or only enabled ones
+
+      cli_tools_jq_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable jq JSON processor
+
+      cli_tools_yq_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable yq YAML processor
+
+      cli_tools_direnv_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable direnv (per-directory env vars)
+
+      cli_tools_direnv_safety_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable direnv safety checks for Projects/ directory
+
+      cli_tools_eza_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable eza (modern ls)
+
+      cli_tools_bat_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable bat (modern cat)
+
+      cli_tools_fd_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable fd (modern find)
+
+      cli_tools_fzf_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable fzf (fuzzy finder)
+
+      cli_tools_git_delta_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable git-delta (git diff pager)
+
+  install:
+    short_description: Install all CLI tools
+    description: Install all enabled CLI tools via Homebrew
+    author: Brian Grimmett
+
+    options:
+      cli_tools_state:
+        type: str
+        required: false
+        default: present
+
+      cli_tools_install_all:
+        type: bool
+        required: false
+        default: true
+
+  configure:
+    short_description: Configure CLI tools
+    description: Configure installed CLI tools
+    author: Brian Grimmett
+
+    options:
+      cli_tools_direnv_configure:
+        type: bool
+        required: false
+        default: true
+
+      cli_tools_direnv_safety_enabled:
+        type: bool
+        required: false
+        default: true
+
+  configure_direnv:
+    short_description: Configure direnv with safety checks
+    description:
+      - Configure direnv with custom direnvrc
+      - Enable safety prompts for Projects/ directory
+      - Prevent accidentally loading wrong environment
+    author: Brian Grimmett
+
+    options:
+      cli_tools_direnv_safety_enabled:
+        type: bool
+        required: false
+        default: true
+
+      cli_tools_direnv_projects_path:
+        type: str
+        required: false
+        description: Path to Projects directory

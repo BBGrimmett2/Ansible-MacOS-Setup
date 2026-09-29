@@ -1,0 +1,23 @@
+---
+# =============================================================================
+# SSH Config Role - Metadata
+# =============================================================================
+
+galaxy_info:
+  author: Brian Grimmett
+  description: Deploy SSH configuration and keys based on workstation profile
+  company: Starbase Engineering
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - macos
+    - ssh
+    - security
+    - git
+
+dependencies:
+  - role: dashlane_secrets

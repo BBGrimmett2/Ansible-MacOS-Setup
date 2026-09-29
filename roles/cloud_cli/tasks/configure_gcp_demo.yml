@@ -1,0 +1,77 @@
+---
+# =============================================================================
+# Cloud CLI Role - Configure GCP Demo Environment (Public Function)
+# =============================================================================
+# Quick setup for GCP demo/test environments
+# Imports service account credentials and creates new configuration
+# =============================================================================
+
+- name: Validate GCP demo variables
+  ansible.builtin.assert:
+    that:
+      - gcp_demo_project_id is defined
+      - gcp_demo_credentials_json is defined
+    fail_msg: "Required GCP demo variables must be defined"
+    quiet: true
+
+- name: Set demo config name if not provided
+  ansible.builtin.set_fact:
+    gcp_demo_config_name: "{{ cloud_cli_demo_profile_name }}"
+  when: gcp_demo_config_name is not defined
+
+- name: Set GCP region
+  ansible.builtin.set_fact:
+    gcp_demo_region: "{{ cloud_cli_gcp_default_region }}"
+  when: gcp_demo_region is not defined
+
+- name: Create GCP credentials directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/gcloud"
+    state: directory
+    mode: "0700"
+
+- name: Save GCP service account credentials
+  ansible.builtin.copy:
+    content: "{{ gcp_demo_credentials_json }}"
+    dest: "{{ ansible_env.HOME }}/.config/gcloud/{{ gcp_demo_config_name }}-sa.json"
+    mode: "0600"
+  no_log: true
+
+- name: Authenticate with service account
+  ansible.builtin.command: >
+    gcloud auth activate-service-account
+    --key-file="{{ ansible_env.HOME }}/.config/gcloud/{{ gcp_demo_config_name }}-sa.json"
+    --project="{{ gcp_demo_project_id }}"
+  register: gcp_auth_result
+  changed_when: gcp_auth_result.rc == 0
+  no_log: true
+
+- name: Create GCP configuration
+  ansible.builtin.command: >
+    gcloud config configurations create {{ gcp_demo_config_name }}
+  register: gcp_config_create
+  changed_when: gcp_config_create.rc == 0
+  failed_when: false
+
+- name: Set GCP configuration properties
+  ansible.builtin.command: >
+    gcloud config set {{ item.key }} {{ item.value }}
+    --configuration={{ gcp_demo_config_name }}
+  loop:
+    - key: project
+      value: "{{ gcp_demo_project_id }}"
+    - key: compute/region
+      value: "{{ gcp_demo_region }}"
+  register: gcp_config_set
+  changed_when: gcp_config_set.rc == 0
+
+- name: Display GCP demo configuration info
+  ansible.builtin.debug:
+    msg:
+      - "GCP demo environment configured successfully"
+      - "Configuration: {{ gcp_demo_config_name }}"
+      - "Project: {{ gcp_demo_project_id }}"
+      - "Region: {{ gcp_demo_region }}"
+      - ""
+      - "Usage: gcloud config configurations activate {{ gcp_demo_config_name }}"
+      - "   or: gcloud --configuration={{ gcp_demo_config_name }} compute instances list"

@@ -1,0 +1,34 @@
+---
+# =============================================================================
+# Database Tools Role - Default Variables
+# =============================================================================
+# Install and configure database and container tools
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) database tools
+database_tools_state: present
+
+# Install all tools (if false, only install enabled tools)
+database_tools_install_all: true
+
+# -----------------------------------------------------------------------------
+# Individual Tool Control
+# -----------------------------------------------------------------------------
+
+# pgAdmin - PostgreSQL management tool
+database_tools_pgadmin_enabled: true
+
+# Podman Desktop - Container management GUI
+database_tools_podman_desktop_enabled: true
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew cask names)
+# -----------------------------------------------------------------------------
+
+database_tools_packages:
+  pgadmin: pgadmin4
+  podman_desktop: podman-desktop

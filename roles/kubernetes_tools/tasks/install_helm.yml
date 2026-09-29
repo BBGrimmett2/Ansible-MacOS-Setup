@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install Helm (Public Function)
+# =============================================================================
+# Installs Helm - Kubernetes package manager
+# =============================================================================
+
+- name: Install Helm via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.helm }}"
+    state: "{{ kubernetes_tools_state }}"

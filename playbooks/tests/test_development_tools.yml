@@ -1,0 +1,75 @@
+---
+# =============================================================================
+# Test Playbook: Development Tools Role
+# =============================================================================
+# Purpose: Test development_tools role installation and configuration in isolation
+# Usage:
+#   Dry run: ansible-playbook playbooks/tests/test_development_tools.yml --check
+#   Execute: ansible-playbook playbooks/tests/test_development_tools.yml
+#   Verify:  ansible-playbook playbooks/tests/test_development_tools.yml (should show no changes)
+# =============================================================================
+
+- name: Test Development Tools Role
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    # Test-specific overrides (if needed)
+    development_tools_precommit_enabled: true
+    development_tools_install_custom_scripts: true
+    workstation_profile: personal
+
+  tasks:
+    - name: Display test information
+      ansible.builtin.debug:
+        msg:
+          - "=== Development Tools Role Test ==="
+          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - "Profile: {{ workstation_profile }}"
+          - "Pre-commit: {{ 'enabled' if development_tools_precommit_enabled else 'disabled' }}"
+          - "Custom scripts: {{ 'enabled' if development_tools_install_custom_scripts else 'disabled' }}"
+
+    - name: Execute development_tools role
+      ansible.builtin.import_role:
+        name: development_tools
+      tags: development_tools
+
+    - name: Verify development tools installations
+      block:
+        - name: Check pre-commit is installed
+          ansible.builtin.command: which pre-commit
+          register: precommit_check
+          changed_when: false
+          failed_when: precommit_check.rc != 0
+          when: development_tools_precommit_enabled
+
+        - name: Check git global config exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.gitconfig"
+          register: gitconfig_stat
+          failed_when: not gitconfig_stat.stat.exists
+
+        - name: Check custom scripts directory exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.local/bin"
+          register: scripts_dir_stat
+          failed_when: not scripts_dir_stat.stat.exists
+          when: development_tools_install_custom_scripts
+
+        - name: Check rhdps script exists
+          ansible.builtin.stat:
+            path: "{{ ansible_env.HOME }}/.local/bin/rhdps"
+          register: rhdps_stat
+          failed_when: not rhdps_stat.stat.exists
+          when: development_tools_install_custom_scripts
+
+        - name: Display verification results
+          ansible.builtin.debug:
+            msg:
+              - "✓ Development tools configured successfully"
+              - "{% if development_tools_precommit_enabled %}pre-commit: {{ precommit_check.stdout }}{% endif %}"
+              - ".gitconfig: {{ gitconfig_stat.stat.path }}"
+              - "{% if development_tools_install_custom_scripts %}Custom scripts: {{ scripts_dir_stat.stat.path }}{% endif %}"
+              - "{% if development_tools_install_custom_scripts %}rhdps: {{ rhdps_stat.stat.path }}{% endif %}"
+      tags: verify
+      when: not ansible_check_mode

@@ -1,0 +1,117 @@
+---
+# =============================================================================
+# Terminal Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Install and configure terminal emulator
+    description:
+      - Install terminal emulator (iTerm2 or Ghostty) via Homebrew
+      - Install Nerd Fonts for terminal icons
+      - Configure terminal preferences
+    author: Brian Grimmett
+
+    options:
+      terminal_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Install or remove terminal components
+
+      terminal_install_all:
+        type: bool
+        required: false
+        default: true
+        description: Install all components or only enabled ones
+
+      terminal_emulator:
+        type: str
+        required: false
+        default: iterm2
+        choices:
+          - iterm2
+          - ghostty
+        description: Terminal emulator to install
+
+      terminal_iterm2_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable iTerm2 installation
+
+      terminal_ghostty_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Enable Ghostty installation
+
+      terminal_install_nerdfonts:
+        type: bool
+        required: false
+        default: true
+        description: Install Nerd Fonts for terminal
+
+      terminal_nerdfonts:
+        type: list
+        required: false
+        elements: str
+        description: List of Nerd Fonts to install (Homebrew cask names)
+
+  install:
+    short_description: Install terminal emulator and fonts
+    description: Install selected terminal emulator and Nerd Fonts
+    author: Brian Grimmett
+
+    options:
+      terminal_state:
+        type: str
+        required: false
+        default: present
+
+      terminal_emulator:
+        type: str
+        required: false
+        default: iterm2
+
+  install_iterm2:
+    short_description: Install iTerm2
+    description: Install iTerm2 terminal emulator
+    author: Brian Grimmett
+
+    options:
+      terminal_state:
+        type: str
+        required: false
+        default: present
+
+  install_ghostty:
+    short_description: Install Ghostty
+    description: Install Ghostty terminal emulator
+    author: Brian Grimmett
+
+    options:
+      terminal_state:
+        type: str
+        required: false
+        default: present
+
+  install_nerdfonts:
+    short_description: Install Nerd Fonts
+    description: Install Nerd Fonts for terminal icons and glyphs
+    author: Brian Grimmett
+
+    options:
+      terminal_state:
+        type: str
+        required: false
+        default: present
+
+      terminal_nerdfonts:
+        type: list
+        required: false
+        elements: str
+        description: List of Nerd Fonts to install

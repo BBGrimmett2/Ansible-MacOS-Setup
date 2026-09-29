@@ -1,0 +1,18 @@
+---
+# =============================================================================
+# Terminal Role - Install Nerd Fonts (Public Function)
+# =============================================================================
+# Installs Nerd Fonts for terminal icons and glyphs
+# =============================================================================
+
+- name: Tap homebrew/cask-fonts repository
+  community.general.homebrew_tap:
+    name: homebrew/cask-fonts
+    state: present
+  when: terminal_state == 'present'
+
+- name: Install Nerd Fonts via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: "{{ terminal_state }}"
+  loop: "{{ terminal_nerdfonts }}"

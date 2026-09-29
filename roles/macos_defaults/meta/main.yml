@@ -1,0 +1,22 @@
+---
+# =============================================================================
+# macOS Defaults Role - Metadata
+# =============================================================================
+
+galaxy_info:
+  author: Brian Grimmett
+  description: Configure macOS system preferences via defaults command
+  company: Starbase Engineering
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - macos
+    - system
+    - preferences
+    - defaults
+
+dependencies: []

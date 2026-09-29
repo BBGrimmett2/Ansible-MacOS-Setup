@@ -1,0 +1,61 @@
+---
+# =============================================================================
+# Cloud CLI Role - Configure Azure Demo Environment (Public Function)
+# =============================================================================
+# Quick setup for Azure demo/test environments
+# Imports service principal credentials and configures Azure CLI
+# =============================================================================
+
+- name: Validate Azure demo variables
+  ansible.builtin.assert:
+    that:
+      - azure_demo_subscription_id is defined
+      - azure_demo_tenant_id is defined
+      - azure_demo_client_id is defined
+      - azure_demo_client_secret is defined
+    fail_msg: "Required Azure demo variables must be defined"
+    quiet: true
+
+- name: Set Azure location
+  ansible.builtin.set_fact:
+    azure_demo_location: "{{ cloud_cli_azure_default_location }}"
+  when: azure_demo_location is not defined
+
+- name: Login to Azure with service principal
+  ansible.builtin.command: >
+    az login --service-principal
+    --username "{{ azure_demo_client_id }}"
+    --password "{{ azure_demo_client_secret }}"
+    --tenant "{{ azure_demo_tenant_id }}"
+  register: azure_login_result
+  changed_when: azure_login_result.rc == 0
+  no_log: true
+
+- name: Set Azure subscription
+  ansible.builtin.command: >
+    az account set --subscription "{{ azure_demo_subscription_id }}"
+  register: azure_sub_set
+  changed_when: azure_sub_set.rc == 0
+
+- name: Set Azure default location
+  ansible.builtin.command: >
+    az config set defaults.location="{{ azure_demo_location }}"
+  register: azure_location_set
+  changed_when: azure_location_set.rc == 0
+
+- name: Set Azure default output format
+  ansible.builtin.command: >
+    az config set core.output="{{ cloud_cli_azure_default_output }}"
+  register: azure_output_set
+  changed_when: azure_output_set.rc == 0
+
+- name: Display Azure demo configuration info
+  ansible.builtin.debug:
+    msg:
+      - "Azure demo environment configured successfully"
+      - "Subscription: {{ azure_demo_subscription_id }}"
+      - "Tenant: {{ azure_demo_tenant_id }}"
+      - "Location: {{ azure_demo_location }}"
+      - ""
+      - "Usage: az vm list"
+      - "   or: az group list"

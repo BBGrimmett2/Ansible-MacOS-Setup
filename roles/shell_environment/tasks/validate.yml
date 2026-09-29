@@ -1,0 +1,19 @@
+---
+# =============================================================================
+# Shell Environment Role - Validation Tasks
+# =============================================================================
+# Validates prerequisites before configuring shell
+# =============================================================================
+
+- name: Validate macOS platform
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Darwin'
+    fail_msg: "This role is designed for macOS only"
+    quiet: true
+
+- name: Check ZSH is available
+  ansible.builtin.command: which zsh
+  register: zsh_check
+  changed_when: false
+  failed_when: zsh_check.rc != 0

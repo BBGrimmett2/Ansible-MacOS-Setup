@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install Kubernetes CLI (Public Function)
+# =============================================================================
+# Installs kubectl for Kubernetes cluster management
+# =============================================================================
+
+- name: Install kubectl via Homebrew
+  community.general.homebrew:
+    name: "{{ kubernetes_tools_packages.kubectl }}"
+    state: "{{ kubernetes_tools_state }}"

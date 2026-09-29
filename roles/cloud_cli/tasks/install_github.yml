@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Cloud CLI Role - Install GitHub CLI (Public Function)
+# =============================================================================
+# Installs GitHub CLI (gh) for GitHub operations
+# =============================================================================
+
+- name: Install GitHub CLI via Homebrew
+  community.general.homebrew:
+    name: "{{ cloud_cli_packages.github }}"
+    state: "{{ cloud_cli_state }}"

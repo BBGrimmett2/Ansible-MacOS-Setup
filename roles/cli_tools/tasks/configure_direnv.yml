@@ -1,0 +1,36 @@
+---
+# =============================================================================
+# CLI Tools Role - Configure direnv (Public Function)
+# =============================================================================
+# Deploys custom direnvrc with safety checks for Projects/ directory
+# This prevents accidentally loading the wrong environment when switching
+# between similar demo/test projects
+# =============================================================================
+
+- name: Create direnv configuration directory
+  ansible.builtin.file:
+    path: "{{ cli_tools_direnv_config_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Deploy custom direnvrc with safety checks
+  ansible.builtin.template:
+    src: direnvrc.j2
+    dest: "{{ cli_tools_direnv_config_file }}"
+    mode: "0644"
+    backup: true
+
+- name: Ensure Projects directory exists (for safety checks)
+  ansible.builtin.file:
+    path: "{{ cli_tools_direnv_projects_path }}"
+    state: directory
+    mode: "0755"
+  when: cli_tools_direnv_safety_enabled
+
+- name: Display direnv configuration info
+  ansible.builtin.debug:
+    msg:
+      - "direnv configured successfully"
+      - "Config file: {{ cli_tools_direnv_config_file }}"
+      - "Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else 'disabled' }}"
+      - "{{ 'Projects path: ' + cli_tools_direnv_projects_path if cli_tools_direnv_safety_enabled else '' }}"

@@ -1,0 +1,87 @@
+---
+# =============================================================================
+# Desktop Apps Role - Default Variables
+# =============================================================================
+# Install and configure desktop applications
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to install (present) or remove (absent) desktop apps
+desktop_apps_state: present
+
+# Install all apps (if false, only install enabled apps)
+desktop_apps_install_all: true
+
+# -----------------------------------------------------------------------------
+# Individual App Control
+# -----------------------------------------------------------------------------
+
+# Google Chrome - Web browser
+desktop_apps_chrome_enabled: true
+
+# VS Code - Code editor
+desktop_apps_vscode_enabled: true
+
+# Cursor - AI-powered code editor
+desktop_apps_cursor_enabled: true
+
+# Google Drive - Cloud storage
+desktop_apps_google_drive_enabled: true
+
+# Rectangle - Window management
+desktop_apps_rectangle_enabled: true
+
+# DisplayLink Manager - Multi-monitor support
+desktop_apps_displaylink_enabled: false
+
+# Elgato Camera Hub - Webcam software
+desktop_apps_elgato_camera_hub_enabled: false
+
+# Elgato Control Center - Stream Deck/lighting control
+desktop_apps_elgato_control_center_enabled: false
+
+# Obsidian - Note-taking app
+desktop_apps_obsidian_enabled: true
+
+# Discord - Communication platform
+desktop_apps_discord_enabled: true
+
+# -----------------------------------------------------------------------------
+# Package Mapping (Homebrew cask names)
+# -----------------------------------------------------------------------------
+
+desktop_apps_packages:
+  chrome: google-chrome
+  vscode: visual-studio-code
+  cursor: cursor
+  google_drive: google-drive
+  rectangle: rectangle
+  displaylink: displaylink
+  obsidian: obsidian
+  discord: discord
+
+# -----------------------------------------------------------------------------
+# Default Applications Configuration
+# -----------------------------------------------------------------------------
+
+# Configure default applications
+desktop_apps_configure_defaults: true
+
+# Set Chrome as default browser
+desktop_apps_chrome_default_browser: true
+
+# Set VS Code as default editor
+desktop_apps_vscode_default_editor: true
+
+# File associations for VS Code
+desktop_apps_vscode_file_associations:
+  - yml
+  - yaml
+  - json
+  - sh
+  - py
+  - md
+  - txt

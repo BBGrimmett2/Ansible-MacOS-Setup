@@ -1,0 +1,50 @@
+---
+# =============================================================================
+# Dashlane Secrets Role - Validation Tasks
+# =============================================================================
+# Validates that Dashlane CLI is installed and authenticated.
+# =============================================================================
+
+- name: Check if Dashlane CLI is installed
+  ansible.builtin.command: which {{ dashlane_cli }}
+  register: dashlane_cli_check
+  failed_when: false
+  changed_when: false
+
+- name: Assert Dashlane CLI is installed
+  ansible.builtin.assert:
+    that:
+      - dashlane_cli_check.rc == 0
+    fail_msg: |
+      Dashlane CLI ({{ dashlane_cli }}) is not installed.
+      Please install it first:
+        brew tap dashlane/tap
+        brew install dashlane-cli
+      Or run the bootstrap script: ./scripts/bootstrap.sh
+    success_msg: "Dashlane CLI is installed"
+
+- name: Check Dashlane authentication status
+  ansible.builtin.command: "{{ dashlane_cli }} whoami"
+  register: dashlane_auth_check
+  failed_when: false
+  changed_when: false
+  when: dashlane_validate_auth
+
+- name: Assert Dashlane is authenticated
+  ansible.builtin.assert:
+    that:
+      - dashlane_auth_check.rc == 0
+    fail_msg: |
+      Dashlane CLI is not authenticated.
+      Please login first:
+        {{ dashlane_cli }} login
+    success_msg: "Dashlane authentication verified"
+  when: dashlane_validate_auth
+
+- name: Display Dashlane user info
+  ansible.builtin.debug:
+    msg: "Authenticated as: {{ dashlane_auth_check.stdout }}"
+  when:
+    - dashlane_validate_auth
+    - dashlane_auth_check.rc == 0
+    - dashlane_log_retrievals

@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Network Tools Role - Install Wireshark (Public Function)
+# =============================================================================
+# Installs Wireshark network protocol analyzer
+# =============================================================================
+
+- name: Install Wireshark via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ network_tools_packages.wireshark }}"
+    state: "{{ network_tools_state }}"

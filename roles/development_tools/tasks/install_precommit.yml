@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Development Tools Role - Install pre-commit (Public Function)
+# =============================================================================
+# Installs pre-commit git hooks framework
+# =============================================================================
+
+- name: Install pre-commit via Homebrew
+  community.general.homebrew:
+    name: "{{ development_tools_packages.precommit }}"
+    state: "{{ development_tools_state }}"

@@ -1,0 +1,22 @@
+---
+# =============================================================================
+# Development Tools Role - Main Entry Point
+# =============================================================================
+# Orchestrates validation, installation, and configuration
+# =============================================================================
+
+- name: Validate prerequisites
+  ansible.builtin.import_tasks: validate.yml
+  tags: [always, validate]
+
+- name: Install development tools
+  ansible.builtin.import_tasks: install.yml
+  tags: [install]
+  when: development_tools_state == 'present'
+
+- name: Configure git
+  ansible.builtin.import_tasks: configure_git.yml
+  tags: [configure, git]
+  when:
+    - development_tools_state == 'present'
+    - development_tools_configure_git

@@ -1,0 +1,142 @@
+---
+# =============================================================================
+# Shell Environment Role - Default Variables
+# =============================================================================
+# Configure ZSH shell environment with dotfiles, aliases, and tool integrations
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation State
+# -----------------------------------------------------------------------------
+
+# Whether to configure (present) or restore defaults (absent)
+shell_environment_state: present
+
+# -----------------------------------------------------------------------------
+# Shell Configuration
+# -----------------------------------------------------------------------------
+
+# Install and configure ZSH
+shell_environment_zsh_enabled: true
+
+# ZSH configuration file
+shell_environment_zshrc_path: "{{ ansible_env.HOME }}/.zshrc"
+
+# Backup existing configuration
+shell_environment_backup_existing: true
+
+# -----------------------------------------------------------------------------
+# PATH Configuration
+# -----------------------------------------------------------------------------
+
+# Custom PATH entries (prepended to PATH)
+shell_environment_path_entries:
+  - "{{ ansible_env.HOME }}/.local/bin"
+  - "{{ homebrew_prefix }}/bin"
+  - "{{ homebrew_prefix }}/sbin"
+
+# Homebrew prefix (auto-detected)
+homebrew_prefix: "{{ '/opt/homebrew' if ansible_architecture == 'arm64' else '/usr/local' }}"
+
+# -----------------------------------------------------------------------------
+# Environment Variables
+# -----------------------------------------------------------------------------
+
+# Default editor
+shell_environment_editor: vim
+
+# Language/locale
+shell_environment_lang: en_US.UTF-8
+
+# Additional environment variables
+shell_environment_extra_vars: {}
+
+# -----------------------------------------------------------------------------
+# Aliases
+# -----------------------------------------------------------------------------
+
+# Enable modern tool aliases
+shell_environment_modern_aliases: true
+
+# Alias definitions
+shell_environment_aliases:
+  # Modern tool replacements
+  ls: eza --icons --git
+  ll: eza --icons --git -lh
+  la: eza --icons --git -lha
+  tree: eza --tree --icons
+  cat: bat --paging=never
+  # Kubernetes shortcuts
+  k: kubectl
+  kgp: kubectl get pods
+  kgs: kubectl get svc
+  kgn: kubectl get nodes
+  kctx: kubectx
+  kns: kubens
+  # Git shortcuts
+  g: git
+  gs: git status
+  ga: git add
+  gc: git commit
+  gp: git push
+  gl: git log --oneline --graph --decorate
+  # Directory navigation
+  ..: cd ..
+  ...: cd ../..
+  ....: cd ../../..
+  # Safety aliases
+  rm: rm -i
+  cp: cp -i
+  mv: mv -i
+
+# -----------------------------------------------------------------------------
+# Tool Integrations
+# -----------------------------------------------------------------------------
+
+# Enable direnv hook
+shell_environment_direnv_enabled: true
+
+# Enable fzf key bindings
+shell_environment_fzf_enabled: true
+
+# FZF options
+shell_environment_fzf_opts: "--height 40% --layout=reverse --border"
+
+# Enable kubectl completion
+shell_environment_kubectl_completion: true
+
+# Enable helm completion
+shell_environment_helm_completion: true
+
+# Enable gh (GitHub CLI) completion
+shell_environment_gh_completion: true
+
+# -----------------------------------------------------------------------------
+# Prompt Configuration
+# -----------------------------------------------------------------------------
+
+# Configure custom prompt
+shell_environment_custom_prompt: true
+
+# Prompt style (simple, detailed)
+shell_environment_prompt_style: detailed
+
+# Show git branch in prompt
+shell_environment_prompt_git: true
+
+# Show kubectl context in prompt
+shell_environment_prompt_kubectl: true
+
+# -----------------------------------------------------------------------------
+# History Configuration
+# -----------------------------------------------------------------------------
+
+# History file size
+shell_environment_histsize: 10000
+shell_environment_savehist: 10000
+
+# Share history between sessions
+shell_environment_share_history: true
+
+# Ignore duplicates
+shell_environment_hist_ignore_dups: true

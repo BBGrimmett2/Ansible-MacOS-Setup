@@ -1,0 +1,46 @@
+---
+# =============================================================================
+# Desktop Apps Role - Installation Tasks
+# =============================================================================
+# Orchestrates installation of all enabled desktop apps
+# =============================================================================
+
+- name: Install Google Chrome
+  ansible.builtin.include_tasks: install_chrome.yml
+  when: desktop_apps_install_all or desktop_apps_chrome_enabled
+
+- name: Install VS Code
+  ansible.builtin.include_tasks: install_vscode.yml
+  when: desktop_apps_install_all or desktop_apps_vscode_enabled
+
+- name: Install Cursor
+  ansible.builtin.include_tasks: install_cursor.yml
+  when: desktop_apps_install_all or desktop_apps_cursor_enabled
+
+- name: Install Google Drive
+  ansible.builtin.include_tasks: install_google_drive.yml
+  when: desktop_apps_install_all or desktop_apps_google_drive_enabled
+
+- name: Install Rectangle
+  ansible.builtin.include_tasks: install_rectangle.yml
+  when: desktop_apps_install_all or desktop_apps_rectangle_enabled
+
+- name: Install DisplayLink
+  ansible.builtin.include_tasks: install_displaylink.yml
+  when: desktop_apps_install_all or desktop_apps_displaylink_enabled
+
+- name: Install Elgato Camera Hub
+  ansible.builtin.include_tasks: install_elgato_camera_hub.yml
+  when: desktop_apps_install_all or desktop_apps_elgato_camera_hub_enabled
+
+- name: Install Elgato Control Center
+  ansible.builtin.include_tasks: install_elgato_control_center.yml
+  when: desktop_apps_install_all or desktop_apps_elgato_control_center_enabled
+
+- name: Install Obsidian
+  ansible.builtin.include_tasks: install_obsidian.yml
+  when: desktop_apps_install_all or desktop_apps_obsidian_enabled
+
+- name: Install Discord
+  ansible.builtin.include_tasks: install_discord.yml
+  when: desktop_apps_install_all or desktop_apps_discord_enabled

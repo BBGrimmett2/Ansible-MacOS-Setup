@@ -1,0 +1,65 @@
+---
+# =============================================================================
+# Shell Environment Role - Argument Specifications
+# =============================================================================
+
+argument_specs:
+  main:
+    short_description: Configure ZSH shell environment
+    description:
+      - Deploy ZSH configuration with modern tool integrations
+      - Configure aliases for eza, bat, kubectl, etc.
+      - Enable direnv, fzf, and completion systems
+      - Set up custom prompt with git and kubectl context
+    author: Brian Grimmett
+
+    options:
+      shell_environment_state:
+        type: str
+        required: false
+        default: present
+        choices:
+          - present
+          - absent
+        description: Configure or restore defaults
+
+      shell_environment_backup_existing:
+        type: bool
+        required: false
+        default: true
+        description: Backup existing .zshrc before deploying
+
+      shell_environment_modern_aliases:
+        type: bool
+        required: false
+        default: true
+        description: Enable modern tool aliases (eza, bat, etc.)
+
+      shell_environment_custom_prompt:
+        type: bool
+        required: false
+        default: true
+        description: Use custom prompt with git/kubectl context
+
+      shell_environment_direnv_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable direnv integration
+
+      shell_environment_fzf_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable fzf key bindings
+
+  configure:
+    short_description: Configure shell environment
+    description: Deploy ZSH configuration
+    author: Brian Grimmett
+
+    options:
+      shell_environment_state:
+        type: str
+        required: false
+        default: present

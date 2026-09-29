@@ -1,0 +1,145 @@
+---
+# =============================================================================
+# macOS Defaults Role - Default Variables
+# =============================================================================
+# Configure macOS system preferences via the defaults command.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Dock Settings
+# -----------------------------------------------------------------------------
+
+# Automatically hide and show the Dock
+macos_dock_autohide: true
+
+# Dock position on screen (bottom, left, right)
+macos_dock_position: bottom
+
+# Icon size of Dock items (16-128)
+macos_dock_tilesize: 48
+
+# Magnification of Dock items on hover
+macos_dock_magnification: false
+
+# Magnification size (if enabled, 16-128)
+macos_dock_largesize: 64
+
+# Minimize windows using (genie, scale)
+macos_dock_mineffect: genie
+
+# Show recent applications in Dock
+macos_dock_show_recents: false
+
+# Automatically rearrange Spaces based on most recent use
+macos_dock_mru_spaces: false
+
+# -----------------------------------------------------------------------------
+# Finder Settings
+# -----------------------------------------------------------------------------
+
+# Show hidden files in Finder
+macos_finder_show_hidden_files: true
+
+# Show all filename extensions
+macos_finder_show_extensions: true
+
+# Show path bar at bottom of Finder windows
+macos_finder_show_path_bar: true
+
+# Show status bar at bottom of Finder windows
+macos_finder_show_status_bar: true
+
+# Default Finder view style (icnv=icon, Nlsv=list, clmv=column, Flwv=gallery)
+macos_finder_default_view: clmv
+
+# Search scope (SCcf=current folder, SCsp=this mac, SCev=previous search scope)
+macos_finder_search_scope: SCcf
+
+# Show warning before changing an extension
+macos_finder_warn_on_extension_change: false
+
+# Show warning before emptying the Trash
+macos_finder_warn_on_empty_trash: false
+
+# -----------------------------------------------------------------------------
+# Keyboard Settings
+# -----------------------------------------------------------------------------
+
+# Key repeat rate (1 = slow, 2 = fast)
+macos_keyboard_key_repeat: 2
+
+# Delay until key repeat (15 = long, 1 = short)
+macos_keyboard_initial_key_repeat: 15
+
+# Enable press-and-hold for special characters
+macos_keyboard_press_and_hold: false
+
+# -----------------------------------------------------------------------------
+# Trackpad Settings
+# -----------------------------------------------------------------------------
+
+# Enable tap to click
+macos_trackpad_tap_to_click: true
+
+# Tracking speed (0.0 = slow, 3.0 = fast)
+macos_trackpad_tracking_speed: 1.5
+
+# Enable natural scrolling (true = content tracks finger movement)
+macos_trackpad_natural_scrolling: true
+
+# -----------------------------------------------------------------------------
+# Screenshots
+# -----------------------------------------------------------------------------
+
+# Screenshot save location
+macos_screenshots_location: "{{ ansible_env.HOME }}/Desktop"
+
+# Screenshot file format (png, jpg, gif, pdf, tiff)
+macos_screenshots_format: png
+
+# Include date/time in screenshot filename
+macos_screenshots_include_date: true
+
+# Disable shadow in screenshots
+macos_screenshots_disable_shadow: false
+
+# -----------------------------------------------------------------------------
+# Other System Settings
+# -----------------------------------------------------------------------------
+
+# Expand save panel by default
+macos_expand_save_panel: true
+
+# Expand print panel by default
+macos_expand_print_panel: true
+
+# Disable automatic capitalization
+macos_disable_auto_capitalize: false
+
+# Disable automatic period substitution
+macos_disable_auto_period: false
+
+# Disable smart quotes
+macos_disable_smart_quotes: false
+
+# Disable smart dashes
+macos_disable_smart_dashes: false
+
+# Show battery percentage in menu bar
+macos_show_battery_percentage: true
+
+# Require password after sleep or screen saver (in seconds, 0 = immediately)
+macos_require_password_delay: 5
+
+# -----------------------------------------------------------------------------
+# Application Control
+# -----------------------------------------------------------------------------
+
+# Whether to restart affected applications after changes
+macos_restart_affected_apps: true
+
+# List of applications to restart (if macos_restart_affected_apps is true)
+macos_apps_to_restart:
+  - Finder
+  - Dock
+  - SystemUIServer

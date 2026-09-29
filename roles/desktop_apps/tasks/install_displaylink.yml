@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Desktop Apps Role - Install Displaylink (Public Function)
+# =============================================================================
+# Installs Displaylink
+# =============================================================================
+
+- name: Install Displaylink via Homebrew
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.displaylink }}"
+    state: "{{ desktop_apps_state }}"

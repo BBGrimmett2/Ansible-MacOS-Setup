@@ -1,0 +1,11 @@
+---
+# =============================================================================
+# Cloud CLI Role - Install Azure CLI (Public Function)
+# =============================================================================
+# Installs Azure CLI for Microsoft Azure
+# =============================================================================
+
+- name: Install Azure CLI via Homebrew
+  community.general.homebrew:
+    name: "{{ cloud_cli_packages.azure }}"
+    state: "{{ cloud_cli_state }}"

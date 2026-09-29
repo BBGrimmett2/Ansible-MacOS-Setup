@@ -1,0 +1,51 @@
+---
+# =============================================================================
+# Development Tools Role - Install Custom Scripts (Public Function)
+# =============================================================================
+# Installs all custom shell scripts from files/custom_scripts/ to ~/.local/bin
+# Provides extensible framework for adding custom productivity commands
+# =============================================================================
+
+- name: Create local bin directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: "0755"
+
+- name: Find all custom scripts
+  ansible.builtin.find:
+    paths: "{{ role_path }}/files/custom_scripts"
+    file_type: file
+    excludes:
+      - "README.md"
+      - "*.md"
+  register: custom_scripts_found
+
+- name: Install custom scripts
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ ansible_env.HOME }}/.local/bin/{{ item.path | basename }}"
+    mode: "0755"
+  loop: "{{ custom_scripts_found.files }}"
+  when: custom_scripts_found.files | length > 0
+
+- name: Verify ~/.local/bin is in PATH
+  ansible.builtin.shell: |
+    if [[ ":$PATH:" == *":{{ ansible_env.HOME }}/.local/bin:"* ]]; then
+      echo "present"
+    else
+      echo "missing"
+    fi
+  register: path_check
+  changed_when: false
+
+- name: Display custom scripts installation info
+  ansible.builtin.debug:
+    msg:
+      - "Custom scripts installed successfully"
+      - "Location: {{ ansible_env.HOME }}/.local/bin/"
+      - "Installed scripts:"
+      - "{{ custom_scripts_found.files | map(attribute='path') | map('basename') | list }}"
+      - ""
+      - "{{ '⚠ WARNING: ~/.local/bin is not in PATH' if path_check.stdout == 'missing' else '✓ ~/.local/bin is in PATH' }}"
+      - "{{ 'Add to your shell profile: export PATH=\"$HOME/.local/bin:$PATH\"' if path_check.stdout == 'missing' else '' }}"
