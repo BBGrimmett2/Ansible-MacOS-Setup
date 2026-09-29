@@ -438,6 +438,58 @@ authenticate_dashlane() {
     read -r
 }
 
+authenticate_github_cli() {
+    print_section "Authenticating GitHub CLI (Optional)"
+
+    # Find gh - check command first, then try full paths
+    local gh_cmd=""
+    if command -v gh &>/dev/null; then
+        gh_cmd="gh"
+    elif [[ -x "/opt/homebrew/bin/gh" ]]; then
+        gh_cmd="/opt/homebrew/bin/gh"
+        export PATH="/opt/homebrew/bin:$PATH"
+    elif [[ -x "/usr/local/bin/gh" ]]; then
+        gh_cmd="/usr/local/bin/gh"
+        export PATH="/usr/local/bin:$PATH"
+    else
+        print_info "GitHub CLI not installed (installed by playbook)"
+        print_info "You can authenticate later by running: gh auth login"
+        return 0
+    fi
+
+    # Check if already authenticated
+    if $gh_cmd auth status &>/dev/null; then
+        print_step "GitHub CLI already authenticated"
+        return 0
+    fi
+
+    # Prompt for authentication
+    echo ""
+    print_info "GitHub CLI can be used for creating PRs, issues, and other GitHub operations"
+    print_info "SSH key authentication is already configured for git operations"
+    echo ""
+    read -p "Would you like to authenticate GitHub CLI now? (y/N): " -n 1 -r
+    echo ""
+
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_info "Skipping GitHub CLI authentication"
+        print_info "You can authenticate later by running: gh auth login"
+        return 0
+    fi
+
+    # Run authentication
+    echo ""
+    print_info "Starting GitHub CLI authentication (will open browser)..."
+    echo ""
+
+    if $gh_cmd auth login; then
+        print_step "GitHub CLI authenticated successfully"
+    else
+        print_warning "GitHub CLI authentication failed or was cancelled"
+        print_info "You can authenticate later by running: gh auth login"
+    fi
+}
+
 # =============================================================================
 # Ansible Galaxy Collections
 # =============================================================================
@@ -541,6 +593,9 @@ main() {
 
     # Run Ansible automation
     run_ansible_playbook
+
+    # Authenticate GitHub CLI (optional, after gh is installed by playbook)
+    authenticate_github_cli
 
     # Cleanup installation artifacts
     print_section "Cleanup"
