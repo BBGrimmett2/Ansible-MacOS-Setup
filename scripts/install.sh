@@ -182,8 +182,17 @@ install_xcode_cli_tools() {
 install_homebrew() {
     print_section "Installing Homebrew Package Manager"
 
-    if command -v brew &>/dev/null; then
-        print_step "Homebrew already installed at $(which brew)"
+    # Check if Homebrew binary exists (check file directly, not PATH)
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        # Apple Silicon - already installed
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+        print_step "Homebrew already installed at /opt/homebrew/bin/brew"
+        print_info "Skipping Homebrew update (Ansible will manage packages)"
+        return 0
+    elif [[ -f "/usr/local/bin/brew" ]]; then
+        # Intel - already installed
+        eval "$(/usr/local/bin/brew shellenv)"
+        print_step "Homebrew already installed at /usr/local/bin/brew"
         print_info "Skipping Homebrew update (Ansible will manage packages)"
         return 0
     fi
