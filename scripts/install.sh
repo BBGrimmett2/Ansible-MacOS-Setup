@@ -415,23 +415,27 @@ authenticate_dashlane() {
         print_info "Proceeding with re-authentication..."
     else
         print_info "Dashlane authentication required for secret management"
-        print_info "Skip now and authenticate later by running: dcli sync"
+        print_info "Skip now and authenticate later by running: dcli configure"
         echo ""
         read -p "Authenticate now? (Y/n): " auth_choice
 
         if [[ "$auth_choice" =~ ^[Nn]$ ]]; then
             print_warning "Skipping Dashlane authentication"
-            print_warning "Run 'dcli sync' before running playbooks that need secrets"
+            print_warning "Run 'dcli configure' before running playbooks that need secrets"
             return 0
         fi
     fi
 
-    # Run dcli sync - it will automatically open browser
+    # Run dcli configure for initial authentication (not sync!)
     echo ""
-    if ! $dcli_cmd sync; then
+    print_info "Follow the prompts to authenticate with Dashlane..."
+    print_info "This will ask for your email, open browser, and require 2FA + master password"
+    echo ""
+
+    if ! $dcli_cmd configure; then
         echo ""
         print_warning "Dashlane authentication failed"
-        print_warning "You can authenticate later by running: dcli sync"
+        print_warning "You can authenticate later by running: dcli configure"
         print_info "Press Enter to continue..."
         read -r
         return 0
@@ -443,8 +447,8 @@ authenticate_dashlane() {
         local verified_user=$($dcli_cmd whoami 2>/dev/null)
         print_step "Dashlane CLI authenticated successfully (user: ${verified_user})"
     else
-        print_warning "Dashlane sync completed but authentication verification failed"
-        print_warning "You may need to run 'dcli sync' again before running playbooks"
+        print_warning "Dashlane configure completed but authentication verification failed"
+        print_warning "Try running 'dcli configure' manually before running playbooks"
         print_info "Press Enter to continue..."
         read -r
     fi
