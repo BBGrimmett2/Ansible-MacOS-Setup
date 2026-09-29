@@ -337,15 +337,22 @@ install_dashlane_cli() {
     brew install dashlane/tap/dashlane-cli &>/dev/null &
     spinner $! "Installing Dashlane CLI"
 
-    # Ensure dcli is available in current shell
+    # Ensure Homebrew bin is in PATH for current session
+    if [[ -d "/opt/homebrew/bin" ]]; then
+        export PATH="/opt/homebrew/bin:$PATH"
+    elif [[ -d "/usr/local/bin" ]]; then
+        export PATH="/usr/local/bin:$PATH"
+    fi
+
+    # Refresh shell's command hash
     hash -r 2>/dev/null || true
 
     # Verify installation
-    if ! command -v dcli &>/dev/null; then
-        print_warning "Dashlane CLI installed but not in PATH. You may need to restart your shell."
-        print_info "Try running: hash -r"
-    else
+    if command -v dcli &>/dev/null; then
         print_step "Dashlane CLI installed successfully"
+    else
+        print_warning "Dashlane CLI installed but not immediately available"
+        print_info "It will be available in new terminal sessions"
     fi
 }
 
@@ -373,9 +380,18 @@ clone_repository() {
 authenticate_dashlane() {
     print_section "Authenticating Dashlane CLI"
 
-    # Ensure dcli is available
-    if ! command -v dcli &>/dev/null; then
-        print_warning "Dashlane CLI not found in PATH"
+    # Find dcli - check command first, then try full paths
+    local dcli_cmd=""
+    if command -v dcli &>/dev/null; then
+        dcli_cmd="dcli"
+    elif [[ -x "/opt/homebrew/bin/dcli" ]]; then
+        dcli_cmd="/opt/homebrew/bin/dcli"
+        export PATH="/opt/homebrew/bin:$PATH"
+    elif [[ -x "/usr/local/bin/dcli" ]]; then
+        dcli_cmd="/usr/local/bin/dcli"
+        export PATH="/usr/local/bin:$PATH"
+    else
+        print_warning "Dashlane CLI not found"
         print_warning "You can authenticate later by running: dcli sync"
         return 0
     fi
@@ -384,9 +400,9 @@ authenticate_dashlane() {
     local already_authenticated=false
     local dashlane_user=""
 
-    if dcli whoami &>/dev/null; then
+    if $dcli_cmd whoami &>/dev/null; then
         already_authenticated=true
-        dashlane_user=$(dcli whoami 2>/dev/null || echo "unknown")
+        dashlane_user=$($dcli_cmd whoami 2>/dev/null || echo "unknown")
         print_step "Dashlane CLI already authenticated (user: ${dashlane_user})"
         echo ""
         read -p "Re-authenticate with different account? (y/N): " reauth_choice
@@ -412,7 +428,7 @@ authenticate_dashlane() {
 
     # Run dcli sync - it will automatically open browser
     echo ""
-    if ! dcli sync; then
+    if ! $dcli_cmd sync; then
         echo ""
         print_warning "Dashlane authentication failed"
         print_warning "You can authenticate later by running: dcli sync"
