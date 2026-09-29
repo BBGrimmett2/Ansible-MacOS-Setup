@@ -1,0 +1,44 @@
+---
+# =============================================================================
+# Deploy SSH Keys
+# =============================================================================
+# Deploy SSH keys from Dashlane based on configuration in group_vars/localhost.yml
+# =============================================================================
+
+- name: Create SSH directory
+  ansible.builtin.file:
+    path: "{{ ssh_config_dir }}"
+    state: directory
+    mode: "{{ ssh_dir_permissions }}"
+  tags:
+    - ssh_config
+    - ssh_config:keys
+
+- name: Deploy SSH keys from Dashlane
+  ansible.builtin.include_role:
+    name: dashlane_secrets
+    tasks_from: fetch_ssh_key
+  vars:
+    dashlane_secret_name: "{{ item.dashlane_secret }}"
+    dashlane_secret_output_path: "{{ item.file }}"
+    dashlane_secret_permissions: "{{ ssh_key_permissions }}"
+  loop: "{{ ssh_keys }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  tags:
+    - ssh_config
+    - ssh_config:keys
+
+- name: Display deployed SSH keys
+  ansible.builtin.debug:
+    msg: "SSH key '{{ item.name }}' deployed to {{ item.file }}"
+  loop: "{{ ssh_keys }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  tags:
+    - ssh_config
+    - ssh_config:keys

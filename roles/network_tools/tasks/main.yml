@@ -13,3 +13,11 @@
   ansible.builtin.import_tasks: install.yml
   tags: [install]
   when: network_tools_state == 'present'
+
+- name: Deploy VPN configurations
+  ansible.builtin.import_tasks: deploy_vpn.yml
+  tags: [network, vpn]
+
+- name: Deploy certificates
+  ansible.builtin.import_tasks: deploy_certificates.yml
+  tags: [network, certificates]

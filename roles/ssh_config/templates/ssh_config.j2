@@ -1,0 +1,45 @@
+# =============================================================================
+# SSH Client Configuration
+# =============================================================================
+# Managed by Ansible - Do not edit manually
+# Generated: {{ ansible_date_time.iso8601 }}
+# Configuration: group_vars/localhost.yml (ssh_host_configs)
+# =============================================================================
+
+# Global SSH client options
+Host *
+{% for key, value in ssh_global_options.items() %}
+    {{ key }} {{ value }}
+{% endfor %}
+    StrictHostKeyChecking {{ ssh_strict_host_key_checking }}
+{% if ssh_compression %}
+    Compression yes
+{% endif %}
+
+# =============================================================================
+# Host-Specific Configurations
+# =============================================================================
+{% for config in ssh_host_configs %}
+{% if config.enabled | default(false) %}
+
+# {{ config.name }}
+Host {{ config.host_pattern }}
+{% if config.hostname is defined %}
+    HostName {{ config.hostname }}
+{% endif %}
+{% if config.user is defined %}
+    User {{ config.user }}
+{% endif %}
+{% if config.identity_file is defined %}
+    IdentityFile {{ config.identity_file }}
+{% endif %}
+{% if config.proxy_jump is defined %}
+    ProxyJump {{ config.proxy_jump }}
+{% endif %}
+{% if config.options is defined %}
+{% for option_key, option_value in config.options.items() %}
+    {{ option_key }} {{ option_value }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}

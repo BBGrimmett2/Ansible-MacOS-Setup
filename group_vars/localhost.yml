@@ -22,3 +22,136 @@ desktop_apps_chrome_enabled: false
 
 # Open Google Drive for configuration
 desktop_apps_google_drive_configure: true
+
+# -----------------------------------------------------------------------------
+# Secrets Configuration
+# -----------------------------------------------------------------------------
+# Define all secrets, their Dashlane locations, and deployment paths.
+# Enable/disable individual secrets as needed.
+
+# SSH Keys Configuration
+# Maps SSH keys from Dashlane to local deployment paths
+ssh_keys:
+  - name: github
+    dashlane_secret: ssh_key_github
+    file: "{{ ssh_directory }}/id_github"
+    host_pattern: "github.com"
+    enabled: true
+
+  - name: gitlab
+    dashlane_secret: ssh_key_gitlab
+    file: "{{ ssh_directory }}/id_gitlab"
+    host_pattern: "gitlab.com"
+    enabled: false
+
+  - name: shadowman_git
+    dashlane_secret: ssh_key_shadowman_git
+    file: "{{ ssh_directory }}/id_shadowman"
+    host_pattern: "git.shadowman.dev"
+    enabled: true
+
+  - name: starbase_local
+    dashlane_secret: ssh_key_starbase_local
+    file: "{{ ssh_directory }}/starbase-local"
+    host_pattern: "*.local.starbase.icu"
+    enabled: false
+
+# SSH Config Deployment Options
+# Set to true to deploy complete SSH config from Dashlane instead of using template
+ssh_config_from_dashlane: false
+ssh_config_dashlane_secret: "ssh_config"  # Dashlane secret name if using Dashlane
+
+# SSH Host Configurations
+# Defines SSH config file Host blocks with custom options per environment
+# This is used by the template (when ssh_config_from_dashlane is false)
+ssh_host_configs:
+  # GitHub
+  - name: github
+    host_pattern: "github.com"
+    hostname: "github.com"
+    user: git
+    identity_file: "~/.ssh/id_github"
+    options:
+      IdentitiesOnly: "yes"
+    enabled: true
+
+  # Shadowman Git Server
+  - name: shadowman_git
+    host_pattern: "git.shadowman.dev"
+    hostname: "git.shadowman.dev"
+    user: git
+    identity_file: "~/.ssh/id_shadowman"
+    options:
+      IdentitiesOnly: "yes"
+      ForwardAgent: "yes"
+    enabled: true
+
+  # Shadowman Internal Hosts (wildcard)
+  - name: shadowman_internal
+    host_pattern: "*.shadowman.dev !git.shadowman.dev"
+    user: bgrimmet
+    identity_file: "~/.ssh/id_shadowman"
+    options:
+      PreferredAuthentications: publickey
+      ForwardAgent: "yes"
+    enabled: true
+
+  # Starbase.icu Local Development
+  - name: starbase_local
+    host_pattern: "*.local.starbase.icu"
+    user: briangrimmett
+    identity_file: "~/.ssh/starbase-local"
+    options:
+      PreferredAuthentications: publickey
+    enabled: false
+
+  # Example: Bastion/Jump Host
+  - name: shadowman_bastion
+    host_pattern: "bastion.shadowman.dev"
+    hostname: "bastion.shadowman.dev"
+    user: bgrimmet
+    identity_file: "~/.ssh/id_shadowman"
+    options:
+      ForwardAgent: "yes"
+      ControlMaster: auto
+      ControlPath: "~/.ssh/control-%r@%h:%p"
+      ControlPersist: "10m"
+    enabled: false
+
+  # Example: Hosts via Jump/Bastion
+  - name: shadowman_via_bastion
+    host_pattern: "*.internal.shadowman.dev"
+    user: bgrimmet
+    identity_file: "~/.ssh/id_shadowman"
+    proxy_jump: "bastion.shadowman.dev"
+    options:
+      PreferredAuthentications: publickey
+    enabled: false
+
+# VPN Profiles Configuration
+# Maps VPN profiles from Dashlane to local deployment paths
+vpn_profiles:
+  - name: shadowman
+    dashlane_secret: vpn_shadowman_profile
+    file: "{{ user_home }}/.vpn/shadowman.ovpn"
+    enabled: true
+
+  - name: personal_vpn
+    dashlane_secret: vpn_personal_profile
+    file: "{{ user_home }}/.vpn/personal.ovpn"
+    enabled: false
+
+# Certificates Configuration
+# Maps certificates from Dashlane to system keychain installation
+certificates:
+  - name: shadowman_root_ca
+    dashlane_secret: cert_shadowman_root_ca
+    file: "{{ user_home }}/.certs/shadowman_root_ca.pem"
+    keychain_name: "Shadowman"
+    enabled: true
+
+  - name: openshift_root_ca
+    dashlane_secret: cert_openshift_root_ca
+    file: "{{ user_home }}/.certs/openshift_root_ca.pem"
+    keychain_name: "OpenShift"
+    enabled: false

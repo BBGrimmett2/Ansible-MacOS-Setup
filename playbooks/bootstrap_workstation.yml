@@ -41,8 +41,8 @@
     - role: homebrew
       tags: [foundation, homebrew]
 
-    # - role: dashlane_secrets
-    #   tags: [foundation, secrets]
+    - role: dashlane_secrets
+      tags: [foundation, secrets]
 
     # System Configuration
     - role: macos_defaults
@@ -51,8 +51,8 @@
     # - role: pam_security
     #   tags: [system, security, pam]
 
-    # - role: ssh_config
-    #   tags: [system, ssh]
+    - role: ssh_config
+      tags: [system, ssh]
 
     # CLI Tools
     - role: cli_tools

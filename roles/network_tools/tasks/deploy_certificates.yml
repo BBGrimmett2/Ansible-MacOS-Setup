@@ -1,0 +1,70 @@
+---
+# =============================================================================
+# Certificate Deployment
+# =============================================================================
+# Purpose: Deploy and install certificates from Dashlane secrets storage
+# Configuration: Defined in group_vars/all.yml (certificates list)
+# =============================================================================
+
+- name: Create certificates directory
+  ansible.builtin.file:
+    path: "{{ user_home }}/.certs"
+    state: directory
+    mode: '0755'
+  tags: [network, certificates]
+
+- name: Deploy certificates from Dashlane
+  ansible.builtin.include_role:
+    name: dashlane_secrets
+    tasks_from: fetch_file
+  vars:
+    dashlane_secret_name: "{{ item.dashlane_secret }}"
+    dashlane_secret_output_path: "{{ item.file }}"
+    dashlane_secret_permissions: "0644"
+  loop: "{{ certificates }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  tags: [network, certificates]
+
+- name: Check if certificates already installed in system keychain
+  ansible.builtin.command:
+    cmd: security find-certificate -c "{{ item.keychain_name }}" /Library/Keychains/System.keychain
+  register: cert_check
+  changed_when: false
+  failed_when: false
+  loop: "{{ certificates }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  tags: [network, certificates]
+
+- name: Install certificates to system keychain
+  ansible.builtin.command:
+    cmd: >
+      security add-trusted-cert
+      -d -r trustRoot
+      -k /Library/Keychains/System.keychain
+      {{ item.item.file }}
+  become: true
+  register: cert_install
+  changed_when: cert_install.rc == 0
+  loop: "{{ cert_check.results }}"
+  when:
+    - item.item.enabled | default(false)
+    - item.rc != 0
+  loop_control:
+    label: "{{ item.item.name }}"
+  tags: [network, certificates]
+
+- name: Display certificate installation status
+  ansible.builtin.debug:
+    msg: "Certificate '{{ item.item.name }}' {{ 'installed' if item.rc != 0 else 'already present' }} in system keychain"
+  loop: "{{ cert_check.results }}"
+  when:
+    - item.item.enabled | default(false)
+  loop_control:
+    label: "{{ item.item.name }}"
+  tags: [network, certificates]

@@ -1,0 +1,39 @@
+---
+# =============================================================================
+# VPN Profile Deployment
+# =============================================================================
+# Purpose: Deploy VPN profiles from Dashlane secrets storage
+# Configuration: Defined in group_vars/all.yml (vpn_profiles list)
+# =============================================================================
+
+- name: Create VPN profiles directory
+  ansible.builtin.file:
+    path: "{{ user_home }}/.vpn"
+    state: directory
+    mode: '0700'
+  tags: [network, vpn]
+
+- name: Deploy VPN profiles from Dashlane
+  ansible.builtin.include_role:
+    name: dashlane_secrets
+    tasks_from: fetch_file
+  vars:
+    dashlane_secret_name: "{{ item.dashlane_secret }}"
+    dashlane_secret_output_path: "{{ item.file }}"
+    dashlane_secret_permissions: "0600"
+  loop: "{{ vpn_profiles }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  tags: [network, vpn]
+
+- name: Display deployed VPN profiles
+  ansible.builtin.debug:
+    msg: "VPN profile '{{ item.name }}' deployed to {{ item.file }}"
+  loop: "{{ vpn_profiles }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  tags: [network, vpn]

@@ -2,8 +2,8 @@
 # =============================================================================
 # SSH Config Role - Deploy SSH Config File
 # =============================================================================
-# Public function: Deploy SSH client configuration.
-# Can be called via: tasks_from: deploy_config
+# Deploy SSH client configuration from template or Dashlane.
+# Configuration: group_vars/localhost.yml (ssh_host_configs)
 # =============================================================================
 
 - name: Check if SSH config exists
@@ -24,26 +24,22 @@
 - name: Deploy SSH config from Dashlane
   when: ssh_config_from_dashlane
   block:
-    - name: Set Dashlane secret name for SSH config
-      ansible.builtin.set_fact:
-        ssh_config_secret_name: "{{ ssh_config_dashlane_secret_personal if workstation_profile == 'personal' else ssh_config_dashlane_secret_work }}"
-
     - name: Fetch SSH config from Dashlane
       ansible.builtin.include_role:
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "{{ ssh_config_secret_name }}"
+        dashlane_secret_name: "{{ ssh_config_dashlane_secret }}"
         dashlane_secret_output_path: "{{ ssh_config_file }}"
         dashlane_secret_permissions: "{{ ssh_config_permissions }}"
 
     - name: Display SSH config deployment status
       ansible.builtin.debug:
-        msg: "SSH config deployed from Dashlane ({{ ssh_config_secret_name }}) for {{ workstation_profile }} profile"
+        msg: "SSH config deployed from Dashlane ({{ ssh_config_dashlane_secret }})"
 
 - name: Deploy SSH config from template
   ansible.builtin.template:
-    src: "ssh_config_{{ workstation_profile }}.j2"
+    src: ssh_config.j2
     dest: "{{ ssh_config_file }}"
     mode: "{{ ssh_config_permissions }}"
     backup: "{{ ssh_backup_existing }}"
@@ -51,5 +47,5 @@
 
 - name: Display SSH config deployment status (template)
   ansible.builtin.debug:
-    msg: "SSH config deployed from template for {{ workstation_profile }} profile"
+    msg: "SSH config deployed from template ({{ ssh_host_configs | selectattr('enabled', 'equalto', true) | list | length }} host configs enabled)"
   when: not ssh_config_from_dashlane
