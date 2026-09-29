@@ -361,15 +361,24 @@ install_galaxy_collections() {
 
     # Check if requirements file exists
     if [[ ! -f "collections/requirements.yml" ]]; then
-        print_warning "No collections/requirements.yml found, skipping collection installation"
+        print_info "No collections/requirements.yml found, skipping collection installation"
+        return 0
+    fi
+
+    # Check if collections list is empty
+    if grep -q "collections: \[\]" collections/requirements.yml; then
+        print_info "No collections defined in requirements.yml, skipping installation"
         return 0
     fi
 
     print_info "Installing required Ansible collections..."
-    ansible-galaxy collection install -r collections/requirements.yml &>/dev/null &
-    spinner $! "Installing Galaxy collections"
 
-    print_step "Ansible collections installed successfully"
+    # Install collections and show output
+    if ansible-galaxy collection install -r collections/requirements.yml; then
+        print_step "Ansible collections installed successfully"
+    else
+        print_warning "Galaxy collections installation had issues (non-fatal, continuing)"
+    fi
 }
 
 # =============================================================================
