@@ -90,11 +90,15 @@
   post_tasks:
     - name: Find Ansible backup files to clean up
       ansible.builtin.find:
-        paths: "{{ ansible_facts['env']['HOME'] }}"
+        paths:
+          - "{{ ansible_facts['env']['HOME'] }}"
+          - "{{ ansible_facts['env']['HOME'] }}/.ssh"
         patterns:
           # Ansible backup files end with timestamp and ~
           - ".*.[0-9]*.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]@*~"
           - "*.[0-9]*.[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]@*~"
+          # SSH config backups with epoch timestamp
+          - "*.backup.[0-9]*"
         hidden: true
       register: backup_files
 

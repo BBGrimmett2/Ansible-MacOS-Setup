@@ -1,6 +1,6 @@
 # Configuration Guide
 
-This guide explains how to configure all secrets, SSH hosts, VPN profiles, and certificates in a centralized, extensible way through `group_vars/localhost.yml`.
+This guide explains how to configure all secrets, SSH hosts, VPN profiles, and certificates in a centralized, extensible way through `host_vars/localhost.yml`.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ This guide explains how to configure all secrets, SSH hosts, VPN profiles, and c
 
 ## Overview
 
-All configuration is centralized in `group_vars/localhost.yml`. This file controls:
+All configuration is centralized in `host_vars/localhost.yml`. This file controls:
 - Which SSH keys to deploy from Dashlane
 - SSH config Host blocks with custom options per environment
 - Which VPN profiles to deploy
@@ -33,7 +33,7 @@ All configuration is centralized in `group_vars/localhost.yml`. This file contro
 
 Define SSH keys to deploy from Dashlane to local filesystem.
 
-**Location:** `group_vars/localhost.yml`
+**Location:** `host_vars/localhost.yml`
 
 ```yaml
 ssh_keys:
@@ -75,7 +75,7 @@ ssh_keys:
 
 Define SSH config file Host blocks with custom options per environment.
 
-**Location:** `group_vars/localhost.yml`
+**Location:** `host_vars/localhost.yml`
 
 ```yaml
 ssh_host_configs:
@@ -172,7 +172,7 @@ options:
 
 Define VPN profiles to deploy from Dashlane to local filesystem.
 
-**Location:** `group_vars/localhost.yml`
+**Location:** `host_vars/localhost.yml`
 
 ```yaml
 vpn_profiles:
@@ -211,7 +211,7 @@ vpn_profiles:
 
 Define certificates to deploy from Dashlane and install to system keychain.
 
-**Location:** `group_vars/localhost.yml`
+**Location:** `host_vars/localhost.yml`
 
 ```yaml
 certificates:
@@ -269,7 +269,7 @@ dcli note add --title "cert_acme_root_ca" --content "$(cat /path/to/acme-ca.pem)
 rm ~/.ssh/temp_acme*
 ```
 
-**3. Update `group_vars/localhost.yml`:**
+**3. Update `host_vars/localhost.yml`:**
 
 ```yaml
 ssh_keys:
@@ -455,7 +455,7 @@ ssh_host_configs:
 
 ### 4. Version Control
 
-- Commit `group_vars/localhost.yml` to version control
+- Commit `host_vars/localhost.yml` to version control
 - Secrets are **not** in this file - only Dashlane secret names
 - Safe to share with team members
 
@@ -494,7 +494,7 @@ ansible-playbook playbooks/bootstrap_workstation.yml --tags ssh -vv
 
 ```bash
 # Check enabled hosts
-cat group_vars/localhost.yml | grep -A 10 "ssh_host_configs:"
+cat host_vars/localhost.yml | grep -A 10 "ssh_host_configs:"
 
 # Verify template
 cat ~/.ssh/config
@@ -526,7 +526,7 @@ dcli read ssh_key_shadowman_git --output raw | head -1
 
 ### File Locations
 
-- Configuration: `group_vars/localhost.yml`
+- Configuration: `host_vars/localhost.yml`
 - SSH config template: `roles/ssh_config/templates/ssh_config.j2`
 - VPN deployment: `roles/network_tools/tasks/deploy_vpn.yml`
 - Certificate deployment: `roles/network_tools/tasks/deploy_certificates.yml`

@@ -2,7 +2,7 @@
 # =============================================================================
 # Deploy SSH Keys
 # =============================================================================
-# Deploy SSH keys from Dashlane based on configuration in group_vars/localhost.yml
+# Deploy SSH keys from Dashlane based on configuration in host_vars/localhost.yml
 # =============================================================================
 
 - name: Create SSH directory
