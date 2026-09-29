@@ -542,21 +542,26 @@ main() {
     # Run Ansible automation
     run_ansible_playbook
 
+    # Cleanup installation artifacts
+    print_section "Cleanup"
+
+    print_info "Removing installation repository..."
+    cd "$HOME" || true
+    rm -rf "$REPO_DIR" &>/dev/null || print_warning "Could not remove repository (non-fatal)"
+
+    print_info "Removing Ansible virtual environment..."
+    rm -rf "$VENV_DIR" &>/dev/null || print_warning "Could not remove venv (non-fatal)"
+
+    print_step "Installation artifacts cleaned up"
+
     # Final instructions
     print_section "Next Steps"
     echo ""
-    print_info "${BOLD}IMPORTANT:${RESET} To use dcli and other Homebrew tools in THIS terminal:"
+    print_info "${BOLD}IMPORTANT:${RESET} To use all installed tools in THIS terminal:"
     echo ""
     echo -e "  ${GREEN}source ~/.zshrc${RESET}"
     echo ""
-    print_info "Or open a new terminal window (Homebrew is now in your PATH for new sessions)"
-    echo ""
-    print_info "For cloud demo environments, run:"
-    print_info "  cd ${REPO_DIR}"
-    print_info "  ansible-playbook playbooks/setup_aws_demo.yml"
-    echo ""
-    print_info "Repository: ${REPO_DIR}"
-    print_info "Virtual environment: ${VENV_DIR}"
+    print_info "Or open a new terminal window (tools are now in your PATH for new sessions)"
     echo ""
 
     print_success "All done! Your workstation is ready to use."

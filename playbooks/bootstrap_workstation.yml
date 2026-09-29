@@ -88,21 +88,23 @@
       tags: [config, shell]
 
   post_tasks:
-    - name: Display completion message
+    - name: Gather installed package information
+      ansible.builtin.command: brew list --formula
+      register: brew_formulas
+      changed_when: false
+      failed_when: false
+
+    - name: Gather installed cask information
+      ansible.builtin.command: brew list --cask
+      register: brew_casks
+      changed_when: false
+      failed_when: false
+
+    - name: Display installation summary
       ansible.builtin.debug:
         msg:
           - "=========================================="
           - "Workstation Bootstrap Complete!"
           - "=========================================="
-          - "Profile: {{ workstation_profile }}"
           - ""
-          - "Next steps:"
-          - "  1. Restart your terminal (or run 'source ~/.zshrc') to load shell environment"
-          - "  2. Verify tool installations: brew list, kubectl version, etc."
-          - "  3. Configure any remaining profile-specific settings"
-          - "  {% if workstation_profile == 'work' %}4. Verify Red Hat VPN and AAP access{% endif %}"
-          - ""
-          - "For cloud demo environments, run:"
-          - "  ansible-playbook playbooks/setup_aws_demo.yml"
-          - "  ansible-playbook playbooks/setup_gcp_demo.yml"
-          - "  ansible-playbook playbooks/setup_azure_demo.yml"
+          - "Restart your terminal (or run 'source ~/.zshrc')"
