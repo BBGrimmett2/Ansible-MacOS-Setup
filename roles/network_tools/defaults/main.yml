@@ -29,7 +29,7 @@ network_tools_openvpn_enabled: true
 network_tools_bind_enabled: true
 
 # Wireshark - Network protocol analyzer
-network_tools_wireshark_enabled: false
+network_tools_wireshark_enabled: false  # Disabled - requires GUI interaction
 
 # mtr - Network diagnostic tool (traceroute + ping)
 network_tools_mtr_enabled: true
