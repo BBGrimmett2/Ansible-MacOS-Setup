@@ -312,23 +312,18 @@ authenticate_dashlane() {
     print_section "Authenticating Dashlane CLI"
 
     print_info "Dashlane authentication required for secret management"
-    print_info "This will open your browser for login"
-    echo ""
-    print_info "You can also skip this and authenticate later by running: dcli sync"
+    print_info "Skip now and authenticate later by running: dcli sync"
     echo ""
     read -p "Authenticate now? (Y/n): " auth_choice
 
     if [[ "$auth_choice" =~ ^[Nn]$ ]]; then
         print_warning "Skipping Dashlane authentication"
-        print_warning "Remember to run 'dcli sync' before running playbooks that need secrets"
+        print_warning "Run 'dcli sync' before running playbooks that need secrets"
         return 0
     fi
 
-    # Run dcli sync with full output visible
+    # Run dcli sync - it will automatically open browser
     echo ""
-    print_info "Opening browser for Dashlane authentication..."
-    echo ""
-
     if ! dcli sync; then
         echo ""
         print_warning "Dashlane authentication failed"
