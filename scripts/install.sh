@@ -182,12 +182,12 @@ install_xcode_cli_tools() {
 configure_homebrew_shell() {
     # Determine shell configuration file
     local shell_rc=""
-    if [[ -n "$ZSH_VERSION" ]] || [[ "$SHELL" == *"zsh"* ]]; then
+    if [[ "$SHELL" == *"zsh"* ]]; then
         shell_rc="$HOME/.zshrc"
-    elif [[ -n "$BASH_VERSION" ]] || [[ "$SHELL" == *"bash"* ]]; then
+    elif [[ "$SHELL" == *"bash"* ]]; then
         shell_rc="$HOME/.bash_profile"
     else
-        print_warning "Unknown shell, skipping shell configuration"
+        print_warning "Unknown shell ($SHELL), skipping shell configuration"
         return 0
     fi
 
