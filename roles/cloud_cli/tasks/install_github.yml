@@ -5,7 +5,16 @@
 # Installs GitHub CLI (gh) for GitHub operations
 # =============================================================================
 
+- name: Check if GitHub CLI is installed
+  ansible.builtin.command: brew list --formula gh
+  register: cloud_cli_github_check
+  changed_when: false
+  failed_when: false
+
 - name: Install GitHub CLI via Homebrew
-  community.general.homebrew:
-    name: "{{ cloud_cli_packages.github }}"
-    state: "{{ cloud_cli_state }}"
+  ansible.builtin.command: brew install gh
+  when:
+    - cloud_cli_state == 'present'
+    - cloud_cli_github_check.rc != 0
+  register: cloud_cli_github_install
+  changed_when: cloud_cli_github_install.rc == 0

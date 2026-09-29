@@ -5,7 +5,16 @@
 # Installs kustomize - Kubernetes native configuration management
 # =============================================================================
 
+- name: Check if kustomize is installed
+  ansible.builtin.command: brew list --formula kustomize
+  register: kubernetes_tools_kustomize_check
+  changed_when: false
+  failed_when: false
+
 - name: Install kustomize via Homebrew
-  community.general.homebrew:
-    name: "{{ kubernetes_tools_packages.kustomize }}"
-    state: "{{ kubernetes_tools_state }}"
+  ansible.builtin.command: brew install kustomize
+  when:
+    - kubernetes_tools_state == 'present'
+    - kubernetes_tools_kustomize_check.rc != 0
+  register: kubernetes_tools_kustomize_install
+  changed_when: kubernetes_tools_kustomize_install.rc == 0

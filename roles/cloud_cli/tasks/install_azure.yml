@@ -5,7 +5,16 @@
 # Installs Azure CLI for Microsoft Azure
 # =============================================================================
 
+- name: Check if Azure CLI is installed
+  ansible.builtin.command: brew list --formula azure-cli
+  register: cloud_cli_azure_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Azure CLI via Homebrew
-  community.general.homebrew:
-    name: "{{ cloud_cli_packages.azure }}"
-    state: "{{ cloud_cli_state }}"
+  ansible.builtin.command: brew install azure-cli
+  when:
+    - cloud_cli_state == 'present'
+    - cloud_cli_azure_check.rc != 0
+  register: cloud_cli_azure_install
+  changed_when: cloud_cli_azure_install.rc == 0

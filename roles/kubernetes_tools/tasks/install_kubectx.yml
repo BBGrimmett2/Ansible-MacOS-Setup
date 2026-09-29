@@ -5,7 +5,16 @@
 # Installs kubectx and kubens - Context and namespace switcher
 # =============================================================================
 
+- name: Check if kubectx is installed
+  ansible.builtin.command: brew list --formula kubectx
+  register: kubernetes_tools_kubectx_check
+  changed_when: false
+  failed_when: false
+
 - name: Install kubectx via Homebrew
-  community.general.homebrew:
-    name: "{{ kubernetes_tools_packages.kubectx }}"
-    state: "{{ kubernetes_tools_state }}"
+  ansible.builtin.command: brew install kubectx
+  when:
+    - kubernetes_tools_state == 'present'
+    - kubernetes_tools_kubectx_check.rc != 0
+  register: kubernetes_tools_kubectx_install
+  changed_when: kubernetes_tools_kubectx_install.rc == 0

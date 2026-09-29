@@ -5,7 +5,16 @@
 # Installs Helm - Kubernetes package manager
 # =============================================================================
 
+- name: Check if Helm is installed
+  ansible.builtin.command: brew list --formula helm
+  register: kubernetes_tools_helm_check
+  changed_when: false
+  failed_when: false
+
 - name: Install Helm via Homebrew
-  community.general.homebrew:
-    name: "{{ kubernetes_tools_packages.helm }}"
-    state: "{{ kubernetes_tools_state }}"
+  ansible.builtin.command: brew install helm
+  when:
+    - kubernetes_tools_state == 'present'
+    - kubernetes_tools_helm_check.rc != 0
+  register: kubernetes_tools_helm_install
+  changed_when: kubernetes_tools_helm_install.rc == 0

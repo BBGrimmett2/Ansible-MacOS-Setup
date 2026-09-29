@@ -5,7 +5,16 @@
 # Installs OpenShift CLI (oc) for Red Hat OpenShift
 # =============================================================================
 
+- name: Check if OpenShift CLI is installed
+  ansible.builtin.command: brew list --formula openshift-cli
+  register: kubernetes_tools_oc_check
+  changed_when: false
+  failed_when: false
+
 - name: Install OpenShift CLI via Homebrew
-  community.general.homebrew:
-    name: "{{ kubernetes_tools_packages.oc }}"
-    state: "{{ kubernetes_tools_state }}"
+  ansible.builtin.command: brew install openshift-cli
+  when:
+    - kubernetes_tools_state == 'present'
+    - kubernetes_tools_oc_check.rc != 0
+  register: kubernetes_tools_oc_install
+  changed_when: kubernetes_tools_oc_install.rc == 0

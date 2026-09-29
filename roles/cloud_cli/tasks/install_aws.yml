@@ -5,7 +5,16 @@
 # Installs AWS CLI for Amazon Web Services
 # =============================================================================
 
+- name: Check if AWS CLI is installed
+  ansible.builtin.command: brew list --formula awscli
+  register: cloud_cli_aws_check
+  changed_when: false
+  failed_when: false
+
 - name: Install AWS CLI via Homebrew
-  community.general.homebrew:
-    name: "{{ cloud_cli_packages.aws }}"
-    state: "{{ cloud_cli_state }}"
+  ansible.builtin.command: brew install awscli
+  when:
+    - cloud_cli_state == 'present'
+    - cloud_cli_aws_check.rc != 0
+  register: cloud_cli_aws_install
+  changed_when: cloud_cli_aws_install.rc == 0

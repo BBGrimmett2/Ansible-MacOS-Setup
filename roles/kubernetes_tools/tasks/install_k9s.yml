@@ -5,7 +5,16 @@
 # Installs K9s - Terminal UI for Kubernetes
 # =============================================================================
 
+- name: Check if K9s is installed
+  ansible.builtin.command: brew list --formula k9s
+  register: kubernetes_tools_k9s_check
+  changed_when: false
+  failed_when: false
+
 - name: Install K9s via Homebrew
-  community.general.homebrew:
-    name: "{{ kubernetes_tools_packages.k9s }}"
-    state: "{{ kubernetes_tools_state }}"
+  ansible.builtin.command: brew install k9s
+  when:
+    - kubernetes_tools_state == 'present'
+    - kubernetes_tools_k9s_check.rc != 0
+  register: kubernetes_tools_k9s_install
+  changed_when: kubernetes_tools_k9s_install.rc == 0
