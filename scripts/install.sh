@@ -364,8 +364,22 @@ clone_repository() {
 
         # Update repository
         print_info "Updating repository..."
-        (cd "$REPO_DIR" && git pull origin main) &>/dev/null &
-        spinner $! "Updating repository"
+        (cd "$REPO_DIR" && git fetch origin && git reset --hard origin/main) &>/dev/null &
+        local update_pid=$!
+        spinner $update_pid "Updating repository"
+        wait $update_pid
+        local update_status=$?
+
+        if [[ $update_status -ne 0 ]]; then
+            print_warning "Failed to update repository from GitHub"
+            echo ""
+            read -p "Continue with existing local version? (y/N): " -n 1 -r
+            echo ""
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                print_fatal "Installation cancelled. Please resolve git issues in ${REPO_DIR}"
+            fi
+            print_warning "Continuing with existing local repository version"
+        fi
 
         return 0
     fi
