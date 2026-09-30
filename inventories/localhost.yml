@@ -13,9 +13,3 @@ all:
       ansible_become_method: sudo
       ansible_python_interpreter: auto
 
-  vars:
-    # Ansible behavior
-    ansible_become_ask_pass: false  # Use Touch ID for sudo (configured by pam_security role)
-
-    # macOS detection
-    ansible_facts['os_family']: Darwin
