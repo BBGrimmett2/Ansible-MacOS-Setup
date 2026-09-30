@@ -159,3 +159,8 @@ desktop_apps_rectangle_toggle_todo:
 desktop_apps_rectangle_reflow_todo:
   keyCode: 45
   modifierFlags: 786432
+
+# -----------------------------------------------------------------------------
+# Development Tools Configuration
+# -----------------------------------------------------------------------------
+development_tools_aap_demo_enabled: true
