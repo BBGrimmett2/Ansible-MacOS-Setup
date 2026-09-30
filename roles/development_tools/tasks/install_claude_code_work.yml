@@ -1,0 +1,114 @@
+---
+# =============================================================================
+# Development Tools Role - Install Claude Code CLI (Public Function)
+# =============================================================================
+# Configures Claude Code CLI
+# - Work Profile: Red Hat Vertex AI integration via Google Cloud
+# - Personal Profile: Direct Anthropic API (TODO - not yet implemented)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# WORK PROFILE: Red Hat Vertex AI Setup
+# -----------------------------------------------------------------------------
+
+- name: Check if Claude Code is installed
+  ansible.builtin.command: which claude
+  register: claude_check
+  changed_when: false
+  failed_when: false
+
+- name: Display Claude Code installation status
+  ansible.builtin.debug:
+    msg: "Claude Code CLI {{ 'is installed' if claude_check.rc == 0 else 'not found - install via Homebrew: brew install --cask claude' }}"
+
+- name: Prompt to connect to Red Hat VPN
+  ansible.builtin.pause:
+    prompt: |
+
+      ================================================
+      Claude Code Setup - VPN Required
+      ================================================
+
+      Claude Code setup requires connection to Red Hat VPN.
+
+      ACTION REQUIRED:
+      1. Open Viscosity
+      2. Connect to "Red Hat Global VPN" profile
+      3. Wait for connection to establish
+
+      Press ENTER when connected to VPN to continue...
+      ================================================
+  when:
+    - claude_check.rc == 0
+
+- name: Fetch GCP Project ID from Dashlane
+  ansible.builtin.include_role:
+    name: dashlane_secrets
+    tasks_from: fetch_secret
+  vars:
+    dashlane_secret_name: "claude_code_gcp_project_id"
+  when: claude_check.rc == 0
+
+- name: Check if Claude Code Vertex AI is already configured
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/gcloud/application_default_credentials.json"
+  register: claude_vertex_configured
+
+- name: Display Claude Code configuration prompt
+  ansible.builtin.debug:
+    msg:
+      - "================================================"
+      - "Claude Code - Vertex AI Setup (Red Hat)"
+      - "================================================"
+      - "This will configure Claude Code with Google Cloud Vertex AI"
+      - "You will be prompted to authenticate with your Google account"
+      - "in a browser window."
+      - ""
+      - "GCP Project: {{ dashlane_secret_value if dashlane_secret_retrieved else 'Not configured' }}"
+      - "================================================"
+  when:
+    - claude_check.rc == 0
+    - not claude_vertex_configured.stat.exists
+
+- name: Configure Claude Code with Vertex AI
+  ansible.builtin.shell: |
+    curl -fsSL "https://red.ht/claude-vertex-linux-setup" | bash -s -- {{ dashlane_secret_value }} cloudability-it-gemini
+  when:
+    - claude_check.rc == 0
+    - not claude_vertex_configured.stat.exists
+    - dashlane_secret_retrieved
+  register: claude_vertex_setup
+  changed_when: true
+  no_log: false
+
+- name: Display Claude Code setup completion
+  ansible.builtin.debug:
+    msg:
+      - "Claude Code Vertex AI configuration complete!"
+      - "You can now use the 'claude' command with Red Hat's Vertex AI backend"
+  when:
+    - claude_check.rc == 0
+    - claude_vertex_setup is defined
+    - claude_vertex_setup.changed
+
+- name: Display skip message
+  ansible.builtin.debug:
+    msg: "Claude Code Vertex AI already configured - skipping setup"
+  when:
+    - claude_check.rc == 0
+    - claude_vertex_configured.stat.exists
+
+- name: Prompt to disconnect from Red Hat VPN
+  ansible.builtin.pause:
+    prompt: |
+
+      ================================================
+      Claude Code Setup Complete
+      ================================================
+
+      You may now disconnect from the Red Hat VPN if desired.
+
+      The playbook will continue after you press ENTER.
+      ================================================
+  when:
+    - claude_check.rc == 0

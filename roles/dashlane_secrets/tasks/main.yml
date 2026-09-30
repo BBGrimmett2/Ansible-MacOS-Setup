@@ -6,6 +6,7 @@
 #
 # This role does not fetch secrets by default - use public functions:
 #   - tasks_from: fetch_ssh_key
+#   - tasks_from: fetch_secret
 #   - tasks_from: fetch_credential
 #   - tasks_from: fetch_file
 # =============================================================================
@@ -31,14 +32,23 @@
            dashlane_secret_name: "ssh_key_github"
            dashlane_secret_output_path: "{{ ansible_facts['env']['HOME'] }}/.ssh/id_github"
 
-      2. Fetch Credential:
+      2. Fetch Secret (single value):
+         ansible.builtin.import_role:
+           name: dashlane_secrets
+           tasks_from: fetch_secret
+         vars:
+           dashlane_secret_name: "api_token"
+         # Returns: dashlane_secret_value
+
+      3. Fetch Credential (username/password):
          ansible.builtin.import_role:
            name: dashlane_secrets
            tasks_from: fetch_credential
          vars:
            dashlane_secret_name: "my_service_creds"
+         # Returns: dashlane_credential.username, dashlane_credential.password
 
-      3. Fetch File:
+      4. Fetch File:
          ansible.builtin.import_role:
            name: dashlane_secrets
            tasks_from: fetch_file

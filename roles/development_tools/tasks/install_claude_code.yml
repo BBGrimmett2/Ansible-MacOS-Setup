@@ -2,18 +2,13 @@
 # =============================================================================
 # Development Tools Role - Install Claude Code CLI (Public Function)
 # =============================================================================
-# Installs Claude Code CLI for AI-powered coding (Work profile)
+# Routes to profile-specific Claude Code setup
 # =============================================================================
 
-- name: TODO - Install Claude Code CLI
-  ansible.builtin.debug:
-    msg:
-      - "Claude Code CLI installation not yet implemented"
-      - "Manual installation: npm install -g @anthropic-ai/claude-code"
-      - "Or download from: https://claude.ai/downloads"
+- name: Include work profile Claude Code setup
+  ansible.builtin.include_tasks: install_claude_code_work.yml
+  when: workstation_profile == 'work'
 
-# TODO: Implement actual Claude Code installation
-# - Check if npm is installed
-# - Install via npm or download binary
-# - Configure with API key from Dashlane
-# - Set organization settings
+- name: Include personal profile Claude Code setup
+  ansible.builtin.include_tasks: install_claude_code_personal.yml
+  when: workstation_profile == 'personal'

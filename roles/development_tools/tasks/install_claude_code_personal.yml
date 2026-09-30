@@ -1,0 +1,37 @@
+---
+# =============================================================================
+# Development Tools Role - Install Claude Code CLI - Personal Profile
+# =============================================================================
+# Configures Claude Code CLI with direct Anthropic API
+# =============================================================================
+
+- name: Check if Claude Code is installed
+  ansible.builtin.command: which claude
+  register: claude_check
+  changed_when: false
+  failed_when: false
+
+- name: Display Claude Code installation status
+  ansible.builtin.debug:
+    msg: "Claude Code CLI {{ 'is installed' if claude_check.rc == 0 else 'not found - install via Homebrew: brew install --cask claude' }}"
+
+# TODO: Personal profile Claude Code setup
+# This would typically involve:
+# 1. Fetching Anthropic API key from Dashlane (e.g., claude_code_api_key)
+# 2. Configuring ~/.claude/config.json with API key
+# 3. No VPN required for personal profile
+
+- name: TODO - Personal profile Claude Code setup
+  ansible.builtin.debug:
+    msg:
+      - "================================================"
+      - "Claude Code - Personal Profile Setup"
+      - "================================================"
+      - "Personal profile setup not yet implemented."
+      - ""
+      - "Manual setup:"
+      - "1. Get API key from: https://console.anthropic.com/"
+      - "2. Store in Dashlane as 'claude_code_api_key'"
+      - "3. Configure: claude configure"
+      - "================================================"
+  when: claude_check.rc == 0
