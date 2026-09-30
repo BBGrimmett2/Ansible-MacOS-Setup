@@ -30,6 +30,9 @@ macos_dock_mineffect: genie
 # Show recent applications in Dock
 macos_dock_show_recents: false
 
+# Show indicators for open applications (dots under running apps)
+macos_dock_show_indicators: false
+
 # Automatically rearrange Spaces based on most recent use
 macos_dock_mru_spaces: false
 

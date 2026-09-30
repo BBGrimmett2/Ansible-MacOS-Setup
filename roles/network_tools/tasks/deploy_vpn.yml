@@ -28,9 +28,20 @@
     label: "{{ item.name }}"
   tags: [network, vpn]
 
+- name: Import VPN profiles into Viscosity
+  ansible.builtin.command:
+    cmd: open "{{ item.file }}"
+  loop: "{{ vpn_profiles }}"
+  when:
+    - item.enabled | default(false)
+  loop_control:
+    label: "{{ item.name }}"
+  changed_when: false
+  tags: [network, vpn]
+
 - name: Display deployed VPN profiles
   ansible.builtin.debug:
-    msg: "VPN profile '{{ item.name }}' deployed to {{ item.file }}"
+    msg: "VPN profile '{{ item.name }}' deployed and imported to Viscosity"
   loop: "{{ vpn_profiles }}"
   when:
     - item.enabled | default(false)
