@@ -1,0 +1,53 @@
+---
+# =============================================================================
+# Configure pre-commit in existing local git repositories
+# =============================================================================
+# Purpose:  Scan projects_directory for repos with .pre-commit-config.yaml
+#           and run `pre-commit install` in each one
+# Usage:    ansible-playbook playbooks/configure_precommit.yml
+# Requires: pre-commit installed (run install_development_tools.yml first)
+# Profile:  both
+# =============================================================================
+
+- name: Configure pre-commit in existing repositories
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    workstation_profile: "{{ workstation_profile | default('work') }}"
+
+  tasks:
+    - name: Verify pre-commit is installed
+      ansible.builtin.command: which pre-commit
+      changed_when: false
+      failed_when: false
+      register: precommit_check
+
+    - name: Fail if pre-commit is not installed
+      ansible.builtin.fail:
+        msg: "pre-commit is not installed. Run: ansible-playbook playbooks/install_development_tools.yml"
+      when: precommit_check.rc != 0
+
+    - name: Find repos with .pre-commit-config.yaml under projects directory
+      ansible.builtin.find:
+        paths: "{{ projects_directory }}"
+        patterns: ".pre-commit-config.yaml"
+        hidden: true
+        recurse: true
+        file_type: file
+      register: precommit_configs
+
+    - name: Display repos found
+      ansible.builtin.debug:
+        msg:
+          - "Found {{ precommit_configs.files | length }} repo(s) with .pre-commit-config.yaml"
+          - "{{ precommit_configs.files | map(attribute='path') | map('dirname') | list }}"
+
+    - name: Install pre-commit hooks in each repo
+      ansible.builtin.command: pre-commit install
+      args:
+        chdir: "{{ item.path | dirname }}"
+      loop: "{{ precommit_configs.files }}"
+      loop_control:
+        label: "{{ item.path | dirname | basename }}"
+      changed_when: true
