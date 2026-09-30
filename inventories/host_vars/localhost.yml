@@ -136,6 +136,7 @@ certificates:
 # -----------------------------------------------------------------------------
 # Rectangle Configuration
 # -----------------------------------------------------------------------------
+desktop_apps_rectangle_open: true
 desktop_apps_rectangle_configure: true
 
 # Use Rectangle's recommended shortcuts (not Spectacle's)

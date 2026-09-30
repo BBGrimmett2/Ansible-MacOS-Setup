@@ -105,6 +105,9 @@ desktop_apps_google_drive_configure: false
 # Rectangle Configuration
 # -----------------------------------------------------------------------------
 
+# Open Rectangle after installation (launches it in the menu bar)
+desktop_apps_rectangle_open: false
+
 # Apply Rectangle preferences via macOS defaults
 desktop_apps_rectangle_configure: false
 
