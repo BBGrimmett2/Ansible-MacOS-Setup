@@ -54,7 +54,7 @@
 
 - name: Deploy SSH key to filesystem
   ansible.builtin.copy:
-    content: "{{ dashlane_ssh_key.stdout }}"
+    content: "{{ dashlane_ssh_key.stdout }}\n"
     dest: "{{ dashlane_secret_output_path }}"
     mode: "{{ dashlane_secret_permissions | default(dashlane_default_permissions) }}"
     owner: "{{ ansible_facts['env']['USER'] }}"

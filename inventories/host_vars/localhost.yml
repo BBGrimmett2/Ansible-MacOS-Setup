@@ -63,11 +63,22 @@ ssh_host_configs:
       IdentitiesOnly: "yes"
     enabled: true
 
-  # Shadowman Internal Hosts (wildcard)
+  # Shadowman Bastion Host (direct connection)
+  - name: shadowman_bastion
+    host_pattern: "bastion.shadowman.dev"
+    user: bgrimmet
+    identity_file: "~/.ssh/id_shadowman"
+    options:
+      PreferredAuthentications: publickey
+      ForwardAgent: "yes"
+    enabled: true
+
+  # Shadowman Internal Hosts (via bastion, no VPN required)
   - name: shadowman_internal
     host_pattern: "*.shadowman.dev"
     user: bgrimmet
     identity_file: "~/.ssh/id_shadowman"
+    proxy_jump: "bgrimmet@bastion.shadowman.dev"
     options:
       PreferredAuthentications: publickey
       ForwardAgent: "yes"
