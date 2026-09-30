@@ -24,7 +24,7 @@
   when:
     - desktop_apps_state == 'present'
     - desktop_apps_google_drive_configure | default(false)
-    - desktop_apps_google_drive_check.stat.exists
+    - not desktop_apps_google_drive_check.stat.exists
   changed_when: false
   failed_when: false
 
@@ -40,4 +40,4 @@
   when:
     - desktop_apps_state == 'present'
     - desktop_apps_google_drive_configure | default(false)
-    - desktop_apps_google_drive_check.stat.exists
+    - not desktop_apps_google_drive_check.stat.exists
