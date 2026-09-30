@@ -26,13 +26,6 @@ development_tools_precommit_enabled: true
 development_tools_claude_code_enabled: true
 
 # -----------------------------------------------------------------------------
-# Package Mapping (Homebrew/pip packages)
-# -----------------------------------------------------------------------------
-
-development_tools_packages:
-  precommit: pre-commit
-
-# -----------------------------------------------------------------------------
 # Git Configuration
 # -----------------------------------------------------------------------------
 
@@ -73,25 +66,6 @@ development_tools_git_default_branch: main
 development_tools_git_editor: vim
 
 # -----------------------------------------------------------------------------
-# pre-commit Configuration
-# -----------------------------------------------------------------------------
-
-# Configure pre-commit globally
-development_tools_precommit_configure: true
-
-# Global pre-commit hooks
-development_tools_precommit_global_hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: check-yaml
-  - id: check-added-large-files
-
-# Ansible-specific hooks (work profile)
-development_tools_precommit_ansible_hooks:
-  - id: ansible-lint
-  - id: yamllint
-
-# -----------------------------------------------------------------------------
 # Claude Code Configuration (Work Profile)
 # -----------------------------------------------------------------------------
 # Configured via Red Hat Vertex AI integration
@@ -105,9 +79,6 @@ development_tools_precommit_ansible_hooks:
 # Enable AAP demo environment setup
 development_tools_aap_demo_enabled: false
 
-# AAP demo clone directory
-development_tools_aap_demo_dir: "{{ ansible_facts['env']['HOME'] }}/aap-demo"
-
 # AAP demo GitHub repository
 development_tools_aap_demo_repo: "https://github.com/RedHatOfficial/aap-demo"
 
@@ -117,9 +88,6 @@ development_tools_aap_demo_repo: "https://github.com/RedHatOfficial/aap-demo"
 
 # Install custom scripts
 development_tools_custom_scripts_enabled: true
-
-# Custom scripts directory
-development_tools_custom_scripts_dir: "{{ role_path }}/files/custom_scripts"
 
 # -----------------------------------------------------------------------------
 # Claude Code - MCP Servers (User Scope → ~/.claude.json)
