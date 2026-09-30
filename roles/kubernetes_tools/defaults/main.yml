@@ -40,6 +40,9 @@ kubernetes_tools_stern_enabled: true
 # kustomize - Kubernetes native configuration management
 kubernetes_tools_kustomize_enabled: true
 
+# skopeo - Container image inspection and copy tool
+kubernetes_tools_skopeo_enabled: false
+
 # -----------------------------------------------------------------------------
 # Package Mapping (Homebrew package names)
 # -----------------------------------------------------------------------------
@@ -52,6 +55,7 @@ kubernetes_tools_packages:
   kubectx: kubectx
   stern: stern
   kustomize: kustomize
+  skopeo: skopeo
 
 # -----------------------------------------------------------------------------
 # Configuration

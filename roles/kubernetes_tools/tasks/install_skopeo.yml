@@ -1,0 +1,20 @@
+---
+# =============================================================================
+# Kubernetes Tools Role - Install skopeo (Public Function)
+# =============================================================================
+# Installs skopeo - Container image inspection and copy tool
+# =============================================================================
+
+- name: Check if skopeo is installed
+  ansible.builtin.command: brew list --formula skopeo
+  register: kubernetes_tools_skopeo_check
+  changed_when: false
+  failed_when: false
+
+- name: Install skopeo via Homebrew
+  ansible.builtin.command: brew install skopeo
+  when:
+    - kubernetes_tools_state == 'present'
+    - kubernetes_tools_skopeo_check.rc != 0
+  register: kubernetes_tools_skopeo_install
+  changed_when: kubernetes_tools_skopeo_install.rc == 0

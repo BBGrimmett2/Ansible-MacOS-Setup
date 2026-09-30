@@ -23,6 +23,9 @@ desktop_apps_chrome_enabled: false
 # Enable Webex desktop app
 desktop_apps_webex_enabled: true
 
+# Enable skopeo container image tool
+kubernetes_tools_skopeo_enabled: true
+
 # Open Google Drive for configuration
 desktop_apps_google_drive_configure: true
 

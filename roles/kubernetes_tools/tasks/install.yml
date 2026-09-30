@@ -32,3 +32,7 @@
 - name: Install kustomize
   ansible.builtin.include_tasks: install_kustomize.yml
   when: kubernetes_tools_install_all or kubernetes_tools_kustomize_enabled
+
+- name: Install skopeo
+  ansible.builtin.include_tasks: install_skopeo.yml
+  when: kubernetes_tools_install_all or kubernetes_tools_skopeo_enabled
