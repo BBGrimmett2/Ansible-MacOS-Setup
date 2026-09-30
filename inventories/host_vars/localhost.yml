@@ -107,9 +107,8 @@ development_tools_mcp_servers:
     url: "https://api.githubcopilot.com/mcp/"
   - name: atlassian
     enabled: true
-    transport: stdio
-    command: npx
-    args: ["-y", "@atlassian/mcp-server"]
+    transport: http
+    url: "https://mcp.atlassian.com/v2/mcp"
 
 # Claude Code - Global Skills
 # Add entries here with name matching a directory in roles/development_tools/files/claude_skills/
