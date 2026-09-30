@@ -183,7 +183,7 @@ development_tools_aap_demo_enabled: true
 # Git Configuration
 # -----------------------------------------------------------------------------
 git_user_name_personal: "Brian Grimmett"
-git_user_email_personal: "brian@starbaseengineering.com"
+git_user_email_personal: "bbgrimmett2@gmail.com"
 
 git_user_name_work: "Brian Grimmett"
 git_user_email_work: "bgrimmet@redhat.com"
