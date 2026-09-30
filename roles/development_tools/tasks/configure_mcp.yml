@@ -48,6 +48,7 @@
 - name: Add stdio MCP server (user scope)
   ansible.builtin.command: >
     claude mcp add {{ item.item.name }} --scope user --transport stdio
+    {% for key, value in (item.item.env | default({})).items() %}-e {{ key }}={{ value }} {% endfor %}
     -- {{ item.item.command }} {{ item.item.args | join(' ') }}
   loop: "{{ mcp_check.results }}"
   when:
