@@ -3,7 +3,7 @@
 # Certificate Deployment
 # =============================================================================
 # Purpose: Deploy and install certificates from Dashlane secrets storage
-# Configuration: Defined in host_vars/localhost.yml (certificates list)
+# Configuration: Defined in inventories/host_vars/localhost.yml (certificates list)
 # =============================================================================
 
 - name: Create certificates directory

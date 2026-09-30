@@ -3,7 +3,7 @@
 # SSH Config Role - Main Tasks
 # =============================================================================
 # Orchestrates SSH configuration and key deployment.
-# Configuration: Defined in host_vars/localhost.yml (ssh_keys list)
+# Configuration: Defined in inventories/host_vars/localhost.yml (ssh_keys list)
 # =============================================================================
 
 - name: Validate SSH configuration

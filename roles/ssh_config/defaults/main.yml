@@ -100,7 +100,7 @@ ssh_compression: false
 # -----------------------------------------------------------------------------
 
 # SSH keys to deploy (override in group_vars)
-# This should be defined in host_vars/localhost.yml
+# This should be defined in inventories/host_vars/localhost.yml
 ssh_keys: []
 
 # -----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ ssh_keys: []
 # -----------------------------------------------------------------------------
 
 # SSH host configurations (override in group_vars)
-# This should be defined in host_vars/localhost.yml
+# This should be defined in inventories/host_vars/localhost.yml
 ssh_host_configs: []
 
 # -----------------------------------------------------------------------------

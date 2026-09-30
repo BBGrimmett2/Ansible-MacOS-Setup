@@ -3,7 +3,7 @@
 # SSH Config Role - Deploy SSH Config File
 # =============================================================================
 # Deploy SSH client configuration from template or Dashlane.
-# Configuration: host_vars/localhost.yml (ssh_host_configs)
+# Configuration: inventories/host_vars/localhost.yml (ssh_host_configs)
 # =============================================================================
 
 - name: Check if SSH config exists

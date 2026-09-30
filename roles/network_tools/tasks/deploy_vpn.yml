@@ -3,7 +3,7 @@
 # VPN Profile Deployment
 # =============================================================================
 # Purpose: Deploy VPN profiles from Dashlane secrets storage
-# Configuration: Defined in host_vars/localhost.yml (vpn_profiles list)
+# Configuration: Defined in inventories/host_vars/localhost.yml (vpn_profiles list)
 # =============================================================================
 
 - name: Create VPN profiles directory
