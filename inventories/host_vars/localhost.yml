@@ -132,3 +132,29 @@ certificates:
     dashlane_secret: cert_shadowman_openshift_root_ca
     file: "{{ user_home }}/.certs/openshift_root_ca.pem"
     enabled: true
+
+# -----------------------------------------------------------------------------
+# Rectangle Configuration
+# -----------------------------------------------------------------------------
+desktop_apps_rectangle_configure: true
+
+# Use Rectangle's recommended shortcuts (not Spectacle's)
+desktop_apps_rectangle_alternate_shortcuts: true
+
+# Cycle displays on repeated left/right actions
+desktop_apps_rectangle_subsequent_execution_mode: 1
+
+# Keyboard shortcuts (keyCode + modifierFlags)
+# Modifier flags: cmd=1048576, ctrl+opt=786432
+desktop_apps_rectangle_left_half:
+  keyCode: 123
+  modifierFlags: 1048576
+desktop_apps_rectangle_right_half:
+  keyCode: 124
+  modifierFlags: 1048576
+desktop_apps_rectangle_toggle_todo:
+  keyCode: 11
+  modifierFlags: 786432
+desktop_apps_rectangle_reflow_todo:
+  keyCode: 45
+  modifierFlags: 786432

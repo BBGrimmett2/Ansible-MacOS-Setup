@@ -1,0 +1,9 @@
+---
+# =============================================================================
+# Desktop Apps Role - Handlers
+# =============================================================================
+
+- name: Restart Rectangle
+  ansible.builtin.command: killall Rectangle
+  ignore_errors: true
+  listen: restart rectangle

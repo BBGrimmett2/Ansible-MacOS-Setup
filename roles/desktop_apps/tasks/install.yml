@@ -25,6 +25,12 @@
   ansible.builtin.include_tasks: install_rectangle.yml
   when: desktop_apps_install_all or desktop_apps_rectangle_enabled
 
+- name: Configure Rectangle
+  ansible.builtin.include_tasks: configure_rectangle.yml
+  when:
+    - desktop_apps_install_all or desktop_apps_rectangle_enabled
+    - desktop_apps_rectangle_configure | default(false)
+
 - name: Install DisplayLink
   ansible.builtin.include_tasks: install_displaylink.yml
   when: desktop_apps_install_all or desktop_apps_displaylink_enabled

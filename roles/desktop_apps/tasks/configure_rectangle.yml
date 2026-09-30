@@ -1,0 +1,58 @@
+---
+# =============================================================================
+# Desktop Apps Role - Configure Rectangle (Public Function)
+# =============================================================================
+# Applies Rectangle preferences via macOS defaults.
+# Rectangle must be restarted for changes to take effect.
+# Can be called via: tasks_from: configure_rectangle
+# =============================================================================
+
+- name: Set Rectangle alternate default shortcuts
+  community.general.osx_defaults:
+    domain: com.knollsoft.Rectangle
+    key: alternateDefaultShortcuts
+    type: bool
+    value: "{{ desktop_apps_rectangle_alternate_shortcuts }}"
+
+- name: Set Rectangle subsequent execution mode
+  community.general.osx_defaults:
+    domain: com.knollsoft.Rectangle
+    key: subsequentExecutionMode
+    type: int
+    value: "{{ desktop_apps_rectangle_subsequent_execution_mode }}"
+
+- name: Set Rectangle left half shortcut
+  community.general.osx_defaults:
+    domain: com.knollsoft.Rectangle
+    key: leftHalf
+    type: dict
+    value: "{{ desktop_apps_rectangle_left_half }}"
+  when: desktop_apps_rectangle_left_half | length > 0
+
+- name: Set Rectangle right half shortcut
+  community.general.osx_defaults:
+    domain: com.knollsoft.Rectangle
+    key: rightHalf
+    type: dict
+    value: "{{ desktop_apps_rectangle_right_half }}"
+  when: desktop_apps_rectangle_right_half | length > 0
+
+- name: Set Rectangle toggle todo shortcut
+  community.general.osx_defaults:
+    domain: com.knollsoft.Rectangle
+    key: toggleTodo
+    type: dict
+    value: "{{ desktop_apps_rectangle_toggle_todo }}"
+  when: desktop_apps_rectangle_toggle_todo | length > 0
+
+- name: Set Rectangle reflow todo shortcut
+  community.general.osx_defaults:
+    domain: com.knollsoft.Rectangle
+    key: reflowTodo
+    type: dict
+    value: "{{ desktop_apps_rectangle_reflow_todo }}"
+  when: desktop_apps_rectangle_reflow_todo | length > 0
+
+- name: Display Rectangle configuration status
+  ansible.builtin.debug:
+    msg: "Rectangle configuration completed - restart Rectangle to apply changes"

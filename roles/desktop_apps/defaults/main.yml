@@ -100,3 +100,25 @@ desktop_apps_google_drive_configure: false
 # Google Drive sync preferences (future implementation)
 # desktop_apps_google_drive_sync_folders: []
 # desktop_apps_google_drive_streaming_mode: true
+
+# -----------------------------------------------------------------------------
+# Rectangle Configuration
+# -----------------------------------------------------------------------------
+
+# Apply Rectangle preferences via macOS defaults
+desktop_apps_rectangle_configure: false
+
+# Use Rectangle's recommended shortcuts (true) vs Spectacle's shortcuts (false)
+desktop_apps_rectangle_alternate_shortcuts: true
+
+# Behavior on repeated command:
+# 0: halves to thirds (Spectacle), 1: cycle displays for left/right,
+# 2: disabled, 3: cycle displays + halves to thirds, 4: repeat on next display
+desktop_apps_rectangle_subsequent_execution_mode: 0
+
+# Keyboard shortcut overrides (dict with keyCode and modifierFlags integers)
+# Leave as {} to use Rectangle's built-in defaults
+desktop_apps_rectangle_left_half: {}
+desktop_apps_rectangle_right_half: {}
+desktop_apps_rectangle_toggle_todo: {}
+desktop_apps_rectangle_reflow_todo: {}
