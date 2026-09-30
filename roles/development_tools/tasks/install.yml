@@ -5,6 +5,10 @@
 # Orchestrates installation of all enabled development tools
 # =============================================================================
 
+- name: Install Node.js
+  ansible.builtin.include_tasks: install_nodejs.yml
+  when: development_tools_install_all or development_tools_nodejs_enabled
+
 - name: Install pre-commit
   ansible.builtin.include_tasks: install_precommit.yml
   when: development_tools_install_all or development_tools_precommit_enabled

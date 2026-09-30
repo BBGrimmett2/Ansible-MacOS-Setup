@@ -1,0 +1,31 @@
+---
+# =============================================================================
+# Development Tools Role - Install Node.js
+# =============================================================================
+# Installs Node.js via Homebrew, providing npm and npx
+# Required for stdio-based MCP servers (e.g. Atlassian, GitHub Copilot)
+# =============================================================================
+
+- name: Check if Node.js is installed
+  ansible.builtin.command: brew list --formula node
+  register: development_tools_nodejs_check
+  changed_when: false
+  failed_when: false
+
+- name: Install Node.js via Homebrew
+  ansible.builtin.command: brew install node
+  when:
+    - development_tools_state == 'present'
+    - development_tools_nodejs_check.rc != 0
+  changed_when: true
+
+- name: Verify npx is available
+  ansible.builtin.command: npx --version
+  register: development_tools_npx_check
+  changed_when: false
+  failed_when: false
+
+- name: Display Node.js installation status
+  ansible.builtin.debug:
+    msg: "Node.js installed — npx {{ development_tools_npx_check.stdout }}"
+  when: development_tools_npx_check.rc == 0

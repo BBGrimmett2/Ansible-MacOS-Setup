@@ -19,6 +19,9 @@ development_tools_install_all: true
 # Individual Tool Control
 # -----------------------------------------------------------------------------
 
+# Node.js - Required for npx-based MCP servers (Atlassian, GitHub Copilot, etc.)
+development_tools_nodejs_enabled: true
+
 # pre-commit - Git hooks framework
 development_tools_precommit_enabled: true
 
