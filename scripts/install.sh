@@ -544,8 +544,8 @@ run_ansible_playbook() {
     print_info "You will be prompted for your sudo password and workstation profile"
     echo ""
 
-    # Run the bootstrap playbook with become password prompt
-    if ! ansible-playbook playbooks/bootstrap_workstation.yml --ask-become-pass; then
+    # Run the bootstrap playbook with become password prompt and verbosity
+    if ! ansible-playbook playbooks/bootstrap_workstation.yml --ask-become-pass -v; then
         print_fatal "Ansible playbook execution failed. Check the output above for errors."
     fi
 

@@ -22,8 +22,8 @@ development_tools_install_all: true
 # pre-commit - Git hooks framework
 development_tools_precommit_enabled: true
 
-# Claude Code CLI - AI coding assistant (TODO: manual configuration for now)
-development_tools_claude_code_enabled: false
+# Claude Code CLI - AI coding assistant
+development_tools_claude_code_enabled: true
 
 # -----------------------------------------------------------------------------
 # Package Mapping (Homebrew/pip packages)
@@ -94,9 +94,9 @@ development_tools_precommit_ansible_hooks:
 # -----------------------------------------------------------------------------
 # Claude Code Configuration (Work Profile)
 # -----------------------------------------------------------------------------
-# TODO: Claude Code installation is manual for now
-# User has custom configuration steps outside of Ansible
-# Future: Implement if automation is desired
+# Configured via Red Hat Vertex AI integration
+# Requires active VPN connection during setup
+# GCP Project ID stored in Dashlane as 'claude_code_gcp_project_id'
 
 # -----------------------------------------------------------------------------
 # AAP Demo Environment (Work Profile)
