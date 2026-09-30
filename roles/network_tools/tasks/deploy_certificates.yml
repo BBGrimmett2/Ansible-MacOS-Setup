@@ -52,10 +52,10 @@
     - cert_path_results.results[loop_index].rc == 0
   tags: [network, certificates]
 
-- name: Check if certificates already installed in system keychain
+- name: Check if certificates already installed in login keychain
   ansible.builtin.shell: |
     CN=$(openssl x509 -noout -subject -in "{{ item.file }}" | sed 's/.*CN *= *//' | sed 's/[,\/].*//')
-    security find-certificate -c "$CN" /Library/Keychains/System.keychain
+    security find-certificate -c "$CN" "${HOME}/Library/Keychains/login.keychain-db"
   register: cert_check
   changed_when: false
   failed_when: false
@@ -66,9 +66,15 @@
     label: "{{ item.name }}"
   tags: [network, certificates]
 
-- name: Install certificates to system keychain
+- name: Install certificates to login keychain
   ansible.builtin.command:
-    cmd: open "{{ item.item.file }}"
+    cmd: >
+      security add-trusted-cert
+      -d -r trustRoot
+      -k {{ ansible_facts['env']['HOME'] }}/Library/Keychains/login.keychain-db
+      {{ item.item.file }}
+  register: cert_install
+  changed_when: cert_install.rc == 0
   loop: "{{ cert_check.results }}"
   when:
     - item.item.enabled | default(false)
@@ -79,7 +85,7 @@
 
 - name: Display certificate installation status
   ansible.builtin.debug:
-    msg: "Certificate '{{ item.item.name }}' {{ 'installed' if item.rc != 0 else 'already present' }} in system keychain"
+    msg: "Certificate '{{ item.item.name }}' {{ 'installed' if item.rc != 0 else 'already present' }} in login keychain"
   loop: "{{ cert_check.results }}"
   when:
     - item.item.enabled | default(false)
