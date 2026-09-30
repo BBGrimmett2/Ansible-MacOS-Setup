@@ -27,7 +27,7 @@
 
 - name: Fetch certificate paths from Dashlane
   ansible.builtin.shell: |
-    dcli note "{{ item.dashlane_secret }}" --output text | tr -d '[:space:]'
+    dcli note "{{ item.dashlane_secret }}" --output text | tr -d '\n\r'
   register: cert_path_results
   changed_when: false
   loop: "{{ certificates }}"
