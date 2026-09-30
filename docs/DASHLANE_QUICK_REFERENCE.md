@@ -65,7 +65,7 @@ dcli configure
 dcli status
 
 # Test secret retrieval
-dcli read ssh_key_personal_github --output raw
+dcli note ssh_key_personal_github --output text
 
 # Should output:
 # -----BEGIN OPENSSH PRIVATE KEY-----

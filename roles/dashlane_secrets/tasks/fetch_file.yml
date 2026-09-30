@@ -39,7 +39,7 @@
 
 - name: Fetch file content from Dashlane
   ansible.builtin.shell: |
-    {{ dashlane_cli }} read "{{ dashlane_secret_name }}" --output raw
+    {{ dashlane_cli }} note "{{ dashlane_secret_name }}" --output text
   register: dashlane_file_content
   failed_when:
     - dashlane_file_content.rc != 0

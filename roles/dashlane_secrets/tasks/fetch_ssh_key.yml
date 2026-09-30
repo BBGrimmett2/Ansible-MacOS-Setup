@@ -39,7 +39,7 @@
 
 - name: Fetch SSH key from Dashlane
   ansible.builtin.shell: |
-    {{ dashlane_cli }} read "{{ dashlane_secret_name }}" --output raw
+    {{ dashlane_cli }} note "{{ dashlane_secret_name }}" --output text
   register: dashlane_ssh_key
   failed_when:
     - dashlane_ssh_key.rc != 0
