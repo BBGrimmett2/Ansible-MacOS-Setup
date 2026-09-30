@@ -13,19 +13,32 @@
     mode: '0755'
   tags: [network, certificates]
 
-- name: Deploy certificates from Dashlane
-  ansible.builtin.include_role:
-    name: dashlane_secrets
-    tasks_from: fetch_file
-  vars:
-    dashlane_secret_name: "{{ item.dashlane_secret }}"
-    dashlane_secret_output_path: "{{ item.file }}"
-    dashlane_secret_permissions: "0644"
+- name: Fetch certificate download URLs from Dashlane
+  ansible.builtin.shell: |
+    SHARE_URL=$(dcli note "{{ item.dashlane_secret }}" --output text | tr -d '[:space:]')
+    FILE_ID=$(echo "$SHARE_URL" | sed 's|.*/file/d/||' | sed 's|/.*||')
+    echo "https://drive.google.com/uc?export=download&id=${FILE_ID}"
+  register: cert_url_results
+  changed_when: false
   loop: "{{ certificates }}"
   when:
     - item.enabled | default(false)
   loop_control:
     label: "{{ item.name }}"
+  tags: [network, certificates]
+
+- name: Download certificates from Google Drive
+  ansible.builtin.get_url:
+    url: "{{ cert_url_results.results[loop_index].stdout | trim }}"
+    dest: "{{ item.file }}"
+    mode: '0644'
+  loop: "{{ certificates }}"
+  loop_control:
+    label: "{{ item.name }}"
+    index_var: loop_index
+  when:
+    - item.enabled | default(false)
+    - cert_url_results.results[loop_index].rc == 0
   tags: [network, certificates]
 
 - name: Check if certificates already installed in system keychain
@@ -44,14 +57,7 @@
 
 - name: Install certificates to system keychain
   ansible.builtin.command:
-    cmd: >
-      security add-trusted-cert
-      -d -r trustRoot
-      -k /Library/Keychains/System.keychain
-      {{ item.item.file }}
-  become: true
-  register: cert_install
-  changed_when: cert_install.rc == 0
+    cmd: open "{{ item.item.file }}"
   loop: "{{ cert_check.results }}"
   when:
     - item.item.enabled | default(false)
