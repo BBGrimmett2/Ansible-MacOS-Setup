@@ -1,10 +1,9 @@
 ---
 # =============================================================================
-# Development Tools Role - Install Claude Code CLI (Public Function)
+# Development Tools Role - Install Claude Code CLI (Work Profile)
 # =============================================================================
-# Configures Claude Code CLI
+# Installs and configures Claude Code CLI for the work profile.
 # - Work Profile: Red Hat Vertex AI integration via Google Cloud
-# - Personal Profile: Direct Anthropic API (TODO - not yet implemented)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -17,9 +16,20 @@
   changed_when: false
   failed_when: false
 
-- name: Display Claude Code installation status
+- name: Install Claude Code CLI
+  ansible.builtin.shell: curl -fsSL https://claude.ai/install.sh | bash
+  when: claude_check.rc != 0
+  changed_when: true
+
+- name: Check if Claude Code Vertex AI is already configured
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/claude-code-vertex/env.sh"
+  register: claude_vertex_configured
+
+- name: Display skip message
   ansible.builtin.debug:
-    msg: "Claude Code CLI {{ 'is installed' if claude_check.rc == 0 else 'not found - install via Homebrew: brew install --cask claude' }}"
+    msg: "Claude Code Vertex AI already configured - skipping setup"
+  when: claude_vertex_configured.stat.exists
 
 - name: Prompt to connect to Red Hat VPN
   ansible.builtin.pause:
@@ -38,8 +48,7 @@
 
       Press ENTER when connected to VPN to continue...
       ================================================
-  when:
-    - claude_check.rc == 0
+  when: not claude_vertex_configured.stat.exists
 
 - name: Fetch GCP Project ID from Dashlane
   ansible.builtin.include_role:
@@ -47,12 +56,7 @@
     tasks_from: fetch_secret
   vars:
     dashlane_secret_name: "claude_code_gcp_project_id"
-  when: claude_check.rc == 0
-
-- name: Check if Claude Code Vertex AI is already configured
-  ansible.builtin.stat:
-    path: "{{ ansible_facts['env']['HOME'] }}/.config/gcloud/application_default_credentials.json"
-  register: claude_vertex_configured
+  when: not claude_vertex_configured.stat.exists
 
 - name: Display Claude Code configuration prompt
   ansible.builtin.debug:
@@ -66,20 +70,16 @@
       - ""
       - "GCP Project: {{ dashlane_secret_value if dashlane_secret_retrieved else 'Not configured' }}"
       - "================================================"
-  when:
-    - claude_check.rc == 0
-    - not claude_vertex_configured.stat.exists
+  when: not claude_vertex_configured.stat.exists
 
-- name: Configure Claude Code with Vertex AI
+- name: Install and configure Claude Code with Vertex AI
   ansible.builtin.shell: |
     curl -fsSL "https://red.ht/claude-vertex-linux-setup" | bash -s -- {{ dashlane_secret_value }} cloudability-it-gemini
   when:
-    - claude_check.rc == 0
     - not claude_vertex_configured.stat.exists
     - dashlane_secret_retrieved
   register: claude_vertex_setup
   changed_when: true
-  no_log: false
 
 - name: Display Claude Code setup completion
   ansible.builtin.debug:
@@ -87,16 +87,8 @@
       - "Claude Code Vertex AI configuration complete!"
       - "You can now use the 'claude' command with Red Hat's Vertex AI backend"
   when:
-    - claude_check.rc == 0
     - claude_vertex_setup is defined
     - claude_vertex_setup.changed
-
-- name: Display skip message
-  ansible.builtin.debug:
-    msg: "Claude Code Vertex AI already configured - skipping setup"
-  when:
-    - claude_check.rc == 0
-    - claude_vertex_configured.stat.exists
 
 - name: Prompt to disconnect from Red Hat VPN
   ansible.builtin.pause:
@@ -110,5 +102,4 @@
 
       The playbook will continue after you press ENTER.
       ================================================
-  when:
-    - claude_check.rc == 0
+  when: not claude_vertex_configured.stat.exists
