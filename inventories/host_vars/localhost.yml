@@ -185,7 +185,7 @@ development_tools_aap_demo_enabled: true
 git_user_name_personal: "Brian Grimmett"
 git_user_email_personal: "bbgrimmett2@gmail.com"
 
-git_user_name_work: "Brian Grimmett"
-git_user_email_work: "bgrimmet@redhat.com"
+git_user_name_work: "{{ git_user_name_personal }}"
+git_user_email_work: "{{ git_user_email_personal }}"
 
 development_tools_git_editor: "code --wait"
