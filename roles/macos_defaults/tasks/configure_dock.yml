@@ -26,7 +26,7 @@
   community.general.osx_defaults:
     domain: com.apple.dock
     key: tilesize
-    type: int
+    type: float
     value: "{{ macos_dock_tilesize }}"
   notify: Restart Dock
 
@@ -42,7 +42,7 @@
   community.general.osx_defaults:
     domain: com.apple.dock
     key: largesize
-    type: int
+    type: float
     value: "{{ macos_dock_largesize }}"
   when: macos_dock_magnification
   notify: Restart Dock
