@@ -1,0 +1,26 @@
+---
+# =============================================================================
+# Development Tools Role - Configure Claude Code Skills (Public Function)
+# =============================================================================
+# Deploys SKILL.md files to ~/.claude/skills/ (user scope)
+# Skills defined in development_tools_claude_skills (defaults/main.yml or host_vars)
+# Add skill directories to roles/development_tools/files/claude_skills/<name>/SKILL.md
+# =============================================================================
+
+- name: Ensure Claude skills directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.claude/skills/{{ item.name }}"
+    state: directory
+    mode: '0755'
+  loop: "{{ development_tools_claude_skills | selectattr('enabled', 'equalto', true) | list }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Deploy Claude skill files
+  ansible.builtin.copy:
+    src: "claude_skills/{{ item.name }}/SKILL.md"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.claude/skills/{{ item.name }}/SKILL.md"
+    mode: '0644'
+  loop: "{{ development_tools_claude_skills | selectattr('enabled', 'equalto', true) | list }}"
+  loop_control:
+    label: "{{ item.name }}"

@@ -24,3 +24,13 @@
   when:
     - development_tools_aap_demo_enabled
     - workstation_profile == 'work'
+
+- name: Configure MCP servers
+  ansible.builtin.include_tasks: configure_mcp.yml
+  when: development_tools_mcp_enabled | default(true)
+
+- name: Configure Claude Code skills
+  ansible.builtin.include_tasks: configure_claude_skills.yml
+  when:
+    - development_tools_claude_skills_enabled | default(true)
+    - development_tools_claude_skills | length > 0

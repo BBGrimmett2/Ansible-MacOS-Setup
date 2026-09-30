@@ -120,3 +120,37 @@ development_tools_custom_scripts_enabled: true
 
 # Custom scripts directory
 development_tools_custom_scripts_dir: "{{ role_path }}/files/custom_scripts"
+
+# -----------------------------------------------------------------------------
+# Claude Code - MCP Servers (User Scope → ~/.claude.json)
+# -----------------------------------------------------------------------------
+
+# Enable MCP server configuration
+development_tools_mcp_enabled: true
+
+# MCP server definitions
+# Schema: name, enabled, transport (http|stdio|ws), url (http/ws), command+args (stdio)
+development_tools_mcp_servers:
+  - name: redhat-docs
+    enabled: true
+    transport: http
+    url: "https://docs-mcp.api.redhat.com/mcp"
+  - name: github
+    enabled: true
+    transport: http
+    url: "https://api.githubcopilot.com/mcp/"
+  - name: atlassian
+    enabled: true
+    transport: stdio
+    command: npx
+    args: ["-y", "@atlassian/mcp-server"]
+
+# -----------------------------------------------------------------------------
+# Claude Code - Global Skills (User Scope → ~/.claude/skills/)
+# -----------------------------------------------------------------------------
+
+# Enable skill deployment
+development_tools_claude_skills_enabled: true
+
+# Skills to deploy — add entries with name matching a directory in files/claude_skills/
+development_tools_claude_skills: []

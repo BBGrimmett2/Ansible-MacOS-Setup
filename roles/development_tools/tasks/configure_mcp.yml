@@ -1,0 +1,46 @@
+---
+# =============================================================================
+# Development Tools Role - Configure MCP Servers (Public Function)
+# =============================================================================
+# Idempotently registers MCP servers at user scope (~/.claude.json)
+# Servers defined in development_tools_mcp_servers (defaults/main.yml or host_vars)
+# =============================================================================
+
+- name: Check if MCP server is already configured
+  ansible.builtin.shell: claude mcp list | grep -q "^{{ item.name }}"
+  loop: "{{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) | list }}"
+  register: mcp_check
+  changed_when: false
+  failed_when: false
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Add HTTP MCP server (user scope)
+  ansible.builtin.command: >
+    claude mcp add {{ item.item.name }} --scope user --transport http {{ item.item.url }}
+  loop: "{{ mcp_check.results }}"
+  when:
+    - item.rc != 0
+    - item.item.transport == 'http'
+  changed_when: true
+  loop_control:
+    label: "{{ item.item.name }}"
+
+- name: Add stdio MCP server (user scope)
+  ansible.builtin.command: >
+    claude mcp add {{ item.item.name }} --scope user --transport stdio
+    -- {{ item.item.command }} {{ item.item.args | join(' ') }}
+  loop: "{{ mcp_check.results }}"
+  when:
+    - item.rc != 0
+    - item.item.transport == 'stdio'
+  changed_when: true
+  loop_control:
+    label: "{{ item.item.name }}"
+
+- name: Display MCP server configuration status
+  ansible.builtin.debug:
+    msg: "MCP server '{{ item.item.name }}' {{ 'added' if item.rc != 0 else 'already configured' }}"
+  loop: "{{ mcp_check.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"

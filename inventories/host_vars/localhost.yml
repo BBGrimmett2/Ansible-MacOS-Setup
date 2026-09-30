@@ -93,6 +93,29 @@ vpn_profiles:
     file: "{{ user_home }}/.vpn/shadowman.ovpn"
     enabled: true
 
+# Claude Code - MCP Servers
+# Override or extend the default MCP server list from development_tools defaults
+# Schema: name, enabled, transport (http|stdio|ws), url (http/ws), command+args (stdio)
+development_tools_mcp_servers:
+  - name: redhat-docs
+    enabled: true
+    transport: http
+    url: "https://docs-mcp.api.redhat.com/mcp"
+  - name: github
+    enabled: true
+    transport: http
+    url: "https://api.githubcopilot.com/mcp/"
+  - name: atlassian
+    enabled: true
+    transport: stdio
+    command: npx
+    args: ["-y", "@atlassian/mcp-server"]
+
+# Claude Code - Global Skills
+# Add entries here with name matching a directory in roles/development_tools/files/claude_skills/
+development_tools_claude_skills: []
+
+# -----------------------------------------------------------------------------
 # Certificates Configuration
 # Maps certificates from Dashlane to system keychain installation
 certificates:                                                                                               
