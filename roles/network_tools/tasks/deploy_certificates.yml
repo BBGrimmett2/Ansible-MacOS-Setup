@@ -13,12 +13,22 @@
     mode: '0755'
   tags: [network, certificates]
 
-- name: Fetch certificate download URLs from Dashlane
+- name: Check Google Drive is mounted
+  ansible.builtin.stat:
+    path: "{{ google_drive_path }}"
+  register: google_drive_mount
+  tags: [network, certificates]
+
+- name: Fail if Google Drive is not mounted
+  ansible.builtin.fail:
+    msg: "Google Drive is not mounted at {{ google_drive_path }}. Open the Google Drive app and sign in first."
+  when: not google_drive_mount.stat.exists
+  tags: [network, certificates]
+
+- name: Fetch certificate paths from Dashlane
   ansible.builtin.shell: |
-    SHARE_URL=$(dcli note "{{ item.dashlane_secret }}" --output text | tr -d '[:space:]')
-    FILE_ID=$(echo "$SHARE_URL" | sed 's|.*/file/d/||' | sed 's|/.*||')
-    echo "https://drive.google.com/uc?export=download&id=${FILE_ID}"
-  register: cert_url_results
+    dcli note "{{ item.dashlane_secret }}" --output text | tr -d '[:space:]'
+  register: cert_path_results
   changed_when: false
   loop: "{{ certificates }}"
   when:
@@ -27,18 +37,19 @@
     label: "{{ item.name }}"
   tags: [network, certificates]
 
-- name: Download certificates from Google Drive
-  ansible.builtin.get_url:
-    url: "{{ cert_url_results.results[loop_index].stdout | trim }}"
+- name: Copy certificates from Google Drive
+  ansible.builtin.copy:
+    src: "{{ cert_path_results.results[loop_index].stdout | trim }}"
     dest: "{{ item.file }}"
     mode: '0644'
+    remote_src: true
   loop: "{{ certificates }}"
   loop_control:
     label: "{{ item.name }}"
     index_var: loop_index
   when:
     - item.enabled | default(false)
-    - cert_url_results.results[loop_index].rc == 0
+    - cert_path_results.results[loop_index].rc == 0
   tags: [network, certificates]
 
 - name: Check if certificates already installed in system keychain

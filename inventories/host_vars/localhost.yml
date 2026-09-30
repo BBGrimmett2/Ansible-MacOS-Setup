@@ -115,18 +115,20 @@ development_tools_mcp_servers:
 # Add entries here with name matching a directory in roles/development_tools/files/claude_skills/
 development_tools_claude_skills: []
 
+# Google Drive Configuration
+# Mount path for Google Drive on this machine
+google_drive_path: "/Users/bgrimmet/Google Drive/My Drive"
+
 # -----------------------------------------------------------------------------
 # Certificates Configuration
-# Maps certificates from Dashlane to system keychain installation
-certificates:                                                                                               
+# dashlane_secret: name of Dashlane note containing the full Google Drive file path
+certificates:
   - name: shadowman_root_ca
     dashlane_secret: cert_shadowman_root_ca
     file: "{{ user_home }}/.certs/shadowman_root_ca.pem"
-    keychain_name: "Shadowman"
     enabled: true
-    
+
   - name: shadowman_openshift_root_ca
     dashlane_secret: cert_shadowman_openshift_root_ca
     file: "{{ user_home }}/.certs/openshift_root_ca.pem"
-    keychain_name: "OpenShift"
-    enabled: true 
+    enabled: true
