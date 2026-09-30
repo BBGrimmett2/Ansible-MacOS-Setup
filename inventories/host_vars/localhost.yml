@@ -63,11 +63,12 @@ ssh_host_configs:
       IdentitiesOnly: "yes"
     enabled: true
 
-  # Shadowman Bastion Host (direct connection)
+  # Shadowman Bastion Host (direct, ProxyJump none prevents *.shadowman.dev wildcard loop)
   - name: shadowman_bastion
     host_pattern: "bastion.shadowman.dev"
     user: bgrimmet
     identity_file: "~/.ssh/id_shadowman"
+    proxy_jump: "none"
     options:
       PreferredAuthentications: publickey
       ForwardAgent: "yes"
