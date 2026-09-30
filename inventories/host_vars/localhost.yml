@@ -133,6 +133,9 @@ certificates:
     file: "{{ user_home }}/.certs/openshift_root_ca.pem"
     enabled: true
 
+# Show indicators (dots) for open applications in Dock
+macos_dock_show_indicators: true
+
 # -----------------------------------------------------------------------------
 # Rectangle Configuration
 # -----------------------------------------------------------------------------
@@ -164,3 +167,14 @@ desktop_apps_rectangle_reflow_todo:
 # Development Tools Configuration
 # -----------------------------------------------------------------------------
 development_tools_aap_demo_enabled: true
+
+# -----------------------------------------------------------------------------
+# Git Configuration
+# -----------------------------------------------------------------------------
+git_user_name_personal: "Brian Grimmett"
+git_user_email_personal: "brian@starbaseengineering.com"
+
+git_user_name_work: "Brian Grimmett"
+git_user_email_work: "bgrimmet@redhat.com"
+
+development_tools_git_editor: "code --wait"
