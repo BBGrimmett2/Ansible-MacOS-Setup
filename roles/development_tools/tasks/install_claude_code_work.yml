@@ -74,10 +74,8 @@
 
 - name: Install and configure Claude Code with Vertex AI
   ansible.builtin.shell: |
-    curl -fsSL "https://red.ht/claude-vertex-linux-setup" | bash -s -- {{ dashlane_secret_value }} cloudability-it-gemini
-  when:
-    - not claude_vertex_configured.stat.exists
-    - dashlane_secret_retrieved
+    curl -fsSL "https://red.ht/claude-vertex-linux-setup" | bash -s -- {{ dashlane_secret_value }}
+  when: not claude_vertex_configured.stat.exists
   register: claude_vertex_setup
   changed_when: true
 
