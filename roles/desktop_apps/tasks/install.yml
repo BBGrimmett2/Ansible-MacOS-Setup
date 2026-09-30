@@ -54,3 +54,7 @@
 - name: Install Hidden Bar
   ansible.builtin.include_tasks: install_hidden_bar.yml
   when: desktop_apps_install_all or desktop_apps_hidden_bar_enabled
+
+- name: Install Webex
+  ansible.builtin.include_tasks: install_webex.yml
+  when: desktop_apps_install_all or desktop_apps_webex_enabled

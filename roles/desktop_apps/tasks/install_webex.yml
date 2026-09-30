@@ -1,0 +1,20 @@
+---
+# =============================================================================
+# Desktop Apps Role - Install Webex (Public Function)
+# =============================================================================
+# Installs Cisco Webex
+# =============================================================================
+
+- name: Check if Webex is installed
+  ansible.builtin.stat:
+    path: /Applications/Webex.app
+  register: desktop_apps_webex_check
+
+- name: Install Webex via Homebrew
+  ansible.builtin.command: brew install --cask webex
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_webex_enabled | default(false)
+    - not desktop_apps_webex_check.stat.exists
+  register: desktop_apps_webex_install
+  changed_when: desktop_apps_webex_install.rc == 0

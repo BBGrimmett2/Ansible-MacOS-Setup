@@ -52,6 +52,9 @@ desktop_apps_discord_enabled: true
 # Hidden Bar - Menu bar icon organizer
 desktop_apps_hidden_bar_enabled: true
 
+# Webex - Video conferencing
+desktop_apps_webex_enabled: false
+
 # -----------------------------------------------------------------------------
 # Package Mapping (Homebrew cask names)
 # -----------------------------------------------------------------------------
@@ -66,6 +69,7 @@ desktop_apps_packages:
   obsidian: obsidian
   discord: discord
   hidden_bar: hiddenbar
+  webex: webex
 
 # -----------------------------------------------------------------------------
 # Default Applications Configuration
