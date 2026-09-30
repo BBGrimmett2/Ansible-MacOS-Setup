@@ -130,20 +130,7 @@ development_tools_mcp_enabled: true
 
 # MCP server definitions
 # Schema: name, enabled, transport (http|stdio|ws), url (http/ws), command+args (stdio)
-development_tools_mcp_servers:
-  - name: redhat-docs
-    enabled: true
-    transport: http
-    url: "https://docs-mcp.api.redhat.com/mcp"
-  - name: github
-    enabled: true
-    transport: http
-    url: "https://api.githubcopilot.com/mcp/"
-  - name: atlassian
-    enabled: true
-    transport: stdio
-    command: npx
-    args: ["-y", "@atlassian/mcp-server"]
+development_tools_mcp_servers: []
 
 # -----------------------------------------------------------------------------
 # Claude Code - Global Skills (User Scope → ~/.claude/skills/)
