@@ -63,6 +63,14 @@
     value: "{{ macos_dock_show_recents }}"
   notify: Restart Dock
 
+- name: Set show indicators for open applications
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: show-process-indicators
+    type: bool
+    value: "{{ macos_dock_show_indicators }}"
+  notify: Restart Dock
+
 - name: Set auto-rearrange Spaces based on recent use
   community.general.osx_defaults:
     domain: com.apple.dock
