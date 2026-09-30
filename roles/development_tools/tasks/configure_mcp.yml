@@ -6,6 +6,25 @@
 # Servers defined in development_tools_mcp_servers (defaults/main.yml or host_vars)
 # =============================================================================
 
+- name: Get current MCP server list
+  ansible.builtin.command: claude mcp list
+  register: mcp_current_list
+  changed_when: false
+  failed_when: false
+
+- name: Remove MCP server if transport has changed
+  ansible.builtin.command: claude mcp remove {{ item.name }}
+  loop: "{{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) | list }}"
+  when:
+    - item.name in mcp_current_list.stdout
+    - >
+      (item.transport == 'http' and item.name ~ ' (stdio)' in mcp_current_list.stdout) or
+      (item.transport == 'stdio' and item.name ~ ' (http)' in mcp_current_list.stdout) or
+      (item.transport == 'http' and item.name ~ ' (sse)' in mcp_current_list.stdout)
+  changed_when: true
+  loop_control:
+    label: "{{ item.name }}"
+
 - name: Check if MCP server is already configured
   ansible.builtin.shell: claude mcp list | grep -q "^{{ item.name }}"
   loop: "{{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) | list }}"

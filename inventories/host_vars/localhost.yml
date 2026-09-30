@@ -132,6 +132,9 @@ certificates:
     file: "{{ user_home }}/.certs/openshift_root_ca.pem"
     enabled: true
 
+# Do not auto-hide the Dock
+macos_dock_autohide: false
+
 # Show indicators (dots) for open applications in Dock
 macos_dock_show_indicators: true
 
