@@ -29,8 +29,9 @@
   tags: [network, certificates]
 
 - name: Check if certificates already installed in system keychain
-  ansible.builtin.command:
-    cmd: security find-certificate -c "{{ item.keychain_name }}" /Library/Keychains/System.keychain
+  ansible.builtin.shell: |
+    CN=$(openssl x509 -noout -subject -in "{{ item.file }}" | sed 's/.*CN *= *//' | sed 's/[,\/].*//')
+    security find-certificate -c "$CN" /Library/Keychains/System.keychain
   register: cert_check
   changed_when: false
   failed_when: false
