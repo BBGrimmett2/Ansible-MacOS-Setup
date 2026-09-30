@@ -6,29 +6,22 @@
 # Note: Opens GitHub repository for manual setup
 # =============================================================================
 
-- name: Check if AAP demo is already cloned
-  ansible.builtin.stat:
-    path: "{{ development_tools_aap_demo_dir }}"
-  register: development_tools_aap_demo_check
+- name: Check aap-demo CLI version
+  ansible.builtin.command: aap-demo --version
+  register: development_tools_aap_demo_version
+  changed_when: false
+  failed_when: false
 
-- name: Open AAP demo GitHub repository
-  ansible.builtin.command: open {{ development_tools_aap_demo_repo }}
-  when:
-    - development_tools_state == 'present'
-    - not development_tools_aap_demo_check.stat.exists
-  changed_when: true
+- name: Display aap-demo version
+  ansible.builtin.debug:
+    msg: "{{ development_tools_aap_demo_version.stdout_lines }}"
+  when: development_tools_aap_demo_version.rc == 0
 
-- name: Display AAP demo installation instructions
+- name: Warn if aap-demo CLI is not installed
   ansible.builtin.debug:
     msg:
-      - "AAP demo GitHub repository opened in your browser"
-      - "Please clone and follow setup instructions"
-      - "URL: {{ development_tools_aap_demo_repo }}"
-      - ""
-      - "Quick start:"
+      - "aap-demo CLI not found. Install from: {{ development_tools_aap_demo_repo }}"
       - "  git clone {{ development_tools_aap_demo_repo }} {{ development_tools_aap_demo_dir }}"
       - "  cd {{ development_tools_aap_demo_dir }}"
       - "  # Follow README.md for setup"
-  when:
-    - development_tools_state == 'present'
-    - not development_tools_aap_demo_check.stat.exists
+  when: development_tools_aap_demo_version.rc != 0
