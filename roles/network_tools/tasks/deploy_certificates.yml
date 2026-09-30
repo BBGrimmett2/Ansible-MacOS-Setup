@@ -2,8 +2,14 @@
 # =============================================================================
 # Certificate Deployment
 # =============================================================================
-# Purpose: Deploy and install certificates from Dashlane secrets storage
+# Purpose: Deploy and install certificates from Google Drive via path stored in Dashlane
 # Configuration: Defined in inventories/host_vars/localhost.yml (certificates list)
+#
+# NOTE: On a fresh machine, Google Drive must be installed, signed in, and synced
+# before this role runs. The playbook installs certs to the System keychain using
+# `security add-trusted-cert`. If the automated install fails, manually trust each
+# cert via: sudo security add-trusted-cert -d -r trustRoot \
+#   -k /Library/Keychains/System.keychain <cert-file>
 # =============================================================================
 
 - name: Create certificates directory
