@@ -17,6 +17,10 @@
   ansible.builtin.include_tasks: install_cursor.yml
   when: desktop_apps_install_all or desktop_apps_cursor_enabled
 
+- name: Check Canon IJ Scan Utility Lite for TR8520
+  ansible.builtin.include_tasks: install_canon_ij_scan.yml
+  when: desktop_apps_canon_ij_scan_enabled | bool
+
 - name: Install Microsoft 365
   ansible.builtin.include_tasks: install_microsoft_365.yml
   when: desktop_apps_microsoft_365_enabled | bool
