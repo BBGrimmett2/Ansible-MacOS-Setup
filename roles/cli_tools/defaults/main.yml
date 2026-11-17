@@ -12,54 +12,13 @@
 # Whether to install (present) or remove (absent) CLI tools
 cli_tools_state: present
 
-# Install all tools (if false, only install enabled tools)
-cli_tools_install_all: true
+# Package lists are defined by inventory, never embedded in role defaults.
+# The empty fallback allows the role to be reused with a custom inventory.
+cli_tools_packages_common: []
+cli_tools_packages_extra: []
 
-# -----------------------------------------------------------------------------
-# Individual Tool Control
-# -----------------------------------------------------------------------------
-
-# jq - JSON processor
-cli_tools_jq_enabled: true
-
-# yq - YAML processor
-cli_tools_yq_enabled: true
-
-# direnv - Per-directory environment variables
-cli_tools_direnv_enabled: true
-
-# eza - Modern ls replacement
-cli_tools_eza_enabled: true
-
-# bat - Modern cat replacement with syntax highlighting
-cli_tools_bat_enabled: true
-
-# fd - Modern find replacement
-cli_tools_fd_enabled: true
-
-# fzf - Fuzzy finder
-cli_tools_fzf_enabled: true
-
-# pipx - Isolated Python CLI application installer
-cli_tools_pipx_enabled: true
-
-# git-delta - Git diff pager with syntax highlighting
-cli_tools_git_delta_enabled: true
-
-# -----------------------------------------------------------------------------
-# Package Mapping (Homebrew package names)
-# -----------------------------------------------------------------------------
-
-cli_tools_packages:
-  jq: jq
-  yq: yq
-  direnv: direnv
-  eza: eza
-  bat: bat
-  fd: fd
-  fzf: fzf
-  git_delta: git-delta
-  pipx: pipx
+# The direnv configuration tasks only run when direnv is selected.
+cli_tools_direnv_enabled: "{{ 'direnv' in ((cli_tools_packages_common | default([])) + (cli_tools_packages_extra | default([]))) }}"
 
 # -----------------------------------------------------------------------------
 # direnv Configuration (Special - Safety Checks)

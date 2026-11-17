@@ -60,3 +60,18 @@ default_secret_permissions: "0600"
 # Default installation state for all tools (can be overridden per-role)
 # Options: present, absent
 default_tool_state: present
+
+# -----------------------------------------------------------------------------
+# CLI Homebrew formulae installed on every workstation.
+# Keep non-sensitive package names here; profiles add their own packages.
+# -----------------------------------------------------------------------------
+cli_tools_packages_common:
+  - jq
+  - yq
+  - direnv
+  - eza
+  - bat
+  - fd
+  - fzf
+  - git-delta
+  - pipx

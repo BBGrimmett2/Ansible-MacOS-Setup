@@ -1,37 +1,27 @@
 ---
-# Install selected CLI formulae in one Homebrew invocation instead of
-# repeated 'brew list' + 'brew install' calls for each tool.
-# Homebrew may fail on a mixed batch when some formulae are already installed.
-# Query installed formulae once and submit only missing packages.
+# Homebrew CLI packages are data, not individual tasks:
+# - inventories/group_vars/all.yml: cli_tools_packages_common
+# - inventories/group_vars/profiles/*.yml: cli_tools_packages_extra
+# Keep app-specific setup (e.g. direnv, pipx) as separate configuration tasks.
 
-- name: Build list of enabled CLI Homebrew formulae
+- name: Combine common and profile-specific CLI packages
   ansible.builtin.set_fact:
     cli_tools_selected_formulae: >-
-      {{
-        [
-          cli_tools_packages.jq if (cli_tools_install_all or cli_tools_jq_enabled) else '',
-          cli_tools_packages.yq if (cli_tools_install_all or cli_tools_yq_enabled) else '',
-          cli_tools_packages.direnv if (cli_tools_install_all or cli_tools_direnv_enabled) else '',
-          cli_tools_packages.eza if (cli_tools_install_all or cli_tools_eza_enabled) else '',
-          cli_tools_packages.bat if (cli_tools_install_all or cli_tools_bat_enabled) else '',
-          cli_tools_packages.fd if (cli_tools_install_all or cli_tools_fd_enabled) else '',
-          cli_tools_packages.fzf if (cli_tools_install_all or cli_tools_fzf_enabled) else '',
-          cli_tools_packages.git_delta if (cli_tools_install_all or cli_tools_git_delta_enabled) else '',
-          cli_tools_packages.pipx if (cli_tools_install_all or cli_tools_pipx_enabled) else ''
-        ] | reject('equalto', '') | list
-      }}
+      {{ ((cli_tools_packages_common | default([])) +
+          (cli_tools_packages_extra | default([]))) | unique | list }}
 
-- name: Get installed Homebrew formulae once
+- name: Read installed Homebrew CLI formulae once
   ansible.builtin.command: brew list --formula
   register: cli_tools_installed_formulae
   changed_when: false
 
-- name: Select only formulae not yet installed
+- name: Determine missing CLI formulae
   ansible.builtin.set_fact:
     cli_tools_missing_formulae: >-
-      {{ cli_tools_selected_formulae | difference(cli_tools_installed_formulae.stdout_lines) }}
+      {{ cli_tools_selected_formulae |
+         reject('in', cli_tools_installed_formulae.stdout_lines) | list }}
 
-- name: Install missing CLI formulae in one batch
+- name: Install missing CLI formulae in a single batch
   community.general.homebrew:
     name: "{{ cli_tools_missing_formulae }}"
     state: present
@@ -42,4 +32,4 @@
   ansible.builtin.command: pipx ensurepath
   register: pipx_ensurepath
   changed_when: "'Success!' in pipx_ensurepath.stdout"
-  when: cli_tools_packages.pipx in cli_tools_selected_formulae
+  when: "'pipx' in cli_tools_selected_formulae"
