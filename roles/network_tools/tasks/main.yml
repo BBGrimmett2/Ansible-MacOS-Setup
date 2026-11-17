@@ -16,8 +16,10 @@
 
 - name: Deploy VPN configurations
   ansible.builtin.import_tasks: deploy_vpn.yml
+  when: vpn_profiles | default([]) | length > 0
   tags: [network, vpn]
 
 - name: Deploy certificates
   ansible.builtin.import_tasks: deploy_certificates.yml
+  when: certificates | default([]) | length > 0
   tags: [network, certificates]
