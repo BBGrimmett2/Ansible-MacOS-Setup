@@ -25,7 +25,7 @@ argument_specs:
       desktop_apps_install_all:
         type: bool
         required: false
-        default: true
+        default: false
         description: Install all apps or only enabled ones
 
       desktop_apps_chrome_enabled:
@@ -45,6 +45,12 @@ argument_specs:
         required: false
         default: true
         description: Enable Cursor installation
+
+      desktop_apps_chatgpt_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Install official ChatGPT desktop app for personal and work
 
       desktop_apps_configure_defaults:
         type: bool
