@@ -21,11 +21,27 @@
       {{ cli_tools_selected_formulae |
          reject('in', cli_tools_installed_formulae.stdout_lines) | list }}
 
-- name: Install missing CLI formulae in a single batch
-  community.general.homebrew:
-    name: "{{ cli_tools_missing_formulae }}"
-    state: present
-    update_homebrew: false
+- name: Install missing CLI formulae in a single noninteractive batch
+  ansible.builtin.command:
+    argv: "{{ ['brew', 'install', '--no-ask'] + cli_tools_missing_formulae }}"
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_ASK: "1"
+  register: cli_tools_brew_install
+  changed_when: cli_tools_brew_install.rc == 0
+  when: cli_tools_missing_formulae | length > 0
+
+- name: Verify all requested CLI formulae are now installed
+  ansible.builtin.command: brew list --formula
+  register: cli_tools_installed_after
+  changed_when: false
+  when: cli_tools_missing_formulae | length > 0
+
+- name: Assert CLI Homebrew batch was installed
+  ansible.builtin.assert:
+    that:
+      - cli_tools_missing_formulae | difference(cli_tools_installed_after.stdout_lines) | length == 0
+    fail_msg: "Some CLI formulae were not installed: {{ cli_tools_missing_formulae | difference(cli_tools_installed_after.stdout_lines) }}"
   when: cli_tools_missing_formulae | length > 0
 
 - name: Add pipx user scripts to PATH
