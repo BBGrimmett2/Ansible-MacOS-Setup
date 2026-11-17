@@ -27,6 +27,7 @@ certificates:
     file: "{{ user_home }}/.certs/starbase_root_ca.pem"
     enabled: true
     required: true
+
 development_tools_aap_demo_enabled: false
 development_tools_mcp_servers: []
 
