@@ -70,12 +70,6 @@ Per `docs/planning/github-workflows-review.md`.
 
 ---
 
-## Desktop App Follow-ups
-
-| Status | Item | Priority | Notes |
-|--------|------|----------|-------|
-| [ ] | Review and configure Raycast after installation | MEDIUM | Walk through launcher, hotkeys, clipboard history, extensions, snippets, and overlap with Rectangle; decide which settings Ansible should manage for personal/work |
-
 ## Backlog / Future
 
 | Status | Item | Notes |
