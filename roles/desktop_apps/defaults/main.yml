@@ -28,6 +28,9 @@ desktop_apps_vscode_enabled: true
 # Cursor - AI-powered code editor
 desktop_apps_cursor_enabled: true
 
+# Raycast - macOS launcher and productivity commands (both profiles)
+desktop_apps_raycast_enabled: true
+
 # ChatGPT - Official OpenAI desktop application (both profiles)
 desktop_apps_chatgpt_enabled: true
 
@@ -66,6 +69,7 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
+  raycast: raycast
   chatgpt: chatgpt
   nextcloud: nextcloud
   rectangle: rectangle
