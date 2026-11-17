@@ -28,6 +28,9 @@ desktop_apps_vscode_enabled: true
 # Cursor - AI-powered code editor
 desktop_apps_cursor_enabled: true
 
+# Microsoft 365 Office suite (personal only)
+desktop_apps_microsoft_365_enabled: false
+
 # AppCleaner - app removal and related-file cleanup (personal only)
 desktop_apps_appcleaner_enabled: false
 
@@ -75,6 +78,7 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
+  microsoft_365: microsoft-office
   appcleaner: appcleaner
   stats: stats
   raycast: raycast
