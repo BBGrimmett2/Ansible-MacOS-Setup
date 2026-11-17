@@ -55,3 +55,6 @@ cli_tools_packages_extra: []
 
 # Collaboration software specific to the work profile.
 desktop_apps_webex_enabled: true
+
+# Discord developer and community collaboration.
+desktop_apps_discord_enabled: true
