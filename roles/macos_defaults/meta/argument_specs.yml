@@ -14,6 +14,17 @@ argument_specs:
 
     options:
       # Dock Settings
+      macos_dock_apps:
+        type: list
+        elements: str
+        required: false
+        description: Ordered application bundle paths for the fully managed Dock; Finder is handled by macOS
+
+      macos_dock_manage_apps:
+        type: bool
+        required: false
+        default: true
+        description: Whether to replace Dock pins with the configured app list
       macos_dock_autohide:
         type: bool
         required: false
