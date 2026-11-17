@@ -46,6 +46,12 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_stats_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Install Stats menu bar system monitor on both profiles
+
       desktop_apps_raycast_enabled:
         type: bool
         required: false
