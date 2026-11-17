@@ -17,6 +17,9 @@ cli_tools_state: present
 cli_tools_packages_common: []
 cli_tools_packages_extra: []
 
+# The direnv configuration tasks only run when direnv is selected.
+cli_tools_direnv_enabled: "{{ 'direnv' in ((cli_tools_packages_common | default([])) + (cli_tools_packages_extra | default([]))) }}"
+
 # -----------------------------------------------------------------------------
 # direnv Configuration (Special - Safety Checks)
 # -----------------------------------------------------------------------------
