@@ -40,6 +40,9 @@ cli_tools_fd_enabled: true
 # fzf - Fuzzy finder
 cli_tools_fzf_enabled: true
 
+# pipx - Isolated Python CLI application installer
+cli_tools_pipx_enabled: true
+
 # git-delta - Git diff pager with syntax highlighting
 cli_tools_git_delta_enabled: true
 
@@ -56,6 +59,7 @@ cli_tools_packages:
   fd: fd
   fzf: fzf
   git_delta: git-delta
+  pipx: pipx
 
 # -----------------------------------------------------------------------------
 # direnv Configuration (Special - Safety Checks)
