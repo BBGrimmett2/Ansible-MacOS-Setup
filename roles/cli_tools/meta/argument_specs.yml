@@ -22,71 +22,23 @@ argument_specs:
           - absent
         description: Install or remove CLI tools
 
-      cli_tools_install_all:
-        type: bool
+      cli_tools_packages_common:
+        type: list
+        elements: str
         required: false
-        default: true
-        description: Install all tools or only enabled ones
+        description: Common Homebrew CLI formulas from group_vars/all.yml
 
-      cli_tools_jq_enabled:
-        type: bool
+      cli_tools_packages_extra:
+        type: list
+        elements: str
         required: false
-        default: true
-        description: Enable jq JSON processor
-
-      cli_tools_yq_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable yq YAML processor
-
-      cli_tools_direnv_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable direnv (per-directory env vars)
+        description: Additional formulas for the selected workstation profile
 
       cli_tools_direnv_safety_enabled:
         type: bool
         required: false
         default: true
         description: Enable direnv safety checks for Projects/ directory
-
-      cli_tools_eza_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable eza (modern ls)
-
-      cli_tools_bat_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable bat (modern cat)
-
-      cli_tools_fd_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable fd (modern find)
-
-      cli_tools_fzf_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable fzf (fuzzy finder)
-
-      cli_tools_pipx_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable pipx isolated Python CLI installer
-
-      cli_tools_git_delta_enabled:
-        type: bool
-        required: false
-        default: true
-        description: Enable git-delta (git diff pager)
 
   install:
     short_description: Install all CLI tools
@@ -98,11 +50,6 @@ argument_specs:
         type: str
         required: false
         default: present
-
-      cli_tools_install_all:
-        type: bool
-        required: false
-        default: true
 
   configure:
     short_description: Configure CLI tools
