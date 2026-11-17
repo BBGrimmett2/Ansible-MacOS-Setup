@@ -76,6 +76,12 @@ argument_specs:
         default: true
         description: Enable fzf (fuzzy finder)
 
+      cli_tools_pipx_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable pipx isolated Python CLI installer
+
       cli_tools_git_delta_enabled:
         type: bool
         required: false
