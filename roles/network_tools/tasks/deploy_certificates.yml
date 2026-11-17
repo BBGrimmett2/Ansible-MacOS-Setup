@@ -19,18 +19,6 @@
     mode: '0755'
   tags: [network, certificates]
 
-- name: Check Google Drive is mounted
-  ansible.builtin.stat:
-    path: "{{ google_drive_path }}"
-  register: google_drive_mount
-  tags: [network, certificates]
-
-- name: Fail if Google Drive is not mounted
-  ansible.builtin.fail:
-    msg: "Google Drive is not mounted at {{ google_drive_path }}. Open the Google Drive app and sign in first."
-  when: not google_drive_mount.stat.exists
-  tags: [network, certificates]
-
 - name: Fetch certificate paths from Dashlane
   ansible.builtin.shell: |
     dcli note "{{ item.dashlane_secret }}" --output text | tr -d '\n\r'
@@ -46,7 +34,7 @@
     label: "{{ item.name }}"
   tags: [network, certificates]
 
-- name: Copy certificates from Google Drive
+- name: Copy certificates from configured local paths
   ansible.builtin.copy:
     src: "{{ cert_path_results.results[loop_index].stdout | trim }}"
     dest: "{{ item.file }}"
