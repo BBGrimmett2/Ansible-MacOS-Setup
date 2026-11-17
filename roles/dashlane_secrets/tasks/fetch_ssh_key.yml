@@ -52,6 +52,31 @@
   ansible.builtin.set_fact:
     dashlane_key_retrieved: "{{ dashlane_ssh_key.rc == 0 }}"
 
+- name: Check for an existing SSH private key
+  ansible.builtin.stat:
+    path: "{{ dashlane_secret_output_path }}"
+  register: existing_profile_ssh_key
+  when: dashlane_key_retrieved
+
+- name: Read existing private key without exposing it
+  ansible.builtin.slurp:
+    src: "{{ dashlane_secret_output_path }}"
+  register: existing_profile_ssh_content
+  when:
+    - dashlane_key_retrieved
+    - existing_profile_ssh_key.stat.exists
+  no_log: true
+
+- name: Refuse to overwrite a different SSH identity
+  ansible.builtin.assert:
+    that:
+      - (existing_profile_ssh_content.content | b64decode | trim) == (dashlane_ssh_key.stdout | trim)
+    fail_msg: "Existing SSH private key conflicts with Dashlane: {{ dashlane_secret_output_path }}. Resolve manually; no key was overwritten."
+  when:
+    - dashlane_key_retrieved
+    - existing_profile_ssh_key.stat.exists
+  no_log: true
+
 - name: Deploy SSH key to filesystem
   ansible.builtin.copy:
     content: "{{ dashlane_ssh_key.stdout }}\n"
