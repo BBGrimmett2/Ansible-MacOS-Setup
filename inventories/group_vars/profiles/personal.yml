@@ -47,3 +47,6 @@ network_tools_wireshark_enabled: true
 
 # macOS menu bar system monitoring.
 desktop_apps_stats_enabled: true
+
+# App removal utility for personal workstation.
+desktop_apps_appcleaner_enabled: true
