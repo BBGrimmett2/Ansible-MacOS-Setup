@@ -46,6 +46,17 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_canon_ij_scan_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Check Canon IJ Scan Utility Lite for PIXMA TR8520
+
+      desktop_apps_canon_ij_scan_support_url:
+        type: str
+        required: false
+        description: Official Canon TR8520 software and driver downloads page
+
       desktop_apps_microsoft_365_enabled:
         type: bool
         required: false
