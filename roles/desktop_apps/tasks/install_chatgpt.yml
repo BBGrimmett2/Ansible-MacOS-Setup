@@ -1,0 +1,10 @@
+---
+# Official ChatGPT macOS app, shared by personal and work profiles.
+# Authentication remains separate and is not stored in the repository.
+
+- name: Install ChatGPT Desktop with Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.chatgpt }}"
+    state: present
+    update_homebrew: false
+  when: desktop_apps_state == 'present'
