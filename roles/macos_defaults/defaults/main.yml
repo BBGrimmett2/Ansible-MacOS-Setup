@@ -9,6 +9,11 @@
 # Dock Settings
 # -----------------------------------------------------------------------------
 
+# Application tiles are fully managed after app installation by manage_dock.yml.
+# The per-profile lists live in inventories/group_vars/profiles/*.yml.
+macos_dock_apps: []
+macos_dock_manage_apps: true
+
 # Automatically hide and show the Dock
 macos_dock_autohide: true
 
