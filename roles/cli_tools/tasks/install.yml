@@ -21,31 +21,50 @@
       {{ cli_tools_selected_formulae |
          reject('in', cli_tools_installed_formulae.stdout_lines) | list }}
 
-- name: Install missing CLI formulae in a single noninteractive batch
+# Install packages individually: a failure identifies the exact formula and
+# completed installs remain available on the next run. Avoids an opaque failure
+# in an all-or-nothing Homebrew batch. 'command' is used because the Homebrew
+# collection failed without reporting a useful exit reason on this workstation.
+# The pre-check and post-check make the operation idempotent.
+- name: Install each missing CLI formula using Homebrew
   ansible.builtin.command:
-    argv: "{{ ['brew', 'install', '--no-ask'] + cli_tools_missing_formulae }}"
+    argv:
+      - "{{ homebrew_bin }}"
+      - install
+      - --no-ask
+      - "{{ item }}"
   environment:
     HOMEBREW_NO_AUTO_UPDATE: "1"
     HOMEBREW_NO_ASK: "1"
+  loop: "{{ cli_tools_missing_formulae }}"
+  loop_control:
+    label: "{{ item }}"
   register: cli_tools_brew_install
   changed_when: cli_tools_brew_install.rc == 0
-  when: cli_tools_missing_formulae | length > 0
+  failed_when: cli_tools_brew_install.rc != 0
+  when: not ansible_check_mode
 
 - name: Verify all requested CLI formulae are now installed
   ansible.builtin.command: brew list --formula
   register: cli_tools_installed_after
   changed_when: false
-  when: cli_tools_missing_formulae | length > 0
+  when:
+    - not ansible_check_mode
+    - cli_tools_missing_formulae | length > 0
 
-- name: Assert CLI Homebrew batch was installed
+- name: Assert requested CLI Homebrew formulae were installed
   ansible.builtin.assert:
     that:
       - cli_tools_missing_formulae | difference(cli_tools_installed_after.stdout_lines) | length == 0
     fail_msg: "Some CLI formulae were not installed: {{ cli_tools_missing_formulae | difference(cli_tools_installed_after.stdout_lines) }}"
-  when: cli_tools_missing_formulae | length > 0
+  when:
+    - not ansible_check_mode
+    - cli_tools_missing_formulae | length > 0
 
 - name: Add pipx user scripts to PATH
   ansible.builtin.command: pipx ensurepath
   register: pipx_ensurepath
   changed_when: "'Success!' in pipx_ensurepath.stdout"
-  when: "'pipx' in cli_tools_selected_formulae"
+  when:
+    - not ansible_check_mode
+    - "'pipx' in cli_tools_selected_formulae"
