@@ -26,8 +26,8 @@ desktop_apps_webex_enabled: true
 # Enable skopeo container image tool
 kubernetes_tools_skopeo_enabled: true
 
-# Open Google Drive for configuration
-desktop_apps_google_drive_configure: true
+# Launch Nextcloud for optional first-time account setup.
+desktop_apps_nextcloud_open: true
 
 # -----------------------------------------------------------------------------
 # Secrets Configuration
