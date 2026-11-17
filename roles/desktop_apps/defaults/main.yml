@@ -33,6 +33,9 @@ desktop_apps_canon_ij_scan_enabled: false
 desktop_apps_canon_ij_scan_download_url: https://asia.canon/en/support/0200531730/
 desktop_apps_canon_ij_scan_dmg_filename: msul-mac-4_2_1-ea21_3.dmg
 
+# Unsloth Desktop (personal only)
+desktop_apps_unsloth_enabled: false
+
 # Microsoft 365 Office suite (personal only)
 desktop_apps_microsoft_365_enabled: false
 
@@ -83,6 +86,7 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
+  unsloth: unsloth
   microsoft_365: microsoft-office
   appcleaner: appcleaner
   stats: stats
