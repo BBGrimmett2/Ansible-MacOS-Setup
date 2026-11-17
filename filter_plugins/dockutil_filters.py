@@ -1,19 +1,26 @@
 """Small, testable transformations for dockutil's tab-separated output."""
 
+from urllib.parse import unquote, urlparse
+
 
 def dockutil_app_paths(output):
-    """Return ordered application paths from `dockutil --list`.
+    """Read the ordered app paths from `dockutil --list`.
 
-    dockutil lists records as: label<TAB>path<TAB>section<TAB>plist.
-    Exclude Downloads/other persistent folders; Finder is managed by macOS.
+    dockutil lists records as label<TAB>path<TAB>section<TAB>plist. The
+    persistent-apps path may be a file:// URL with percent-encoded spaces.
+    Ignore persistent-others (folders/stacks) and macOS's fixed Finder tile.
     """
     paths = []
     for line in output.splitlines():
         fields = line.split("\t")
-        if len(fields) >= 3 and fields[2].strip() == "apps":
-            path = fields[1].strip()
-            if path:
-                paths.append(path)
+        if len(fields) < 3 or fields[2].strip() not in ("persistent-apps", "apps"):
+            continue
+
+        location = fields[1].strip()
+        if location.startswith("file://"):
+            location = unquote(urlparse(location).path)
+        if location:
+            paths.append(location.rstrip("/"))
     return paths
 
 
