@@ -58,3 +58,6 @@ desktop_apps_webex_enabled: true
 
 # Discord developer and community collaboration.
 desktop_apps_discord_enabled: true
+
+# Raycast launcher and productivity workflows.
+desktop_apps_raycast_enabled: true
