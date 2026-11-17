@@ -1,42 +1,34 @@
 ---
-# =============================================================================
-# CLI Tools Role - Installation Tasks
-# =============================================================================
-# Orchestrates installation of all enabled CLI tools
-# =============================================================================
+# Install selected CLI formulae in one Homebrew invocation instead of
+# repeated 'brew list' + 'brew install' calls for each tool.
+# The Homebrew module is idempotent and skips already-installed formulae.
 
-- name: Install jq
-  ansible.builtin.include_tasks: install_jq.yml
-  when: cli_tools_install_all or cli_tools_jq_enabled
+- name: Build list of enabled CLI Homebrew formulae
+  ansible.builtin.set_fact:
+    cli_tools_selected_formulae: >-
+      {{
+        [
+          cli_tools_packages.jq if (cli_tools_install_all or cli_tools_jq_enabled) else '',
+          cli_tools_packages.yq if (cli_tools_install_all or cli_tools_yq_enabled) else '',
+          cli_tools_packages.direnv if (cli_tools_install_all or cli_tools_direnv_enabled) else '',
+          cli_tools_packages.eza if (cli_tools_install_all or cli_tools_eza_enabled) else '',
+          cli_tools_packages.bat if (cli_tools_install_all or cli_tools_bat_enabled) else '',
+          cli_tools_packages.fd if (cli_tools_install_all or cli_tools_fd_enabled) else '',
+          cli_tools_packages.fzf if (cli_tools_install_all or cli_tools_fzf_enabled) else '',
+          cli_tools_packages.git_delta if (cli_tools_install_all or cli_tools_git_delta_enabled) else '',
+          cli_tools_packages.pipx if (cli_tools_install_all or cli_tools_pipx_enabled) else ''
+        ] | reject('equalto', '') | list
+      }}
 
-- name: Install yq
-  ansible.builtin.include_tasks: install_yq.yml
-  when: cli_tools_install_all or cli_tools_yq_enabled
+- name: Install enabled CLI formulae in one batch
+  community.general.homebrew:
+    name: "{{ cli_tools_selected_formulae }}"
+    state: present
+    update_homebrew: false
+  when: cli_tools_selected_formulae | length > 0
 
-- name: Install direnv
-  ansible.builtin.include_tasks: install_direnv.yml
-  when: cli_tools_install_all or cli_tools_direnv_enabled
-
-- name: Install eza
-  ansible.builtin.include_tasks: install_eza.yml
-  when: cli_tools_install_all or cli_tools_eza_enabled
-
-- name: Install bat
-  ansible.builtin.include_tasks: install_bat.yml
-  when: cli_tools_install_all or cli_tools_bat_enabled
-
-- name: Install fd
-  ansible.builtin.include_tasks: install_fd.yml
-  when: cli_tools_install_all or cli_tools_fd_enabled
-
-- name: Install fzf
-  ansible.builtin.include_tasks: install_fzf.yml
-  when: cli_tools_install_all or cli_tools_fzf_enabled
-
-- name: Install git-delta
-  ansible.builtin.include_tasks: install_git_delta.yml
-  when: cli_tools_install_all or cli_tools_git_delta_enabled
-
-- name: Install pipx
-  ansible.builtin.include_tasks: install_pipx.yml
-  when: cli_tools_install_all or cli_tools_pipx_enabled
+- name: Add pipx user scripts to PATH
+  ansible.builtin.command: pipx ensurepath
+  register: pipx_ensurepath
+  changed_when: "'Success!' in pipx_ensurepath.stdout"
+  when: cli_tools_packages.pipx in cli_tools_selected_formulae
