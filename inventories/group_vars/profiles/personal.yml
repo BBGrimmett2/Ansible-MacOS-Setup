@@ -44,3 +44,6 @@ desktop_apps_raycast_enabled: true
 # Network diagnostics and VPN client selection.
 network_tools_openvpn_enabled: true
 network_tools_wireshark_enabled: true
+
+# macOS menu bar system monitoring.
+desktop_apps_stats_enabled: true
