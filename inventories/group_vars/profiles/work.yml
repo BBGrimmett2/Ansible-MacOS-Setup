@@ -61,3 +61,7 @@ desktop_apps_discord_enabled: true
 
 # Raycast launcher and productivity workflows.
 desktop_apps_raycast_enabled: true
+
+# Network diagnostics and VPN client selection.
+network_tools_openvpn_enabled: true
+network_tools_wireshark_enabled: false
