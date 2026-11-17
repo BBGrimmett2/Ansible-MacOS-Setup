@@ -1,0 +1,29 @@
+---
+# Nextcloud desktop sync client. The CA, server URL and credentials are
+# independent of this installer and must never be embedded in the public repo.
+
+- name: Check whether Nextcloud is already installed
+  ansible.builtin.stat:
+    path: /Applications/Nextcloud.app
+  register: desktop_apps_nextcloud_stat
+
+- name: Install Nextcloud with Homebrew Cask
+  community.general.homebrew_cask:
+    name: nextcloud
+    state: present
+    update_homebrew: false
+  when:
+    - desktop_apps_state == 'present'
+    - not desktop_apps_nextcloud_stat.stat.exists
+
+- name: Open Nextcloud on first installation when requested
+  ansible.builtin.command:
+    argv:
+      - open
+      - -a
+      - Nextcloud
+  changed_when: false
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_nextcloud_open | bool
+    - not desktop_apps_nextcloud_stat.stat.exists
