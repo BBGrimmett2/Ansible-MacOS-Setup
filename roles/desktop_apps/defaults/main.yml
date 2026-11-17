@@ -28,6 +28,9 @@ desktop_apps_vscode_enabled: true
 # Cursor - AI-powered code editor
 desktop_apps_cursor_enabled: true
 
+# Stats - macOS menu bar system monitoring (both profiles)
+desktop_apps_stats_enabled: true
+
 # Raycast - macOS launcher and productivity commands (both profiles)
 desktop_apps_raycast_enabled: true
 
@@ -69,6 +72,7 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
+  stats: stats
   raycast: raycast
   chatgpt: chatgpt
   nextcloud: nextcloud
