@@ -17,6 +17,10 @@
   ansible.builtin.include_tasks: install_cursor.yml
   when: desktop_apps_install_all or desktop_apps_cursor_enabled
 
+- name: Install Microsoft 365
+  ansible.builtin.include_tasks: install_microsoft_365.yml
+  when: desktop_apps_microsoft_365_enabled | bool
+
 - name: Install AppCleaner
   ansible.builtin.include_tasks: install_appcleaner.yml
   when: desktop_apps_install_all or desktop_apps_appcleaner_enabled
