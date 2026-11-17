@@ -17,9 +17,9 @@
   ansible.builtin.include_tasks: install_cursor.yml
   when: desktop_apps_install_all or desktop_apps_cursor_enabled
 
-- name: Install Google Drive
-  ansible.builtin.include_tasks: install_google_drive.yml
-  when: desktop_apps_install_all or desktop_apps_google_drive_enabled
+- name: Install Nextcloud
+  ansible.builtin.include_tasks: install_nextcloud.yml
+  when: desktop_apps_install_all or desktop_apps_nextcloud_enabled
 
 - name: Install Rectangle
   ansible.builtin.include_tasks: install_rectangle.yml
