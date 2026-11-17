@@ -13,7 +13,7 @@
 desktop_apps_state: present
 
 # Install all apps (if false, only install enabled apps)
-desktop_apps_install_all: true
+desktop_apps_install_all: false
 
 # -----------------------------------------------------------------------------
 # Individual App Control
@@ -35,13 +35,13 @@ desktop_apps_nextcloud_enabled: true
 desktop_apps_rectangle_enabled: true
 
 # DisplayLink Manager - Multi-monitor support
-desktop_apps_displaylink_enabled: false
+desktop_apps_displaylink_enabled: true
 
 # Elgato Camera Hub - Webcam software
-desktop_apps_elgato_camera_hub_enabled: false
+desktop_apps_elgato_camera_hub_enabled: true
 
 # Elgato Control Center - Stream Deck/lighting control
-desktop_apps_elgato_control_center_enabled: false
+desktop_apps_elgato_control_center_enabled: true
 
 # Obsidian - Note-taking app
 desktop_apps_obsidian_enabled: true
