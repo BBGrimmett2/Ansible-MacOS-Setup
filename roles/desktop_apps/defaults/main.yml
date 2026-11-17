@@ -30,7 +30,8 @@ desktop_apps_cursor_enabled: true
 
 # Canon PIXMA TR8520 scanning utility (personal-only; Canon download)
 desktop_apps_canon_ij_scan_enabled: false
-desktop_apps_canon_ij_scan_support_url: https://www.usa.canon.com/support/p/pixma-tr8520?tab=drivers_downloads
+desktop_apps_canon_ij_scan_download_url: https://asia.canon/en/support/0200531730/
+desktop_apps_canon_ij_scan_dmg_filename: msul-mac-4_2_1-ea21_3.dmg
 
 # Microsoft 365 Office suite (personal only)
 desktop_apps_microsoft_365_enabled: false
