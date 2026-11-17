@@ -1,0 +1,56 @@
+---
+# Required CA content is stored as PEM text in Dashlane, never as a local path.
+- name: Read {{ cert_item.name }} certificate PEM from Dashlane
+  ansible.builtin.command:
+    argv: ["{{ dashlane_cli | default('dcli') }}", "note", "{{ cert_item.dashlane_secret }}", "--output", "text"]
+  register: profile_ca_pem
+  changed_when: false
+  failed_when: profile_ca_pem.rc != 0 or 'BEGIN CERTIFICATE' not in profile_ca_pem.stdout
+  no_log: true
+
+- name: Write {{ cert_item.name }} CA PEM
+  ansible.builtin.copy:
+    content: "{{ profile_ca_pem.stdout | trim }}\n"
+    dest: "{{ cert_item.file }}"
+    mode: '0644'
+  no_log: true
+
+- name: Validate {{ cert_item.name }} certificate PEM and validity
+  ansible.builtin.command:
+    argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -checkend, "0"]
+  changed_when: false
+
+- name: Read CA basic constraints for {{ cert_item.name }}
+  ansible.builtin.command:
+    argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -ext, basicConstraints]
+  register: profile_ca_constraints
+  changed_when: false
+
+- name: Require CA certificate properties for {{ cert_item.name }}
+  ansible.builtin.assert:
+    that: "'CA:TRUE' in profile_ca_constraints.stdout"
+    fail_msg: "Dashlane certificate {{ cert_item.name }} is not a CA"
+
+# Compare the retrieved certificate against installed bytes, without a pinned
+# fingerprint: SHA-1 is used only as the keychain's inventory identifier.
+- name: Read local certificate identifier for {{ cert_item.name }}
+  ansible.builtin.command:
+    argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -fingerprint, -sha1]
+  register: profile_ca_identifier
+  changed_when: false
+
+- name: Install {{ cert_item.name }} in system trust if not already installed
+  ansible.builtin.command:
+    argv:
+      - security
+      - add-trusted-cert
+      - -d
+      - -r
+      - trustRoot
+      - -k
+      - /Library/Keychains/System.keychain
+      - "{{ cert_item.file }}"
+  become: true
+  when: (profile_ca_identifier.stdout | regex_replace('^.*=', '') | replace(':', '') | upper) not in profile_installed_ca_inventory.stdout
+  register: profile_ca_installed
+  changed_when: profile_ca_installed.rc == 0
