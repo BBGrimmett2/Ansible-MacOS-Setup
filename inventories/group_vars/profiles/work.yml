@@ -52,3 +52,6 @@ development_tools_mcp_servers: []
 
 # Additional CLI packages for the work profile; appended to common list.
 cli_tools_packages_extra: []
+
+# Collaboration software specific to the work profile.
+desktop_apps_webex_enabled: true
