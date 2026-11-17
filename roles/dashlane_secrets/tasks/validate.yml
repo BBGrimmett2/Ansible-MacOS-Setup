@@ -38,7 +38,7 @@
     fail_msg: |
       Dashlane CLI is not authenticated.
       Please authenticate first:
-        {{ dashlane_cli }} configure
+        {{ dashlane_cli }} sync
     success_msg: "Dashlane authentication verified"
   when: dashlane_validate_auth
 
