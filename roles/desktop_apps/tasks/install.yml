@@ -17,6 +17,12 @@
   ansible.builtin.include_tasks: install_cursor.yml
   when: desktop_apps_install_all or desktop_apps_cursor_enabled
 
+- name: Install Unsloth Desktop (personal only)
+  ansible.builtin.include_tasks: install_unsloth.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_unsloth_enabled | bool
+
 - name: Check Canon IJ Scan Utility Lite for TR8520
   ansible.builtin.include_tasks: install_canon_ij_scan.yml
   when: desktop_apps_canon_ij_scan_enabled | bool
