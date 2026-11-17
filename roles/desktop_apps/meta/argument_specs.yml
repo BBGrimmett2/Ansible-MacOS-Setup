@@ -46,6 +46,12 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_microsoft_365_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Install Microsoft 365 Office suite on selected profiles
+
       desktop_apps_appcleaner_enabled:
         type: bool
         required: false
