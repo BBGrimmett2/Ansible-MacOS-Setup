@@ -20,6 +20,11 @@
     argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -checkend, "0"]
   changed_when: false
 
+- name: Verify certificate chain and current validity for {{ cert_item.name }}
+  ansible.builtin.command:
+    argv: [openssl, verify, -CAfile, "{{ cert_item.file }}", "{{ cert_item.file }}"]
+  changed_when: false
+
 - name: Read CA basic constraints for {{ cert_item.name }}
   ansible.builtin.command:
     argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -ext, basicConstraints]
