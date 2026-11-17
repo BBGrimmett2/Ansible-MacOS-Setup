@@ -48,7 +48,7 @@ certificates:
 
 development_tools_aap_demo_enabled: true
 development_tools_mcp_servers: []
-google_drive_path: "{{ user_home }}/Google Drive/My Drive"
+
 
 # Additional CLI packages for the work profile; appended to common list.
 cli_tools_packages_extra: []
