@@ -1,0 +1,8 @@
+---
+# Stats macOS menu bar monitor, enabled for both profiles.
+- name: Install Stats with Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.stats }}"
+    state: present
+    update_homebrew: false
+  when: desktop_apps_state == 'present'
