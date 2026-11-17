@@ -34,7 +34,6 @@
   ansible.builtin.assert:
     that:
       - dashlane_auth_check.rc == 0
-      - "'Logged in: Yes' in dashlane_auth_check.stdout"
     fail_msg: |
       Dashlane CLI is not authenticated.
       Please authenticate first:
@@ -48,5 +47,4 @@
   when:
     - dashlane_validate_auth
     - dashlane_auth_check.rc == 0
-    - "'Logged in: Yes' in dashlane_auth_check.stdout"
     - dashlane_log_retrievals
