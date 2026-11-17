@@ -1,0 +1,7 @@
+---
+# Install Codex CLI for personal and work macOS profiles.
+# Authentication stays with the user's ChatGPT account; no credentials in Git.
+- name: Install OpenAI Codex CLI
+  community.general.homebrew_cask:
+    name: codex
+    state: present
