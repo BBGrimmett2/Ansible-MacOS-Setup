@@ -52,10 +52,15 @@ argument_specs:
         default: false
         description: Check Canon IJ Scan Utility Lite for PIXMA TR8520
 
-      desktop_apps_canon_ij_scan_support_url:
+      desktop_apps_canon_ij_scan_download_url:
         type: str
         required: false
-        description: Official Canon TR8520 software and driver downloads page
+        description: Canon official IJ Scan Utility Lite download page requiring disclaimer acceptance
+
+      desktop_apps_canon_ij_scan_dmg_filename:
+        type: str
+        required: false
+        description: Canon IJ Scan Utility Lite installer filename expected in Downloads
 
       desktop_apps_microsoft_365_enabled:
         type: bool
