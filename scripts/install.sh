@@ -414,8 +414,10 @@ authenticate_dashlane() {
         print_fatal "Dashlane CLI not installed; cannot continue with secret-dependent setup"
     fi
 
+    # Verify vault access using a real authenticated operation.
+    # dcli status may return stale/unreliable text after a successful sync.
     # Check if already authenticated
-    if $dcli_cmd status 2>/dev/null | grep -Eiq '^[[:space:]]*Logged in:[[:space:]]*Yes([[:space:]]|$)'; then
+    if "$dcli_cmd" devices list >/dev/null 2>&1; then
         print_step "Dashlane CLI already authenticated"
         return 0
     fi
@@ -426,8 +428,8 @@ authenticate_dashlane() {
     echo ""
 
     if "$dcli_cmd" sync; then
-        # Verify it worked
-        if $dcli_cmd status 2>/dev/null | grep -Eiq '^[[:space:]]*Logged in:[[:space:]]*Yes([[:space:]]|$)'; then
+        # Verify the session with a real authenticated operation
+        if "$dcli_cmd" devices list >/dev/null 2>&1; then
             print_step "Dashlane CLI authenticated successfully"
             return 0
         fi
