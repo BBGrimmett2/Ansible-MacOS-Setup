@@ -84,6 +84,11 @@
     - role: desktop_apps
       tags: [tools, desktop]
 
+    # Set Dock pins only after desktop apps have been installed.
+    - role: macos_defaults
+      tasks_from: manage_dock
+      tags: [macos_defaults, macos_defaults:dock, tools]
+
     # Apply file associations only after desktop apps (including VS Code) are installed.
     - role: macos_defaults
       tasks_from: configure_file_associations
