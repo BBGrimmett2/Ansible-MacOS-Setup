@@ -76,4 +76,5 @@ cli_tools_packages_common:
   - git-delta
   - pipx
   - tmux
+  - gnupg
   - dockutil
