@@ -68,3 +68,14 @@ network_tools_wireshark_enabled: false
 
 # macOS menu bar system monitoring.
 desktop_apps_stats_enabled: true
+
+# Fully managed Dock, in display order. Finder is pinned by macOS.
+# Applied after desktop apps are installed.
+macos_dock_apps:
+  - /Applications/Google Chrome.app
+  - /Applications/Visual Studio Code.app
+  - /Applications/Cursor.app
+  - /Applications/ChatGPT.app
+  - /Applications/Webex.app
+  - /Applications/Obsidian.app
+  - /System/Applications/System Settings.app
