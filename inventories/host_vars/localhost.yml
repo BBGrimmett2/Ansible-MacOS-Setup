@@ -26,8 +26,8 @@ desktop_apps_webex_enabled: true
 # Enable skopeo container image tool
 kubernetes_tools_skopeo_enabled: true
 
-# Launch Nextcloud for optional first-time account setup.
-desktop_apps_nextcloud_open: true
+# Nextcloud account setup should be performed after CA trust is established.
+desktop_apps_nextcloud_open: false
 
 # -----------------------------------------------------------------------------
 # Secrets Configuration
