@@ -46,6 +46,12 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_raycast_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Install Raycast launcher for personal and work
+
       desktop_apps_chatgpt_enabled:
         type: bool
         required: false
