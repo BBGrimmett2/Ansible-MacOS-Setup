@@ -18,7 +18,7 @@
     - name: workstation_profile
       prompt: "Select workstation profile (personal/work)"
       private: false
-      default: "work"
+      default: "personal"
 
   pre_tasks:
     - name: Validate profile selection
@@ -27,6 +27,11 @@
           - workstation_profile in ['personal', 'work']
         fail_msg: "Profile must be 'personal' or 'work', got '{{ workstation_profile }}'"
         success_msg: "Profile '{{ workstation_profile }}' selected"
+
+    - name: Load selected non-secret profile configuration
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../inventories/group_vars/profiles/{{ workstation_profile }}.yml"
+      tags: [always]
 
     - name: Display profile information
       ansible.builtin.debug:
