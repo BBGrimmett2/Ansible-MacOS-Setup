@@ -75,3 +75,4 @@ cli_tools_packages_common:
   - fzf
   - git-delta
   - pipx
+  - tmux
