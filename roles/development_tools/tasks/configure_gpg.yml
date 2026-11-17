@@ -1,0 +1,93 @@
+---
+# Import profile-designated key material when available; never generate keys.
+- name: Check GPG availability
+  ansible.builtin.command: gpg --version
+  register: profile_gpg_available
+  changed_when: false
+  failed_when: false
+
+- name: Fetch profile GPG secret from Dashlane
+  ansible.builtin.command:
+    argv: ["{{ dashlane_cli | default('dcli') }}", "note", "{{ development_tools_gpg_secret }}", "--output", "text"]
+  register: profile_gpg_secret
+  changed_when: false
+  failed_when: false
+  no_log: true
+  when: profile_gpg_available.rc == 0 and development_tools_gpg_secret | length > 0
+
+- name: Determine whether GPG secret is available
+  ansible.builtin.set_fact:
+    profile_gpg_ready: "{{ profile_gpg_available.rc == 0 and (profile_gpg_secret.rc | default(1)) == 0 and 'BEGIN PGP PRIVATE KEY BLOCK' in (profile_gpg_secret.stdout | default('')) }}"
+  no_log: true
+
+- name: Import profile key and configure signing
+  when: profile_gpg_ready | bool
+  block:
+    - name: Create private temporary GPG key file
+      ansible.builtin.tempfile:
+        state: file
+        suffix: .asc
+      register: profile_gpg_temp
+
+    - name: Write GPG key to temporary file
+      ansible.builtin.copy:
+        content: "{{ profile_gpg_secret.stdout | trim }}\n"
+        dest: "{{ profile_gpg_temp.path }}"
+        mode: '0600'
+      no_log: true
+
+    - name: Inspect GPG key fingerprint
+      ansible.builtin.command:
+        argv: [gpg, --batch, --show-keys, --with-colons, --fingerprint, "{{ profile_gpg_temp.path }}"]
+      register: profile_gpg_inspect
+      changed_when: false
+      no_log: true
+
+    - name: Set GPG signing fingerprint
+      ansible.builtin.set_fact:
+        profile_gpg_fingerprint: "{{ (profile_gpg_inspect.stdout | regex_findall('(?m)^fpr:{9}([0-9A-F]+):')) | first }}"
+      no_log: true
+
+    - name: Check if private GPG key already installed
+      ansible.builtin.command:
+        argv: [gpg, --batch, --list-secret-keys, "{{ profile_gpg_fingerprint }}"]
+      register: profile_gpg_existing
+      changed_when: false
+      failed_when: false
+      no_log: true
+
+    - name: Import missing private GPG key
+      ansible.builtin.command:
+        argv: [gpg, --batch, --import, "{{ profile_gpg_temp.path }}"]
+      when: profile_gpg_existing.rc != 0
+      no_log: true
+
+    - name: Configure Git GPG signing key
+      community.general.git_config:
+        name: user.signingkey
+        value: "{{ profile_gpg_fingerprint }}"
+        scope: global
+
+    - name: Enable Git commit GPG signing
+      community.general.git_config:
+        name: commit.gpgsign
+        value: 'true'
+        scope: global
+
+    - name: Select GPG signing implementation
+      community.general.git_config:
+        name: gpg.format
+        value: openpgp
+        scope: global
+  always:
+    - name: Remove temporary GPG private key file
+      ansible.builtin.file:
+        path: "{{ profile_gpg_temp.path }}"
+        state: absent
+      when: profile_gpg_temp.path is defined
+      no_log: true
+
+- name: Record missing GPG prerequisite for final run summary
+  ansible.builtin.set_fact:
+    workstation_setup_warnings: "{{ workstation_setup_warnings | default([]) + ['GPG key unavailable: profile=' ~ workstation_profile ~ ', Dashlane=' ~ development_tools_gpg_secret ~ '. Git commit signing was not changed.'] }}"
+  when: not profile_gpg_ready | bool
