@@ -62,6 +62,12 @@
       when: profile_gpg_existing.rc != 0
       no_log: true
 
+    - name: Verify selected private GPG key is usable after import
+      ansible.builtin.command:
+        argv: [gpg, --batch, --list-secret-keys, "{{ profile_gpg_fingerprint }}"]
+      changed_when: false
+      no_log: true
+
     - name: Configure Git GPG signing key
       community.general.git_config:
         name: user.signingkey
@@ -84,7 +90,7 @@
       ansible.builtin.file:
         path: "{{ profile_gpg_temp.path }}"
         state: absent
-      when: profile_gpg_temp.path is defined
+      when: (profile_gpg_temp | default({})).path is defined
       no_log: true
 
 - name: Record missing GPG prerequisite for final run summary
