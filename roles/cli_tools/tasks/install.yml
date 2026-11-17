@@ -1,7 +1,8 @@
 ---
 # Install selected CLI formulae in one Homebrew invocation instead of
 # repeated 'brew list' + 'brew install' calls for each tool.
-# The Homebrew module is idempotent and skips already-installed formulae.
+# Homebrew may fail on a mixed batch when some formulae are already installed.
+# Query installed formulae once and submit only missing packages.
 
 - name: Build list of enabled CLI Homebrew formulae
   ansible.builtin.set_fact:
@@ -20,12 +21,22 @@
         ] | reject('equalto', '') | list
       }}
 
-- name: Install enabled CLI formulae in one batch
+- name: Get installed Homebrew formulae once
+  ansible.builtin.command: brew list --formula
+  register: cli_tools_installed_formulae
+  changed_when: false
+
+- name: Select only formulae not yet installed
+  ansible.builtin.set_fact:
+    cli_tools_missing_formulae: >-
+      {{ cli_tools_selected_formulae | difference(cli_tools_installed_formulae.stdout_lines) }}
+
+- name: Install missing CLI formulae in one batch
   community.general.homebrew:
-    name: "{{ cli_tools_selected_formulae }}"
+    name: "{{ cli_tools_missing_formulae }}"
     state: present
     update_homebrew: false
-  when: cli_tools_selected_formulae | length > 0
+  when: cli_tools_missing_formulae | length > 0
 
 - name: Add pipx user scripts to PATH
   ansible.builtin.command: pipx ensurepath
