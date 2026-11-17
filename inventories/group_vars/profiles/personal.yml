@@ -56,3 +56,14 @@ desktop_apps_microsoft_365_enabled: true
 
 # Canon PIXMA TR8520 document scanning support.
 desktop_apps_canon_ij_scan_enabled: true
+
+# Fully managed Dock, in display order. Finder is managed by macOS and is
+# deliberately omitted from this list. Apply after desktop apps are installed.
+macos_dock_apps:
+  - /Applications/Google Chrome.app
+  - /Applications/Visual Studio Code.app
+  - /Applications/Cursor.app
+  - /Applications/ChatGPT.app
+  - /Applications/Microsoft Outlook.app
+  - /Applications/Obsidian.app
+  - /System/Applications/System Settings.app
