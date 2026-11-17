@@ -17,6 +17,10 @@
   ansible.builtin.include_tasks: install_cursor.yml
   when: desktop_apps_install_all or desktop_apps_cursor_enabled
 
+- name: Install AppCleaner
+  ansible.builtin.include_tasks: install_appcleaner.yml
+  when: desktop_apps_install_all or desktop_apps_appcleaner_enabled
+
 - name: Install Stats
   ansible.builtin.include_tasks: install_stats.yml
   when: desktop_apps_install_all or desktop_apps_stats_enabled
