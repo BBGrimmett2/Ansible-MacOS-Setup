@@ -63,7 +63,7 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
-  google_drive: google-drive
+  nextcloud: nextcloud
   rectangle: rectangle
   displaylink: displaylink
   obsidian: obsidian
@@ -95,15 +95,11 @@ desktop_apps_vscode_file_associations:
   - txt
 
 # -----------------------------------------------------------------------------
-# Google Drive Configuration
+# Nextcloud Configuration
 # -----------------------------------------------------------------------------
 
-# Open Google Drive for configuration after installation
-desktop_apps_google_drive_configure: false
-
-# Google Drive sync preferences (future implementation)
-# desktop_apps_google_drive_sync_folders: []
-# desktop_apps_google_drive_streaming_mode: true
+# Launch Nextcloud after a new installation so the account can be connected.
+desktop_apps_nextcloud_open: false
 
 # -----------------------------------------------------------------------------
 # Rectangle Configuration
