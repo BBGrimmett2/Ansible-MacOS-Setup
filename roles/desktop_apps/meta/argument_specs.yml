@@ -46,6 +46,12 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_unsloth_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Enable personal-only Unsloth Desktop
+
       desktop_apps_canon_ij_scan_enabled:
         type: bool
         required: false
