@@ -1,0 +1,19 @@
+---
+# Canon PIXMA TR8520 uses IJ Scan Utility Lite on macOS.
+# Canon supplies an official DMG/PKG rather than a verified Homebrew cask.
+# Until a stable first-party package URL is verified, do not download guessed
+# binaries or claim an automated installation succeeded.
+
+- name: Check whether Canon IJ Scan Utility Lite is installed
+  ansible.builtin.stat:
+    path: /Applications/Canon Utilities/IJ Scan Utility/IJ Scan Utility Lite.app
+  register: desktop_apps_canon_scan_check
+
+- name: Explain Canon TR8520 scan utility installation if missing
+  ansible.builtin.debug:
+    msg:
+      - "Canon IJ Scan Utility Lite is not currently detected."
+      - "Download the macOS installer from Canon's official TR8520 Software tab:"
+      - "{{ desktop_apps_canon_ij_scan_support_url }}"
+      - "Full unattended installation is not yet implemented because Canon's direct installer URL could not be verified."
+  when: not desktop_apps_canon_scan_check.stat.exists
