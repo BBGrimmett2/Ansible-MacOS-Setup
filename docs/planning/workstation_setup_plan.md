@@ -78,6 +78,7 @@ The goal of this phase is to get the machine ready to run Ansible securely witho
 *   [ ] Install Cursor.
 *   [ ] Install Google Drive.
 *   [ ] Install Rectangle (Window Management).
+*   [ ] Install Raycast for personal/work; after installing, walk through features, shortcuts, clipboard history, extensions, and decide what to automate in Ansible.
 *   [ ] Install DisplayLink Manager.
 *   [ ] Install Elgato Camera Hub.
 *   [ ] Install Elgato Control Center.
