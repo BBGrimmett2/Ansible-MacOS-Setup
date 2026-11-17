@@ -143,6 +143,11 @@
       changed_when: false
       failed_when: false
 
+    - name: Display deferred configuration warnings
+      ansible.builtin.debug:
+        msg: "{{ workstation_setup_warnings | default([]) }}"
+      when: (workstation_setup_warnings | default([]) | length) > 0
+
     - name: Display installation summary
       ansible.builtin.debug:
         msg:
