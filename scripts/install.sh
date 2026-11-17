@@ -183,7 +183,7 @@ configure_homebrew_shell() {
     # Determine shell configuration file
     local shell_rc=""
     if [[ "$SHELL" == *"zsh"* ]]; then
-        shell_rc="$HOME/.zshrc"
+        shell_rc="$HOME/.zprofile"
     elif [[ "$SHELL" == *"bash"* ]]; then
         shell_rc="$HOME/.bash_profile"
     else
@@ -200,6 +200,9 @@ configure_homebrew_shell() {
     else
         return 0
     fi
+
+    # A login zsh reads .zprofile even if Ansible later rewrites .zshrc.
+    touch "$shell_rc"
 
     # Check if shellenv already in rc file
     if grep -q "brew shellenv" "$shell_rc" 2>/dev/null; then
@@ -417,12 +420,12 @@ authenticate_dashlane() {
         return 0
     fi
 
-    # Not authenticated - run configure for initial authentication
+    # Dashlane initiates interactive device authentication through sync.
     echo ""
-    print_info "Dashlane CLI not authenticated. Running configuration..."
+    print_info "Dashlane CLI not authenticated. Starting interactive sync..."
     echo ""
 
-    if $dcli_cmd configure; then
+    if "$dcli_cmd" sync; then
         # Verify it worked
         if $dcli_cmd status 2>/dev/null | grep -Eiq '^[[:space:]]*Logged in:[[:space:]]*Yes([[:space:]]|$)'; then
             print_step "Dashlane CLI authenticated successfully"
