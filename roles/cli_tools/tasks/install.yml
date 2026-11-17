@@ -36,3 +36,7 @@
 - name: Install git-delta
   ansible.builtin.include_tasks: install_git_delta.yml
   when: cli_tools_install_all or cli_tools_git_delta_enabled
+
+- name: Install pipx
+  ansible.builtin.include_tasks: install_pipx.yml
+  when: cli_tools_install_all or cli_tools_pipx_enabled
