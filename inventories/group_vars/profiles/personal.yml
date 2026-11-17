@@ -50,3 +50,6 @@ desktop_apps_stats_enabled: true
 
 # App removal utility for personal workstation.
 desktop_apps_appcleaner_enabled: true
+
+# Microsoft 365 Office suite for personal business development.
+desktop_apps_microsoft_365_enabled: true
