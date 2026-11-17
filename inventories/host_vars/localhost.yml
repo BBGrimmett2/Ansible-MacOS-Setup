@@ -35,111 +35,12 @@ desktop_apps_google_drive_configure: true
 # Define all secrets, their Dashlane locations, and deployment paths.
 # Enable/disable individual secrets as needed.
 
-# SSH Keys Configuration
-# Maps SSH keys from Dashlane to local deployment paths
-ssh_keys:
-  - name: github
-    dashlane_secret: ssh_key_github
-    file: "{{ ssh_directory }}/id_github"
-    host_pattern: "github.com"
-    enabled: true
-
-  - name: shadowman
-    dashlane_secret: ssh_key_shadowman
-    file: "{{ ssh_directory }}/id_shadowman"
-    host_pattern: "*.shadowman.dev"
-    enabled: true
-
-# SSH Config Deployment Options
-# Set to true to deploy complete SSH config from Dashlane instead of using template
-ssh_config_from_dashlane: false
-ssh_config_dashlane_secret: "ssh_config"  # Dashlane secret name if using Dashlane
-
-# SSH Host Configurations
-# Defines SSH config file Host blocks with custom options per environment
-# This is used by the template (when ssh_config_from_dashlane is false)
-ssh_host_configs:
-  # GitHub
-  - name: github
-    host_pattern: "github.com"
-    hostname: "github.com"
-    user: git
-    identity_file: "~/.ssh/id_github"
-    options:
-      IdentitiesOnly: "yes"
-    enabled: true
-
-  # Shadowman Bastion Host (direct, ProxyJump none prevents *.shadowman.dev wildcard loop)
-  - name: shadowman_bastion
-    host_pattern: "bastion.shadowman.dev"
-    user: bgrimmet
-    identity_file: "~/.ssh/id_shadowman"
-    proxy_jump: "none"
-    options:
-      PreferredAuthentications: publickey
-      ForwardAgent: "yes"
-    enabled: true
-
-  # Shadowman Internal Hosts (via bastion, no VPN required)
-  - name: shadowman_internal
-    host_pattern: "*.shadowman.dev"
-    user: bgrimmet
-    identity_file: "~/.ssh/id_shadowman"
-    proxy_jump: "bgrimmet@bastion.shadowman.dev"
-    options:
-      PreferredAuthentications: publickey
-      ForwardAgent: "yes"
-    enabled: true
-
-# VPN Profiles Configuration
-# Maps VPN profiles from Dashlane to local deployment paths
-vpn_profiles:
-  - name: shadowman
-    dashlane_secret: vpn_shadowman_profile
-    file: "{{ user_home }}/.vpn/shadowman.ovpn"
-    enabled: true
-
-# Claude Code - MCP Servers
-# Override or extend the default MCP server list from development_tools defaults
-# Schema: name, enabled, transport (http|stdio|ws), url (http/ws), command+args (stdio)
-development_tools_mcp_servers:
-  - name: redhat-docs
-    enabled: true
-    transport: http
-    url: "https://docs-mcp.api.redhat.com/mcp"
-  - name: github
-    enabled: true
-    transport: stdio
-    command: npx
-    args: ["-y", "@modelcontextprotocol/server-github"]
-    env:
-      GITHUB_PERSONAL_ACCESS_TOKEN: "{{ lookup('pipe', 'gh auth token 2>/dev/null') }}"
-  - name: atlassian
-    enabled: true
-    transport: http
-    url: "https://mcp.atlassian.com/v2/mcp"
+# Profile-specific SSH, VPN, certificate, and MCP controls are loaded from
+# inventories/group_vars/profiles/{personal,work}.yml by the bootstrap playbook.
 
 # Claude Code - Global Skills
 # Add entries here with name matching a directory in roles/development_tools/files/claude_skills/
 development_tools_claude_skills: []
-
-# Google Drive Configuration
-# Mount path for Google Drive on this machine
-google_drive_path: "/Users/bgrimmet/Google Drive/My Drive"
-
-# -----------------------------------------------------------------------------
-# Certificates Configuration
-# dashlane_secret: name of Dashlane note containing the full Google Drive file path
-certificates:
-  - name: shadowman_root_ca
-    dashlane_secret: cert_shadowman_root_ca
-    file: "{{ user_home }}/.certs/shadowman_root_ca.pem"
-    enabled: true
-
-  - name: shadowman_openshift_root_ca
-    dashlane_secret: cert_shadowman_openshift_root_ca
-    file: "{{ user_home }}/.certs/openshift_root_ca.pem"
-    enabled: true
 
 # Do not auto-hide the Dock
 macos_dock_autohide: false
@@ -177,15 +78,9 @@ desktop_apps_rectangle_reflow_todo:
 # -----------------------------------------------------------------------------
 # Development Tools Configuration
 # -----------------------------------------------------------------------------
-development_tools_aap_demo_enabled: true
+# AAP demo enablement is profile-specific (work only).
 
 # -----------------------------------------------------------------------------
-# Git Configuration
-# -----------------------------------------------------------------------------
-git_user_name_personal: "Brian Grimmett"
-git_user_email_personal: "bbgrimmett2@gmail.com"
-
-git_user_name_work: "{{ git_user_name_personal }}"
-git_user_email_work: "{{ git_user_email_personal }}"
-
+# Git identity is not stored in the public inventory. Configure it separately
+# from your selected secret manager or via a local untracked override.
 development_tools_git_editor: "code --wait"

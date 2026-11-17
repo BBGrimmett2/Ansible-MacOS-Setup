@@ -19,7 +19,7 @@ Host *
 # Host-Specific Configurations
 # =============================================================================
 {% for config in ssh_host_configs %}
-{% if config.enabled | default(false) %}
+{% if config.enabled | default(false) and config.profile is defined and config.profile == workstation_profile %}
 
 # {{ config.name }}
 Host {{ config.host_pattern }}

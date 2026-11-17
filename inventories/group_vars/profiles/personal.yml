@@ -1,0 +1,25 @@
+---
+# Non-secret personal workstation controls. Secret values live in the secret manager.
+ssh_keys:
+  - name: github_personal
+    profile: personal
+    dashlane_secret: ssh_key_github
+    file: "{{ ssh_config_dir }}/id_github"
+    enabled: true
+
+ssh_host_configs:
+  - name: github_personal
+    profile: personal
+    host_pattern: github.com
+    hostname: github.com
+    user: git
+    identity_file: "~/.ssh/id_github"
+    options:
+      IdentitiesOnly: "yes"
+    enabled: true
+
+vpn_profiles: []
+certificates: []
+development_tools_aap_demo_enabled: false
+development_tools_mcp_servers: []
+google_drive_path: "{{ user_home }}/Google Drive/My Drive"

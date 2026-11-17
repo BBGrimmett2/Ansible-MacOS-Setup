@@ -25,6 +25,9 @@ development_tools_nodejs_enabled: true
 # pre-commit - Git hooks framework
 development_tools_precommit_enabled: true
 
+# Codex CLI - installed for both personal and work profiles
+development_tools_codex_enabled: true
+
 # Claude Code CLI - AI coding assistant
 development_tools_claude_code_enabled: true
 

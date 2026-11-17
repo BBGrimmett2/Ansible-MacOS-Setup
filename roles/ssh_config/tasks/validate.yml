@@ -9,6 +9,16 @@
     state: directory
     mode: "{{ ssh_dir_permissions }}"
 
+- name: Reject SSH keys without explicit matching profile labels
+  ansible.builtin.assert:
+    that:
+      - item.profile is defined
+      - item.profile in ['personal', 'work']
+    fail_msg: "SSH key '{{ item.name }}' requires profile: personal or work"
+  loop: "{{ ssh_keys | selectattr('enabled', 'equalto', true) | list }}"
+  loop_control:
+    label: "{{ item.name }}"
+
 - name: Display SSH configuration info
   ansible.builtin.debug:
     msg: |

@@ -364,7 +364,10 @@ clone_repository() {
 
         # Update repository
         print_info "Updating repository..."
-        (cd "$REPO_DIR" && git fetch origin && git reset --hard origin/main) &>/dev/null &
+        if [[ -n "$(git -C "$REPO_DIR" status --porcelain)" ]]; then
+            print_fatal "Existing checkout has local changes at $REPO_DIR; refusing to overwrite them."
+        fi
+        (cd "$REPO_DIR" && git fetch origin && git merge --ff-only origin/main) &>/dev/null &
         local update_pid=$!
         spinner $update_pid "Updating repository"
         wait $update_pid
@@ -405,13 +408,11 @@ authenticate_dashlane() {
         dcli_cmd="/usr/local/bin/dcli"
         export PATH="/usr/local/bin:$PATH"
     else
-        print_warning "Dashlane CLI not found"
-        print_warning "You can authenticate later by running: dcli sync"
-        return 0
+        print_fatal "Dashlane CLI not installed; cannot continue with secret-dependent setup"
     fi
 
     # Check if already authenticated
-    if $dcli_cmd status &>/dev/null; then
+    if $dcli_cmd status 2>/dev/null | grep -Eiq '^[[:space:]]*Logged in:[[:space:]]*Yes([[:space:]]|$)'; then
         print_step "Dashlane CLI already authenticated"
         return 0
     fi
@@ -423,7 +424,7 @@ authenticate_dashlane() {
 
     if $dcli_cmd configure; then
         # Verify it worked
-        if $dcli_cmd status &>/dev/null; then
+        if $dcli_cmd status 2>/dev/null | grep -Eiq '^[[:space:]]*Logged in:[[:space:]]*Yes([[:space:]]|$)'; then
             print_step "Dashlane CLI authenticated successfully"
             return 0
         fi
@@ -431,11 +432,28 @@ authenticate_dashlane() {
 
     # If we get here, authentication failed
     echo ""
-    print_warning "Dashlane authentication could not be completed automatically"
-    print_warning "Please authenticate manually after installation:"
-    print_warning "  Run: dcli configure"
-    print_info "Press Enter to continue without Dashlane authentication..."
-    read -r
+    print_fatal "Dashlane authentication failed; Ansible was not started. Rerun this installer to retry."
+}
+
+authenticate_codex_cli() {
+    print_section "Authenticating Codex CLI"
+
+    if ! command -v codex &>/dev/null; then
+        print_warning "Codex not installed; skipping login"
+        return 0
+    fi
+
+    if codex login status &>/dev/null; then
+        print_step "Codex is already authenticated"
+        return 0
+    fi
+
+    print_info "Starting Codex browser sign-in (no credentials are stored in Git)"
+    if codex login && codex login status &>/dev/null; then
+        print_step "Codex authentication successful"
+    else
+        print_warning "Codex login is incomplete; rerun this installer to retry"
+    fi
 }
 
 authenticate_github_cli() {
@@ -596,6 +614,7 @@ main() {
 
     # Authenticate GitHub CLI (optional, after gh is installed by playbook)
     authenticate_github_cli
+    authenticate_codex_cli
 
     # Cleanup installation artifacts
     print_section "Cleanup"

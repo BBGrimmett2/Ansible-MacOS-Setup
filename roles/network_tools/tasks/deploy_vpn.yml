@@ -19,6 +19,8 @@
   loop: "{{ vpn_profiles }}"
   when:
     - item.enabled | default(false)
+    - item.profile is defined
+    - item.profile == workstation_profile
   register: vpn_file_check
   loop_control:
     label: "{{ item.name }}"

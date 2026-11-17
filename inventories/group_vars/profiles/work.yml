@@ -1,0 +1,51 @@
+---
+# Non-secret work workstation controls. Secret values live in the secret manager.
+ssh_keys:
+  - name: shadowman
+    profile: work
+    dashlane_secret: ssh_key_shadowman
+    file: "{{ ssh_config_dir }}/id_shadowman"
+    enabled: true
+
+ssh_host_configs:
+  - name: shadowman_bastion
+    profile: work
+    host_pattern: bastion.shadowman.dev
+    user: "{{ user_name }}"
+    identity_file: "~/.ssh/id_shadowman"
+    proxy_jump: none
+    options:
+      PreferredAuthentications: publickey
+    enabled: true
+  - name: shadowman_internal
+    profile: work
+    host_pattern: "*.shadowman.dev"
+    user: "{{ user_name }}"
+    identity_file: "~/.ssh/id_shadowman"
+    proxy_jump: "bastion.shadowman.dev"
+    options:
+      PreferredAuthentications: publickey
+    enabled: true
+
+vpn_profiles:
+  - name: shadowman
+    profile: work
+    dashlane_secret: vpn_shadowman_profile
+    file: "{{ user_home }}/.vpn/shadowman.ovpn"
+    enabled: true
+
+certificates:
+  - name: shadowman_root_ca
+    profile: work
+    dashlane_secret: cert_shadowman_root_ca
+    file: "{{ user_home }}/.certs/shadowman_root_ca.pem"
+    enabled: true
+  - name: shadowman_openshift_root_ca
+    profile: work
+    dashlane_secret: cert_shadowman_openshift_root_ca
+    file: "{{ user_home }}/.certs/openshift_root_ca.pem"
+    enabled: true
+
+development_tools_aap_demo_enabled: true
+development_tools_mcp_servers: []
+google_drive_path: "{{ user_home }}/Google Drive/My Drive"

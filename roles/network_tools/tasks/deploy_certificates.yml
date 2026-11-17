@@ -35,10 +35,13 @@
   ansible.builtin.shell: |
     dcli note "{{ item.dashlane_secret }}" --output text | tr -d '\n\r'
   register: cert_path_results
+  no_log: true
   changed_when: false
   loop: "{{ certificates }}"
   when:
     - item.enabled | default(false)
+    - item.profile is defined
+    - item.profile == workstation_profile
   loop_control:
     label: "{{ item.name }}"
   tags: [network, certificates]
@@ -55,6 +58,8 @@
     index_var: loop_index
   when:
     - item.enabled | default(false)
+    - item.profile is defined
+    - item.profile == workstation_profile
     - cert_path_results.results[loop_index].rc == 0
   tags: [network, certificates]
 
@@ -68,6 +73,8 @@
   loop: "{{ certificates }}"
   when:
     - item.enabled | default(false)
+    - item.profile is defined
+    - item.profile == workstation_profile
   loop_control:
     label: "{{ item.name }}"
   tags: [network, certificates]
@@ -85,6 +92,7 @@
   loop: "{{ cert_check.results }}"
   when:
     - item.item.enabled | default(false)
+    - item.item.profile == workstation_profile
     - item.rc != 0
   loop_control:
     label: "{{ item.item.name }}"
