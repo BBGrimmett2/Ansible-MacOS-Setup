@@ -34,3 +34,6 @@ development_tools_mcp_servers: []
 
 # Additional CLI packages for the personal profile; appended to common list.
 cli_tools_packages_extra: []
+
+# Discord developer and community collaboration.
+desktop_apps_discord_enabled: true
