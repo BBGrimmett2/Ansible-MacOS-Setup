@@ -1,0 +1,111 @@
+---
+# Public entry point for a fully managed, ordered Dock.
+# Run after desktop_apps; no Dock mutation occurs unless current pins differ.
+# Dock operations require dockutil; command is justified because Ansible's
+# osx_defaults module does not support ordered Dock application tiles.
+
+- name: Validate macOS prerequisites
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Validate managed Dock settings
+  ansible.builtin.assert:
+    that:
+      - macos_dock_apps is sequence
+      - macos_dock_apps is not string
+      - macos_dock_apps | length > 0
+      - macos_dock_apps | unique | length == macos_dock_apps | length
+    fail_msg: "macos_dock_apps must be a nonempty list of unique app bundle paths"
+  when: macos_dock_manage_apps | bool
+
+- name: Manage Dock application tiles
+  when: macos_dock_manage_apps | bool
+  block:
+    - name: Check dockutil is installed
+      ansible.builtin.stat:
+        path: "{{ homebrew_prefix }}/bin/dockutil"
+      register: macos_dockutil_binary
+
+    - name: Require dockutil from the CLI tools role
+      ansible.builtin.assert:
+        that:
+          - macos_dockutil_binary.stat.exists
+        fail_msg: "dockutil is missing; the cli_tools role must run before manage_dock.yml"
+
+    - name: Check desired Dock applications exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ macos_dock_apps }}"
+      loop_control:
+        label: "{{ item }}"
+      register: macos_dock_app_stats
+
+    - name: Fail before changing Dock if an application is missing
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.isdir
+        fail_msg: "Dock app not installed: {{ item.item }}. Complete desktop app setup first."
+        quiet: true
+      loop: "{{ macos_dock_app_stats.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Read current ordered Dock applications
+      ansible.builtin.command:
+        argv:
+          - "{{ homebrew_prefix }}/bin/dockutil"
+          - --list
+      register: macos_dock_current
+      changed_when: false
+      check_mode: false
+
+    - name: Determine whether Dock needs updating
+      ansible.builtin.set_fact:
+        macos_dock_update_needed: >-
+          {{ (macos_dock_current.stdout | dockutil_app_paths) != macos_dock_apps }}
+
+    - name: Rebuild pinned Dock applications only when different
+      when:
+        - macos_dock_update_needed | bool
+        - not ansible_check_mode
+      block:
+        - name: Remove existing pinned Dock items
+          ansible.builtin.command:
+            argv:
+              - "{{ homebrew_prefix }}/bin/dockutil"
+              - --remove
+              - all
+              - --no-restart
+          changed_when: true
+
+        - name: Add desired applications in configured order
+          ansible.builtin.command:
+            argv:
+              - "{{ homebrew_prefix }}/bin/dockutil"
+              - --add
+              - "{{ item }}"
+              - --no-restart
+          loop: "{{ macos_dock_apps }}"
+          loop_control:
+            label: "{{ item }}"
+          changed_when: true
+          notify: Restart Dock
+
+        - name: Verify resulting Dock application order
+          ansible.builtin.command:
+            argv:
+              - "{{ homebrew_prefix }}/bin/dockutil"
+              - --list
+          register: macos_dock_after
+          changed_when: false
+
+        - name: Assert Dock applications match profile configuration
+          ansible.builtin.assert:
+            that:
+              - (macos_dock_after.stdout | dockutil_app_paths) == macos_dock_apps
+            fail_msg: "Dock pins do not match the selected profile after configuration"
+
+    - name: Report Dock plan in check mode
+      ansible.builtin.debug:
+        msg: "Dock layout {{ 'would be rebuilt' if macos_dock_update_needed else 'already matches' }} for the selected profile"
+      when: ansible_check_mode
