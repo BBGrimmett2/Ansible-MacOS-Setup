@@ -45,7 +45,7 @@
   ansible.builtin.debug:
     msg:
       - "Canon IJ Scan Utility Lite is not installed."
-      - "{{ 'Open the .pkg inside the DMG to complete installation.' if desktop_apps_canon_ij_scan_dmg.stat.exists else 'Accept Canon\'s download disclaimer and save the DMG to Downloads, then rerun setup.' }}"
+      - "{{ 'Open the .pkg inside the DMG to complete installation.' if desktop_apps_canon_ij_scan_dmg.stat.exists else 'Accept the Canon download disclaimer and save the DMG to Downloads, then rerun setup.' }}"
       - "Official Canon installer: {{ desktop_apps_canon_ij_scan_download_url }}"
   when:
     - desktop_apps_state == 'present'
