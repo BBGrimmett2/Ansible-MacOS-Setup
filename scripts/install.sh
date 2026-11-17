@@ -400,10 +400,10 @@ clone_repository() {
 authenticate_dashlane() {
     print_section "Authenticating Dashlane CLI"
 
-    # Find dcli - check command first, then try full paths
+    # Find dcli even before the user's new login shell receives Homebrew PATH.
     local dcli_cmd=""
     if command -v dcli &>/dev/null; then
-        dcli_cmd="dcli"
+        dcli_cmd="$(command -v dcli)"
     elif [[ -x "/opt/homebrew/bin/dcli" ]]; then
         dcli_cmd="/opt/homebrew/bin/dcli"
         export PATH="/opt/homebrew/bin:$PATH"
@@ -414,30 +414,15 @@ authenticate_dashlane() {
         print_fatal "Dashlane CLI not installed; cannot continue with secret-dependent setup"
     fi
 
-    # Verify vault access using a real authenticated operation.
-    # dcli status may return stale/unreliable text after a successful sync.
-    # Check if already authenticated
-    if "$dcli_cmd" devices list >/dev/null 2>&1; then
-        print_step "Dashlane CLI already authenticated"
-        return 0
-    fi
-
-    # Dashlane initiates interactive device authentication through sync.
-    echo ""
-    print_info "Dashlane CLI not authenticated. Starting interactive sync..."
-    echo ""
-
+    # Dashlane documents sync as its interactive login and vault unlock operation.
+    # It also succeeds for an already registered/unlocked device. Avoid
+    # supplementary status/devices checks, which have rejected successful syncs.
+    print_info "Synchronizing and unlocking Dashlane vault..."
     if "$dcli_cmd" sync; then
-        # Verify the session with a real authenticated operation
-        if "$dcli_cmd" devices list >/dev/null 2>&1; then
-            print_step "Dashlane CLI authenticated successfully"
-            return 0
-        fi
+        print_step "Dashlane CLI synchronized successfully"
+    else
+        print_fatal "Dashlane synchronization failed; Ansible was not started."
     fi
-
-    # If we get here, authentication failed
-    echo ""
-    print_fatal "Dashlane authentication failed; Ansible was not started. Rerun this installer to retry."
 }
 
 authenticate_codex_cli() {
