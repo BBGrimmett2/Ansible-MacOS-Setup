@@ -1,7 +1,17 @@
 ---
+# Homebrew's official Unsloth Desktop cask currently supports Apple Silicon.
 - name: Install Unsloth Desktop with Homebrew Cask
   community.general.homebrew_cask:
     name: "{{ desktop_apps_packages.unsloth }}"
     state: present
     update_homebrew: false
-  when: desktop_apps_state == 'present'
+  when:
+    - desktop_apps_state == 'present'
+    - ansible_facts['architecture'] == 'arm64'
+
+- name: Report Unsloth cask incompatibility on Intel Macs
+  ansible.builtin.set_fact:
+    workstation_setup_warnings: "{{ workstation_setup_warnings | default([]) + ['Unsloth Desktop: official Homebrew cask requires Apple Silicon. See https://unsloth.ai/download for macOS download options.'] }}"
+  when:
+    - desktop_apps_state == 'present'
+    - ansible_facts['architecture'] != 'arm64'
