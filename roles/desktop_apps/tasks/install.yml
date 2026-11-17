@@ -17,6 +17,10 @@
   ansible.builtin.include_tasks: install_cursor.yml
   when: desktop_apps_install_all or desktop_apps_cursor_enabled
 
+- name: Install Raycast
+  ansible.builtin.include_tasks: install_raycast.yml
+  when: desktop_apps_install_all or desktop_apps_raycast_enabled
+
 - name: Install ChatGPT Desktop
   ansible.builtin.include_tasks: install_chatgpt.yml
   when: desktop_apps_install_all or desktop_apps_chatgpt_enabled
