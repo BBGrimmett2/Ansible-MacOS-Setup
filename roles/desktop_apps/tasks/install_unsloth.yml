@@ -1,0 +1,7 @@
+---
+- name: Install Unsloth Desktop with Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.unsloth }}"
+    state: present
+    update_homebrew: false
+  when: desktop_apps_state == 'present'
