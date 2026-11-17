@@ -435,6 +435,27 @@ authenticate_dashlane() {
     print_fatal "Dashlane authentication failed; Ansible was not started. Rerun this installer to retry."
 }
 
+authenticate_codex_cli() {
+    print_section "Authenticating Codex CLI"
+
+    if ! command -v codex &>/dev/null; then
+        print_warning "Codex not installed; skipping login"
+        return 0
+    fi
+
+    if codex login status &>/dev/null; then
+        print_step "Codex is already authenticated"
+        return 0
+    fi
+
+    print_info "Starting Codex browser sign-in (no credentials are stored in Git)"
+    if codex login && codex login status &>/dev/null; then
+        print_step "Codex authentication successful"
+    else
+        print_warning "Codex login is incomplete; rerun this installer to retry"
+    fi
+}
+
 authenticate_github_cli() {
     print_section "Authenticating GitHub CLI (Optional)"
 
@@ -593,6 +614,7 @@ main() {
 
     # Authenticate GitHub CLI (optional, after gh is installed by playbook)
     authenticate_github_cli
+    authenticate_codex_cli
 
     # Cleanup installation artifacts
     print_section "Cleanup"
