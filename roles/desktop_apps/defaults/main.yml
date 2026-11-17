@@ -28,8 +28,8 @@ desktop_apps_vscode_enabled: true
 # Cursor - AI-powered code editor
 desktop_apps_cursor_enabled: true
 
-# Google Drive - Cloud storage
-desktop_apps_google_drive_enabled: true
+# Nextcloud - Self-hosted cloud sync
+desktop_apps_nextcloud_enabled: true
 
 # Rectangle - Window management
 desktop_apps_rectangle_enabled: true
