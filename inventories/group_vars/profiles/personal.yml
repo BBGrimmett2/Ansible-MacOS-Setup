@@ -19,10 +19,18 @@ ssh_host_configs:
     enabled: true
 
 vpn_profiles: []
-certificates: []
+# Starbase root CA is opt-in until its PEM exists locally and its source
+# path is saved in Dashlane under the referenced secure-note title.
+# Never commit the PEM or private key to this public repository.
+certificates:
+  - name: starbase_root_ca
+    profile: personal
+    dashlane_secret: cert_starbase_root_ca
+    file: "{{ user_home }}/.certs/starbase_root_ca.pem"
+    enabled: false
 development_tools_aap_demo_enabled: false
 development_tools_mcp_servers: []
-google_drive_path: "{{ user_home }}/Google Drive/My Drive"
+
 
 # Additional CLI packages for the personal profile; appended to common list.
 cli_tools_packages_extra: []
