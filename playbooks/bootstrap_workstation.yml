@@ -84,6 +84,11 @@
     - role: desktop_apps
       tags: [tools, desktop]
 
+    # Apply file associations only after desktop apps (including VS Code) are installed.
+    - role: macos_defaults
+      tasks_from: configure_file_associations
+      tags: [macos_defaults, macos_defaults:file_associations]
+
     # Development Tools (includes work-specific tools like Claude Code)
     - role: development_tools
       tags: [tools, development]
