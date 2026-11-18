@@ -21,37 +21,24 @@
     type: int
     value: "{{ desktop_apps_rectangle_subsequent_execution_mode }}"
 
-- name: Set Rectangle left half shortcut
-  community.general.osx_defaults:
-    domain: com.knollsoft.Rectangle
-    key: leftHalf
-    type: dict
-    value: "{{ desktop_apps_rectangle_left_half }}"
-  when: desktop_apps_rectangle_left_half | length > 0
-
-- name: Set Rectangle right half shortcut
-  community.general.osx_defaults:
-    domain: com.knollsoft.Rectangle
-    key: rightHalf
-    type: dict
-    value: "{{ desktop_apps_rectangle_right_half }}"
-  when: desktop_apps_rectangle_right_half | length > 0
-
-- name: Set Rectangle toggle todo shortcut
-  community.general.osx_defaults:
-    domain: com.knollsoft.Rectangle
-    key: toggleTodo
-    type: dict
-    value: "{{ desktop_apps_rectangle_toggle_todo }}"
-  when: desktop_apps_rectangle_toggle_todo | length > 0
-
-- name: Set Rectangle reflow todo shortcut
-  community.general.osx_defaults:
-    domain: com.knollsoft.Rectangle
-    key: reflowTodo
-    type: dict
-    value: "{{ desktop_apps_rectangle_reflow_todo }}"
-  when: desktop_apps_rectangle_reflow_todo | length > 0
+# This installed version of community.general.osx_defaults does not support
+# type: dict. macOS defaults is used only for shortcut dictionaries, with a
+# read-before-write comparison to ensure idempotency.
+- name: Configure Rectangle shortcut dictionaries
+  ansible.builtin.include_tasks: configure_rectangle_shortcut.yml
+  loop:
+    - key: leftHalf
+      value: "{{ desktop_apps_rectangle_left_half }}"
+    - key: rightHalf
+      value: "{{ desktop_apps_rectangle_right_half }}"
+    - key: toggleTodo
+      value: "{{ desktop_apps_rectangle_toggle_todo }}"
+    - key: reflowTodo
+      value: "{{ desktop_apps_rectangle_reflow_todo }}"
+  loop_control:
+    loop_var: rectangle_shortcut
+    label: "{{ rectangle_shortcut.key }}"
+  when: rectangle_shortcut.value | length > 0
 
 - name: Display Rectangle configuration status
   ansible.builtin.debug:
