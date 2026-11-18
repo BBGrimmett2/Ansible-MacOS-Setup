@@ -229,6 +229,8 @@
         - name: Run network_tools
           ansible.builtin.import_role:
             name: network_tools
+          vars:
+            network_tools_deploy_certificates: false
           tags: [tools, network]
 
         - name: Record network_tools result
