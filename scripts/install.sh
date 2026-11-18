@@ -479,6 +479,43 @@ authenticate_codex_cli() {
     fi
 }
 
+# Personal Claude Code uses Claude subscription login. Work uses the
+# profile-specific Red Hat Vertex AI configuration managed by Ansible.
+authenticate_claude_cli() {
+    print_section "Authenticating Claude Code CLI"
+
+    local claude_cmd=""
+    if command -v claude &>/dev/null; then
+        claude_cmd="$(command -v claude)"
+    elif [[ -x "$HOME/.local/bin/claude" ]]; then
+        claude_cmd="$HOME/.local/bin/claude"
+    elif [[ -x "/opt/homebrew/bin/claude" ]]; then
+        claude_cmd="/opt/homebrew/bin/claude"
+    elif [[ -x "/usr/local/bin/claude" ]]; then
+        claude_cmd="/usr/local/bin/claude"
+    else
+        print_warning "Claude Code CLI is not installed; skipping authentication"
+        return 0
+    fi
+
+    if [[ "${WORKSTATION_PROFILE_SELECTED:-}" == "work" ]]; then
+        print_info "Work profile uses Red Hat Vertex AI; skipping Claude subscription login"
+        return 0
+    fi
+
+    if "$claude_cmd" auth status &>/dev/null; then
+        print_step "Claude Code is already authenticated"
+        return 0
+    fi
+
+    print_info "Starting Claude Code browser sign-in (no credentials are stored in Git)"
+    if "$claude_cmd" auth login && "$claude_cmd" auth status &>/dev/null; then
+        print_step "Claude Code authentication successful"
+    else
+        print_warning "Claude Code login is incomplete; run 'claude auth login' to retry"
+    fi
+}
+
 authenticate_github_cli() {
     print_section "Authenticating GitHub CLI (Optional)"
 
@@ -642,6 +679,7 @@ main() {
     # Authenticate GitHub CLI (optional, after gh is installed by playbook)
     authenticate_github_cli
     authenticate_codex_cli
+    authenticate_claude_cli
 
     # Cleanup installation artifacts
     print_section "Cleanup"
