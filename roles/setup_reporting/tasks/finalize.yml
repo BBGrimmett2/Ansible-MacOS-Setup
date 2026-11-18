@@ -61,8 +61,14 @@
 
 - name: Display workstation run summary
   ansible.builtin.debug:
-    msg: >-
-      {{ 'macOS setup [' ~ workstation_profile ~ '] => ' ~ setup_reporting_document.status
-      ~ ' | ' ~ (setup_reporting_results | default([]) | length | string) ~ ' completed stages'
-      ~ ' | ' ~ (workstation_setup_warnings | default([]) | length | string) ~ ' warning(s)'
-      ~ ' | report: ' ~ setup_reporting_state_dir ~ '/latest.json' }}
+    msg:
+      - "======================================================="
+      - "macOS Workstation Setup | {{ workstation_profile | upper }}"
+      - "Status: {{ setup_reporting_document.status | upper }}"
+      - "-------------------------------------------------------"
+      - "Successful stages: {{ setup_reporting_results | selectattr('status', 'equalto', 'success') | list | length }}"
+      - "Warnings: {{ workstation_setup_warnings | default([]) | length }}"
+      - "Failed stages: {{ setup_reporting_results | selectattr('status', 'equalto', 'failed') | list | length }}"
+      - "Skipped stages: {{ setup_reporting_results | selectattr('status', 'equalto', 'skipped') | list | length }}"
+      - "Report: {{ setup_reporting_state_dir }}/latest.json"
+      - "======================================================="
