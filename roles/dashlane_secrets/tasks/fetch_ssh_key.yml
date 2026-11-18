@@ -55,7 +55,7 @@
   ansible.builtin.set_fact:
     dashlane_key_retrieved: >-
       {{ dashlane_ssh_key.rc == 0 and
-         '-----BEGIN OPENSSH PRIVATE KEY-----' in (dashlane_ssh_key.stdout | default('')) }}
+         (dashlane_ssh_key.stdout | default('')) is search('-----BEGIN (OPENSSH|RSA|EC|DSA) PRIVATE KEY-----') }}
   no_log: true
 
 - name: Fail clearly when a required SSH key is missing or invalid
@@ -64,7 +64,7 @@
       - dashlane_key_retrieved | bool
     fail_msg: >-
       Required SSH private key '{{ dashlane_secret_name }}' could not be
-      retrieved as an OpenSSH private key from Dashlane (dcli exit
+      retrieved as a supported SSH private key from Dashlane (dcli exit
       status {{ dashlane_ssh_key.rc }}). Create/import this secure note in
       Dashlane and rerun setup. Target path: {{ dashlane_secret_output_path }}.
       The installer will not silently generate or replace your SSH identity.
