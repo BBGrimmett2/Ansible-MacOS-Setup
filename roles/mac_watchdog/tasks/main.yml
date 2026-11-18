@@ -1,0 +1,7 @@
+---
+- name: Validate watchdog parameters
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Install local watchdog
+  ansible.builtin.import_tasks: install.yml
+  when: mac_watchdog_enabled | bool
