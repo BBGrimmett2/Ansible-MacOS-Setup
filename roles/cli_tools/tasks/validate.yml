@@ -39,3 +39,23 @@
   when:
     - cli_tools_direnv_enabled
     - cli_tools_direnv_safety_enabled
+
+- name: Validate shared and profile-specific CLI package lists
+  ansible.builtin.assert:
+    that:
+      - cli_tools_packages_common is sequence
+      - cli_tools_packages_common is not string
+      - cli_tools_packages_extra is sequence
+      - cli_tools_packages_extra is not string
+    fail_msg: "CLI packages must be lists in all.yml and profiles/{personal,work}.yml"
+
+- name: Validate names in enabled CLI package lists
+  ansible.builtin.assert:
+    that:
+      - item is string
+      - item is match('^[A-Za-z0-9@+_.-]+$')
+    fail_msg: "Invalid Homebrew formula name '{{ item }}' in CLI package list"
+    quiet: true
+  loop: "{{ cli_tools_packages_common + cli_tools_packages_extra }}"
+  loop_control:
+    label: "{{ item }}"
