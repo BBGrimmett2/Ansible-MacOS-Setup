@@ -157,14 +157,28 @@ check_disk_space() {
 
 prepare_app_store() {
     print_section "Preparing Mac App Store"
-    print_info "Opening App Store before software installation..."
-    if ! open -a "App Store"; then
-        print_warning "Could not open Mac App Store automatically"
+
+    # macOS 12+ does not expose a reliable programmatic App Store sign-in
+    # status (mas account is unsupported). Skip the sign-in prompt when the
+    # currently managed App Store application is already installed.
+    if [[ -d "/Applications/Dashlane.app" ]]; then
+        print_step "Dashlane is already installed; skipping App Store sign-in prompt"
+        return 0
     fi
-    echo ""
-    print_info "Sign in with your Apple Account in the App Store if needed."
-    print_info "Ansible installs managed App Store apps after the other desktop software."
-    read -r -p "Press Return when App Store sign-in is complete (or already signed in): " _
+
+    print_info "Dashlane is not installed. Apple Account sign-in may be needed."
+    print_info "Ansible will install Dashlane through the Mac App Store."
+    local needs_signin=""
+    read -r -p "Do you need to open App Store to sign in? (y/N): " needs_signin
+    if [[ "$needs_signin" =~ ^[Yy]$ ]]; then
+        if ! open -a "App Store"; then
+            print_warning "Could not open Mac App Store automatically"
+            return 0
+        fi
+        read -r -p "Press Return once App Store sign-in is complete: " _
+    else
+        print_info "Skipping App Store launch; the install task will report authentication errors if needed."
+    fi
 }
 
 install_xcode_cli_tools() {
