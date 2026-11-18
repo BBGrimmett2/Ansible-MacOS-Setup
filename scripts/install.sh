@@ -498,8 +498,20 @@ authenticate_claude_cli() {
         return 0
     fi
 
-    if [[ "${WORKSTATION_PROFILE_SELECTED:-}" == "work" ]]; then
+    # The profile is selected by the Ansible playbook, not this shell script.
+    # Read the profile from the structured report of the successful run.
+    local setup_report="$HOME/.local/state/ansible-macos-setup/latest.json"
+    local profile=""
+    if [[ -f "$setup_report" ]]; then
+        profile="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("profile", ""))' "$setup_report" 2>/dev/null || true)"
+    fi
+
+    if [[ "$profile" == "work" ]]; then
         print_info "Work profile uses Red Hat Vertex AI; skipping Claude subscription login"
+        return 0
+    fi
+    if [[ "$profile" != "personal" ]]; then
+        print_warning "Unable to verify personal profile from run report; skipping Claude subscription login"
         return 0
     fi
 
