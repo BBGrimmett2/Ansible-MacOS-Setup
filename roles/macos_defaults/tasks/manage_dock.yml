@@ -105,6 +105,12 @@
               - (macos_dock_after.stdout | dockutil_app_paths) == macos_dock_apps
             fail_msg: "Dock pins do not match the selected profile after configuration"
 
+        # Apply the validated Dock changes before leaving this role, rather than
+        # waiting for the end of the playbook where a later failure could prevent
+        # the Dock handler from running.
+        - name: Apply changed Dock layout immediately
+          ansible.builtin.meta: flush_handlers
+
     - name: Report Dock plan in check mode
       ansible.builtin.debug:
         msg: "Dock layout {{ 'would be rebuilt' if macos_dock_update_needed else 'already matches' }} for the selected profile"
