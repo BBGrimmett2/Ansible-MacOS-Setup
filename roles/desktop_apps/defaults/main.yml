@@ -39,6 +39,8 @@ desktop_apps_cursor_enabled: true
 
 # Canon PIXMA TR8520 scanning utility (personal-only; Canon download)
 desktop_apps_canon_ij_scan_enabled: false
+# Manual installer launch must be explicitly opted into; never reopen on each run.
+desktop_apps_canon_ij_scan_open_installer: false
 desktop_apps_canon_ij_scan_download_url: https://asia.canon/en/support/0200531730/
 desktop_apps_canon_ij_scan_dmg_filename: msul-mac-4_2_1-ea21_3.dmg
 
