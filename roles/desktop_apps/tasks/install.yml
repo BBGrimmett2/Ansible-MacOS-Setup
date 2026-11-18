@@ -13,9 +13,23 @@
   ansible.builtin.include_tasks: install_vscode.yml
   when: desktop_apps_install_all or desktop_apps_vscode_enabled
 
-- name: Install Cursor
+- name: Install Cursor (work profile)
   ansible.builtin.include_tasks: install_cursor.yml
-  when: desktop_apps_install_all or desktop_apps_cursor_enabled
+  when:
+    - workstation_profile == 'work'
+    - desktop_apps_install_all or desktop_apps_cursor_enabled
+
+- name: Remove Cursor from personal workstation
+  ansible.builtin.include_tasks: remove_cursor_personal.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_state == 'present'
+
+- name: Install Claude Desktop (personal profile)
+  ansible.builtin.include_tasks: install_claude.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_claude_enabled | bool
 
 - name: Install Unsloth Desktop (personal only)
   ansible.builtin.include_tasks: install_unsloth.yml
