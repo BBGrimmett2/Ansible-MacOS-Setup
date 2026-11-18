@@ -1,5 +1,7 @@
 ---
 # Non-secret personal workstation controls. Secret values live in the secret manager.
+# Allow the signed-in administrator to run any sudo command without a password.
+sudo_access_passwordless_enabled: true
 ssh_keys:
   - name: github_personal
     profile: personal
