@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: Manage personal workstation passwordless sudo
+    description: Install a validated, root-owned sudoers.d drop-in only for the personal profile
+    author: Brian Grimmett
+    options:
+      sudo_access_passwordless_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Grant unrestricted passwordless sudo on the selected personal Mac
+      sudo_access_username:
+        type: str
+        required: false
+        description: Local administrator account receiving NOPASSWD ALL
+      sudo_access_dropin_path:
+        type: str
+        required: false
+        default: /private/etc/sudoers.d/90-starbase-personal
+        description: Root-owned sudoers.d drop-in filename
