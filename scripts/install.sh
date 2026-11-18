@@ -593,9 +593,6 @@ main() {
     check_internet
     check_disk_space
 
-    # Open App Store and allow manual Apple Account sign-in first.
-    prepare_app_store
-
     # Install prerequisites
     install_xcode_cli_tools
     install_homebrew
@@ -604,8 +601,11 @@ main() {
     install_ansible
     install_dashlane_cli
 
-    # Setup repository
+    # Setup repository over HTTPS before SSH keys are available
     clone_repository
+
+    # App Store sign-in follows the toolchain/bootstrap prerequisites.
+    prepare_app_store
 
     # Ensure Homebrew tools are available before Dashlane auth
     # Source the shell config to pick up Homebrew PATH
