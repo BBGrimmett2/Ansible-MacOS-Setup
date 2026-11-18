@@ -25,6 +25,8 @@ set -euo pipefail
 # =============================================================================
 
 readonly REPO_URL="https://github.com/BBGrimmett2/Ansible-MacOS-Setup.git"
+# Explicitly select the git branch for pre-merge testing; default is main.
+readonly WORKSTATION_GIT_REF="${WORKSTATION_GIT_REF:-main}"
 readonly REPO_DIR="${HOME}/ansible-macos-setup"
 readonly VENV_DIR="${HOME}/venv-ansible"
 readonly PYTHON_MIN_VERSION="3.9"
@@ -370,7 +372,8 @@ clone_repository() {
         if [[ -n "$(git -C "$REPO_DIR" status --porcelain)" ]]; then
             print_fatal "Existing checkout has local changes at $REPO_DIR; refusing to overwrite them."
         fi
-        (cd "$REPO_DIR" && git fetch origin && git merge --ff-only origin/main) &>/dev/null &
+        (cd "$REPO_DIR" && git fetch origin "$WORKSTATION_GIT_REF" && \
+          git checkout -B "$WORKSTATION_GIT_REF" "origin/$WORKSTATION_GIT_REF") &>/dev/null &
         local update_pid=$!
         spinner $update_pid "Updating repository"
         wait $update_pid
@@ -390,8 +393,8 @@ clone_repository() {
         return 0
     fi
 
-    print_info "Cloning repository from ${REPO_URL}..."
-    git clone "$REPO_URL" "$REPO_DIR" &>/dev/null &
+    print_info "Cloning repository branch ${WORKSTATION_GIT_REF} from ${REPO_URL}..."
+    git clone --branch "$WORKSTATION_GIT_REF" --single-branch "$REPO_URL" "$REPO_DIR" &>/dev/null &
     spinner $! "Cloning repository"
 
     print_step "Repository cloned to ${REPO_DIR}"
@@ -548,6 +551,7 @@ run_ansible_playbook() {
     # Change to repository directory
     cd "$REPO_DIR"
 
+    print_info "Running selected branch: ${WORKSTATION_GIT_REF}"
     print_info "Starting Ansible playbook execution..."
     print_info "You will be prompted for your sudo password and workstation profile"
     echo ""
