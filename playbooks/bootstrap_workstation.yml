@@ -42,24 +42,23 @@
           - "{% if workstation_profile == 'work' %}Work profile includes Red Hat-specific tools and configurations{% else %}Personal profile with standard development tools{% endif %}"
 
   roles:
-    # Foundation - Required for all profiles
+    # Foundation: install tooling before profile-specific secrets or trust material.
     - role: homebrew
       tags: [foundation, homebrew]
 
     - role: dashlane_secrets
       tags: [foundation, secrets]
 
-    # System Configuration
-    - role: macos_defaults
-      tags: [system, macos_defaults]
-
-    # - role: pam_security
-    #   tags: [system, security, pam]
+    # Certificates must be trusted before SSH is configured.
+    - role: network_tools
+      tasks_from: deploy_certificates
+      tags: [foundation, security, certificates]
+      when: certificates | default([]) | length > 0
 
     - role: ssh_config
-      tags: [system, ssh]
+      tags: [security, ssh]
 
-    # CLI Tools
+    # CLI and application roles install and configure their own dependencies.
     - role: cli_tools
       tags: [tools, cli]
 
@@ -72,45 +71,35 @@
     - role: kubernetes_tools
       tags: [tools, kubernetes]
 
-    # Network Tools
     - role: network_tools
       tags: [tools, network]
 
-    # Database and Container Tools
     - role: database_tools
       tags: [tools, database]
 
-    # Desktop Applications
     - role: desktop_apps
       tags: [tools, desktop]
 
-    # Install Mac App Store applications after all standard desktop apps.
-    - role: desktop_apps
-      tasks_from: install_app_store
-      tags: [tools, desktop, app_store]
+    # Git and signing are configured after the SSH and CLI foundations.
+    - role: development_tools
+      tags: [tools, development]
 
-    # Apply application-specific preferences only after software is installed.
-    - role: desktop_apps
-      tasks_from: configure_post_install
-      tags: [tools, desktop, desktop:configure]
+    # Shell integrates all installed CLI tools.
+    - role: shell_environment
+      tags: [config, shell]
 
-    # Set Dock pins only after desktop apps have been installed.
+    # Only apply system-wide macOS preferences after all tools and apps.
     - role: macos_defaults
-      tasks_from: manage_dock
-      tags: [macos_defaults, macos_defaults:dock, tools]
+      tags: [system, macos_defaults]
 
-    # Apply file associations only after desktop apps (including VS Code) are installed.
     - role: macos_defaults
       tasks_from: configure_file_associations
       tags: [macos_defaults, macos_defaults:file_associations]
 
-    # Development Tools (includes work-specific tools like Claude Code)
-    - role: development_tools
-      tags: [tools, development]
-
-    # Shell Environment - Must be LAST as it integrates all installed tools
-    - role: shell_environment
-      tags: [config, shell]
+    # Fully managed profile-specific Dock is the final configuration step.
+    - role: macos_defaults
+      tasks_from: manage_dock
+      tags: [macos_defaults, macos_defaults:dock]
 
   post_tasks:
     - name: Find Ansible backup files to clean up
