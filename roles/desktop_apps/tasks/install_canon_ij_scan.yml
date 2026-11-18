@@ -10,6 +10,7 @@
       - "{{ ansible_facts['env']['HOME'] }}/Applications"
     patterns:
       - IJ Scan Utility Lite.app
+      - IJ Scan Utility.app
     file_type: directory
     recurse: true
   register: desktop_apps_canon_ij_scan_found
@@ -34,6 +35,7 @@
     - desktop_apps_state == 'present'
     - desktop_apps_canon_ij_scan_found.matched | default(0) | int == 0
     - desktop_apps_canon_ij_scan_dmg.stat.exists
+    - desktop_apps_canon_ij_scan_open_installer | bool
     - not ansible_check_mode
   changed_when: false
 
@@ -46,6 +48,7 @@
     - desktop_apps_state == 'present'
     - desktop_apps_canon_ij_scan_found.matched | default(0) | int == 0
     - not desktop_apps_canon_ij_scan_dmg.stat.exists
+    - desktop_apps_canon_ij_scan_open_installer | bool
     - not ansible_check_mode
   changed_when: false
 
@@ -56,7 +59,7 @@
         'Canon IJ Scan Utility Lite is already installed at ' ~ desktop_apps_canon_ij_scan_found.files[0].path
         if desktop_apps_canon_ij_scan_found.matched | default(0) | int > 0
         else 'Canon IJ Scan Utility Lite is missing. ' ~
-          ('Open the .pkg inside the downloaded DMG.' if desktop_apps_canon_ij_scan_dmg.stat.exists
-            else 'Accept the Canon download disclaimer and save the DMG to Downloads, then rerun setup.')
+          ('Installer already downloaded; open the DMG manually if needed.' if desktop_apps_canon_ij_scan_dmg.stat.exists
+            else 'Installer not found; download from the official Canon page when needed.')
       }}
   when: desktop_apps_state == 'present'
