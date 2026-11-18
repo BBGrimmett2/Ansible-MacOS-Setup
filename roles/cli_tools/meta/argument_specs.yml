@@ -41,8 +41,8 @@ argument_specs:
         description: Enable direnv safety checks for Projects/ directory
 
   install:
-    short_description: Install all CLI tools
-    description: Install all enabled CLI tools via Homebrew
+    short_description: Install enabled CLI tools
+    description: Install missing packages from shared and profile-specific Homebrew lists
     author: Brian Grimmett
 
     options:
@@ -50,6 +50,19 @@ argument_specs:
         type: str
         required: false
         default: present
+        choices: [present, absent]
+
+      cli_tools_packages_common:
+        type: list
+        elements: str
+        required: false
+        description: Shared Homebrew formula names
+
+      cli_tools_packages_extra:
+        type: list
+        elements: str
+        required: false
+        description: Profile-specific Homebrew formula names
 
   configure:
     short_description: Configure CLI tools
