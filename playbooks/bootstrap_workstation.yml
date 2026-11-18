@@ -92,6 +92,11 @@
             setup_reporting_message: Completed role execution
           tags: [foundation, secrets]
 
+        - name: Configure personal sudo policy before privileged certificate operations
+          ansible.builtin.import_role:
+            name: sudo_access
+          tags: [foundation, security, sudo]
+
         - name: Set active setup stage to certificates
           ansible.builtin.set_fact:
             setup_reporting_current_stage: certificates
