@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>{{ mac_watchdog_launchagent_label }}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>{{ mac_watchdog_venv_dir }}/bin/mac-watchdog</string>
+    <string>monitor</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+  <key>ProcessType</key>
+  <string>Background</string>
+  <key>StandardOutPath</key>
+  <string>{{ mac_watchdog_install_root }}/stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>{{ mac_watchdog_install_root }}/stderr.log</string>
+</dict>
+</plist>
