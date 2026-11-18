@@ -1,0 +1,39 @@
+---
+argument_specs:
+  main:
+    short_description: Initialize workstation reporting
+    options:
+      setup_reporting_state_dir:
+        type: str
+        required: false
+        description: Local XDG-style directory for workstation state
+  initialize:
+    short_description: Begin a structured workstation run report
+    options:
+      setup_reporting_schema_version:
+        type: int
+        required: false
+        default: 1
+  record:
+    short_description: Record a workstation setup component outcome
+    options:
+      setup_reporting_component:
+        type: str
+        required: true
+        description: Stable component identifier
+      setup_reporting_status:
+        type: str
+        required: true
+        choices: [success, warning, failed, skipped]
+        description: Component result
+      setup_reporting_message:
+        type: str
+        required: false
+        description: Public nonsecret summary
+  finalize:
+    short_description: Persist JSON state and display run summary
+    options:
+      setup_reporting_state_dir:
+        type: str
+        required: false
+        description: Local state path
