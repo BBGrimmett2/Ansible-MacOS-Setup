@@ -1,0 +1,68 @@
+---
+# Reporting records never contain secret values or private-key contents.
+- name: Ensure workstation state directory exists
+  ansible.builtin.file:
+    path: "{{ setup_reporting_state_dir }}/reports"
+    state: directory
+    mode: '0700'
+
+- name: Collect nonsecret desired state for future drift comparison
+  ansible.builtin.set_fact:
+    setup_reporting_desired:
+      schema_version: "{{ setup_reporting_schema_version | int }}"
+      profile: "{{ workstation_profile }}"
+      source: git_ansible_inventory
+      certificates: "{{ certificates | default([]) | selectattr('enabled', 'equalto', true) | map(attribute='name') | list }}"
+      ssh_keys: "{{ ssh_keys | default([]) | selectattr('enabled', 'equalto', true) | map(attribute='name') | list }}"
+      dock_apps: "{{ macos_dock_apps | default([]) }}"
+    setup_reporting_observed:
+      schema_version: "{{ setup_reporting_schema_version | int }}"
+      profile: "{{ workstation_profile }}"
+      collection: pending
+      note: "No independent drift scan has run; execution results are not observed state."
+  changed_when: false
+
+- name: Build run report
+  ansible.builtin.set_fact:
+    setup_reporting_document:
+      schema_version: "{{ setup_reporting_schema_version | int }}"
+      run_id: "{{ setup_reporting_run_id }}"
+      profile: "{{ workstation_profile }}"
+      started_at: "{{ setup_reporting_started }}"
+      status: "{{ 'failed' if setup_reporting_failed | bool else ('success_with_warnings' if workstation_setup_warnings | default([]) | length > 0 else 'success') }}"
+      results: "{{ setup_reporting_results | default([]) }}"
+      warnings: "{{ workstation_setup_warnings | default([]) }}"
+      error: "{{ setup_reporting_failure_message | default('') }}"
+  changed_when: false
+
+- name: Save desired-state manifest
+  ansible.builtin.copy:
+    content: "{{ setup_reporting_desired | to_nice_json }}\n"
+    dest: "{{ setup_reporting_state_dir }}/manifest.json"
+    mode: '0600'
+
+- name: Save observed-state placeholder
+  ansible.builtin.copy:
+    content: "{{ setup_reporting_observed | to_nice_json }}\n"
+    dest: "{{ setup_reporting_state_dir }}/observed.json"
+    mode: '0600'
+
+- name: Save timestamped execution report
+  ansible.builtin.copy:
+    content: "{{ setup_reporting_document | to_nice_json }}\n"
+    dest: "{{ setup_reporting_state_dir }}/reports/{{ setup_reporting_run_id }}.json"
+    mode: '0600'
+
+- name: Save latest execution report
+  ansible.builtin.copy:
+    content: "{{ setup_reporting_document | to_nice_json }}\n"
+    dest: "{{ setup_reporting_state_dir }}/latest.json"
+    mode: '0600'
+
+- name: Display workstation run summary
+  ansible.builtin.debug:
+    msg: >-
+      {{ 'macOS setup [' ~ workstation_profile ~ '] => ' ~ setup_reporting_document.status
+      ~ ' | ' ~ (setup_reporting_results | default([]) | length | string) ~ ' completed stages'
+      ~ ' | ' ~ (workstation_setup_warnings | default([]) | length | string) ~ ' warning(s)'
+      ~ ' | report: ' ~ setup_reporting_state_dir ~ '/latest.json' }}
