@@ -33,10 +33,6 @@
     - development_tools_aap_demo_enabled
     - workstation_profile == 'work'
 
-- name: Configure profile-specific GitHub GPG signing
-  ansible.builtin.include_tasks: configure_gpg.yml
-  when: development_tools_gpg_enabled | default(true) | bool
-
 - name: Configure MCP servers
   ansible.builtin.include_tasks: configure_mcp.yml
   when: development_tools_mcp_enabled | default(true)
