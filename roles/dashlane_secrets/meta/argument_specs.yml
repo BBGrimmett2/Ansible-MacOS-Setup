@@ -132,6 +132,20 @@ argument_specs:
         default: true
 
   fetch_secret:
-    short_description: fetch secret operation for dashlane secrets
-    description: Documented task entry point callable with tasks_from
-    options: {}
+    short_description: Retrieve a secure note value from Dashlane
+    description: Retrieve an individual secret without writing it to disk
+    options:
+      dashlane_secret_name:
+        type: str
+        required: true
+        description: Name of the Dashlane secure note
+      dashlane_cli:
+        type: str
+        required: false
+        default: dcli
+        description: Dashlane CLI executable
+      dashlane_fail_on_missing:
+        type: bool
+        required: false
+        default: true
+        description: Whether missing notes stop execution
