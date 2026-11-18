@@ -56,6 +56,23 @@
       - /Library/Keychains/System.keychain
       - "{{ cert_item.file }}"
   become: true
-  when: (profile_ca_identifier.stdout | regex_replace('^.*=', '') | replace(':', '') | upper) not in profile_installed_ca_inventory.stdout
   register: profile_ca_installed
   changed_when: profile_ca_installed.rc == 0
+  when: 
+    - (profile_ca_identifier.stdout | regex_replace('^.*=', '') | replace(':', '') | upper) not in profile_installed_ca_inventory.stdout
+    - not ansible_check_mode
+
+- name: Verify {{ cert_item.name }} appears in the system keychain
+  ansible.builtin.command:
+    argv: [security, find-certificate, -a, -Z, /Library/Keychains/System.keychain]
+  register: profile_ca_verified_inventory
+  changed_when: false
+  check_mode: false
+  when: not ansible_check_mode
+
+- name: Assert system keychain contains {{ cert_item.name }}
+  ansible.builtin.assert:
+    that:
+      - (profile_ca_identifier.stdout | regex_replace('^.*=', '') | replace(':', '') | upper) in profile_ca_verified_inventory.stdout
+    fail_msg: "Certificate {{ cert_item.name }} did not appear in System.keychain after import"
+  when: not ansible_check_mode
