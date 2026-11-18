@@ -78,3 +78,4 @@ cli_tools_packages_common:
   - tmux
   - gnupg
   - dockutil
+  - mas
