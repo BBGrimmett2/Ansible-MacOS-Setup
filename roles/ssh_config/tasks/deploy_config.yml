@@ -6,20 +6,8 @@
 # Configuration: inventories/host_vars/localhost.yml (ssh_host_configs)
 # =============================================================================
 
-- name: Check if SSH config exists
-  ansible.builtin.stat:
-    path: "{{ ssh_config_file }}"
-  register: ssh_config_stat
-
-- name: Backup existing SSH config
-  ansible.builtin.copy:
-    src: "{{ ssh_config_file }}"
-    dest: "{{ ssh_config_file }}.backup.{{ ansible_date_time.epoch }}"
-    remote_src: true
-    mode: "{{ ssh_config_permissions }}"
-  when:
-    - ssh_backup_existing
-    - ssh_config_stat.stat.exists
+# The template module creates a backup only when content actually changes.
+# No separate timestamped copy is made on every run.
 
 - name: Deploy SSH config from Dashlane
   when: ssh_config_from_dashlane
