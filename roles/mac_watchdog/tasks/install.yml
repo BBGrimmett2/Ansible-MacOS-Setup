@@ -1,0 +1,86 @@
+---
+- name: Create private watchdog installation directory
+  ansible.builtin.file:
+    path: "{{ mac_watchdog_install_root }}"
+    state: directory
+    mode: '0700'
+
+- name: Checkout pinned watchdog version
+  ansible.builtin.git:
+    repo: "{{ mac_watchdog_repo }}"
+    dest: "{{ mac_watchdog_source_dir }}"
+    version: "{{ mac_watchdog_revision }}"
+    update: true
+    force: false
+  register: mac_watchdog_checkout
+
+- name: Install watchdog in isolated virtual environment
+  ansible.builtin.pip:
+    name: "{{ mac_watchdog_source_dir }}"
+    state: present
+    editable: false
+    virtualenv: "{{ mac_watchdog_venv_dir }}"
+    virtualenv_command: "{{ mac_watchdog_python_executable }} -m venv"
+  register: mac_watchdog_install
+
+- name: Ensure LaunchAgents directory exists
+  ansible.builtin.file:
+    path: "{{ mac_watchdog_home }}/Library/LaunchAgents"
+    state: directory
+    mode: '0700'
+
+- name: Render watchdog user LaunchAgent
+  ansible.builtin.template:
+    src: mac-watchdog.plist.j2
+    dest: "{{ mac_watchdog_launchagent_path }}"
+    mode: '0600'
+  register: mac_watchdog_plist
+
+- name: Query current launchd registration
+  ansible.builtin.command:
+    argv:
+      - /bin/launchctl
+      - print
+      - "gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}"
+  register: mac_watchdog_launchd_status
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Unload outdated LaunchAgent configuration
+  ansible.builtin.command:
+    argv:
+      - /bin/launchctl
+      - bootout
+      - "gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}"
+  when:
+    - mac_watchdog_plist is changed
+    - mac_watchdog_launchd_status.rc == 0
+    - not ansible_check_mode
+  changed_when: true
+
+- name: Bootstrap LaunchAgent when missing or changed
+  ansible.builtin.command:
+    argv:
+      - /bin/launchctl
+      - bootstrap
+      - "gui/{{ ansible_facts['user_uid'] }}"
+      - "{{ mac_watchdog_launchagent_path }}"
+  when:
+    - mac_watchdog_plist is changed or mac_watchdog_launchd_status.rc != 0
+    - not ansible_check_mode
+  changed_when: true
+
+- name: Restart running watchdog after package update
+  ansible.builtin.command:
+    argv:
+      - /bin/launchctl
+      - kickstart
+      - -k
+      - "gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}"
+  when:
+    - (mac_watchdog_checkout is changed or mac_watchdog_install is changed)
+    - mac_watchdog_plist is not changed
+    - mac_watchdog_launchd_status.rc == 0
+    - not ansible_check_mode
+  changed_when: true
