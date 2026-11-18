@@ -37,6 +37,9 @@ desktop_apps_vscode_enabled: true
 # Cursor - AI-powered code editor
 desktop_apps_cursor_enabled: true
 
+# Claude Desktop GUI (distinct from Claude Code CLI)
+desktop_apps_claude_enabled: false
+
 # Canon PIXMA TR8520 scanning utility (personal-only; Canon download)
 desktop_apps_canon_ij_scan_enabled: false
 # Manual installer launch must be explicitly opted into; never reopen on each run.
@@ -97,6 +100,7 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
+  claude: claude
   unsloth: unsloth
   microsoft_365: microsoft-office
   appcleaner: appcleaner
