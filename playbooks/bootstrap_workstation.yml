@@ -111,7 +111,7 @@
             tasks_from: record
           vars:
             setup_reporting_component: certificates
-            setup_reporting_status: {{ 'success' if certificates | default([]) | length > 0 else 'skipped' }}
+            setup_reporting_status: "{{ 'success' if certificates | default([]) | length > 0 else 'skipped' }}"
             setup_reporting_message: Completed role execution
           tags: [foundation, security, certificates]
 
