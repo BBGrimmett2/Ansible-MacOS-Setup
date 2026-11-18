@@ -98,3 +98,6 @@ macos_dock_apps:
 
 # Existing work GPG key; reference it without generating replacements.
 development_tools_gpg_secret: gpg_key_work_github
+
+# Supply the private email through environment or inventory; never reuse a prior identity.
+git_user_email_work: "{{ lookup('ansible.builtin.env', 'WORKSTATION_GIT_EMAIL_WORK') }}"

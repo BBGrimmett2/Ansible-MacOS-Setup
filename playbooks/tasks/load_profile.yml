@@ -1,0 +1,12 @@
+---
+# Shared profile loading for standalone category playbooks.
+- name: Require an explicitly selected workstation profile
+  ansible.builtin.assert:
+    that:
+      - workstation_profile is defined
+      - workstation_profile in ['personal', 'work']
+    fail_msg: "Specify workstation_profile=personal or workstation_profile=work."
+
+- name: Load non-secret variables for the selected profile
+  ansible.builtin.include_vars:
+    file: "{{ playbook_dir }}/../inventories/group_vars/profiles/{{ workstation_profile }}.yml"
