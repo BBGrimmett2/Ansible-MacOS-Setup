@@ -56,6 +56,12 @@ desktop_apps_appcleaner_enabled: true
 # Unsloth Desktop is personal-only.
 desktop_apps_unsloth_enabled: true
 
+# Claude Desktop for personal workstation; Claude Code CLI is separate.
+desktop_apps_claude_enabled: true
+
+# Cursor is reserved for work workstations.
+desktop_apps_cursor_enabled: false
+
 # Microsoft 365 Office suite for personal business development.
 desktop_apps_microsoft_365_enabled: true
 
@@ -67,8 +73,8 @@ desktop_apps_canon_ij_scan_enabled: true
 macos_dock_apps:
   - /Applications/Google Chrome.app
   - /Applications/Visual Studio Code.app
-  - /Applications/Cursor.app
   - /Applications/ChatGPT.app
+  - /Applications/Claude.app
   - /Applications/Microsoft Outlook.app
   - /Applications/Obsidian.app
   - /System/Applications/System Settings.app
