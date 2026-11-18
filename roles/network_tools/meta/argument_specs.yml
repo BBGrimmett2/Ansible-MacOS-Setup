@@ -22,6 +22,12 @@ argument_specs:
           - absent
         description: Install or remove network tools
 
+      network_tools_deploy_certificates:
+        type: bool
+        required: false
+        default: true
+        description: Deploy profile CA certificates as part of the network role
+
       network_tools_install_all:
         type: bool
         required: false
