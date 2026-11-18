@@ -155,6 +155,18 @@ check_disk_space() {
 # Installation Functions
 # =============================================================================
 
+prepare_app_store() {
+    print_section "Preparing Mac App Store"
+    print_info "Opening App Store before software installation..."
+    if ! open -a "App Store"; then
+        print_warning "Could not open Mac App Store automatically"
+    fi
+    echo ""
+    print_info "Sign in with your Apple Account in the App Store if needed."
+    print_info "Ansible installs managed App Store apps after the other desktop software."
+    read -r -p "Press Return when App Store sign-in is complete (or already signed in): " _
+}
+
 install_xcode_cli_tools() {
     print_section "Installing Xcode Command Line Tools"
 
@@ -580,6 +592,9 @@ main() {
     check_admin_rights
     check_internet
     check_disk_space
+
+    # Open App Store and allow manual Apple Account sign-in first.
+    prepare_app_store
 
     # Install prerequisites
     install_xcode_cli_tools
