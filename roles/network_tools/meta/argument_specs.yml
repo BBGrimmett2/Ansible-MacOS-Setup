@@ -171,6 +171,16 @@ argument_specs:
     options: {}
 
   deploy_vpn:
-    short_description: deploy vpn operation for network tools
-    description: Documented task entry point callable with tasks_from
-    options: {}
+    short_description: Install workstation VPN profiles from Dashlane
+    description: Deploy VPN definitions only for the selected profile
+    options:
+      workstation_profile:
+        type: str
+        required: true
+        choices: [personal, work]
+        description: Workstation profile
+      vpn_profiles:
+        type: list
+        elements: dict
+        required: true
+        description: Profile-scoped VPN definitions
