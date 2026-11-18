@@ -1,0 +1,10 @@
+---
+# Post-install application configuration. This public task entry point
+# deliberately runs after desktop_apps and App Store software installers.
+
+- name: Configure Rectangle after application installation
+  ansible.builtin.include_tasks: configure_rectangle.yml
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_install_all or desktop_apps_rectangle_enabled
+    - desktop_apps_rectangle_configure | bool
