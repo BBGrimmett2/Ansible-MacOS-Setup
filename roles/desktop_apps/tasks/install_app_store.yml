@@ -51,16 +51,6 @@
     - not item.stat.exists
     - not desktop_apps_store_user_apps.results[store_app_index].stat.exists
 
-- name: Install mas CLI if App Store apps are missing
-  community.general.homebrew:
-    name: mas
-    state: present
-    update_homebrew: false
-  when:
-    - desktop_apps_state == 'present'
-    - desktop_apps_app_store_enabled | bool
-    - desktop_apps_store_missing_ids | default([]) | length > 0
-
 - name: Install missing Mac App Store apps
   community.general.mas:
     id: "{{ desktop_apps_store_missing_ids }}"
@@ -74,7 +64,7 @@
 
 - name: Report when all managed App Store apps are present
   ansible.builtin.debug:
-    msg: "All managed Mac App Store applications are already installed; no mas CLI required."
+    msg: "All managed Mac App Store applications are already installed; nothing to install."
   when:
     - desktop_apps_state == 'present'
     - desktop_apps_app_store_enabled | bool
