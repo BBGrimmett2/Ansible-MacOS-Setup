@@ -1,0 +1,35 @@
+---
+# Public entry point: install managed Mac App Store apps after standard apps.
+# macOS 12+ sign-in is completed interactively in the GUI before bootstrap.
+- name: Validate Mac App Store app IDs
+  ansible.builtin.assert:
+    that:
+      - item.id is defined
+      - item.id | int > 0
+      - item.name is defined
+    fail_msg: "Each App Store entry needs a name and positive numeric ID"
+  loop: "{{ desktop_apps_app_store_apps }}"
+  loop_control:
+    label: "{{ item.name | default('unidentified') }}"
+  when: desktop_apps_app_store_enabled | bool
+
+- name: Install mas CLI for App Store management
+  community.general.homebrew:
+    name: mas
+    state: present
+    update_homebrew: false
+  when:
+    - desktop_apps_app_store_enabled | bool
+    - desktop_apps_app_store_apps | length > 0
+
+- name: Install configured Mac App Store apps
+  community.general.mas:
+    id: "{{ desktop_apps_app_store_apps | map(attribute='id') | list }}"
+    state: present
+  environment:
+    PATH: "{{ homebrew_prefix }}/bin:{{ ansible_facts['env']['PATH'] }}"
+  when:
+    - desktop_apps_app_store_enabled | bool
+    - desktop_apps_app_store_apps | length > 0
+  # mas may report authentication failure on macOS 12+, even though sign-in
+  # cannot be queried reliably ahead of time. Fail with the module's error.
