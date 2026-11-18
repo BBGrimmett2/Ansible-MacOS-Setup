@@ -17,8 +17,8 @@ pam_touchid_enabled: false
 # Desktop Applications
 # -----------------------------------------------------------------------------
 
-# Disable Google Chrome (already installed manually)
-desktop_apps_chrome_enabled: false
+# Install Chrome when absent; the desktop app installer checks the application bundle first.
+desktop_apps_chrome_enabled: true
 
 # Webex is enabled only for the work profile.
 
