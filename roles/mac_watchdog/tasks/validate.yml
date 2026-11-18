@@ -21,3 +21,13 @@
       - mac_watchdog_python_stat.stat.exists
       - mac_watchdog_python_stat.stat.executable
     fail_msg: "Install Homebrew Python >=3.11 or override mac_watchdog_python_executable"
+
+- name: Verify selected Python is version 3.11 or newer
+  ansible.builtin.command:
+    argv:
+      - "{{ mac_watchdog_python_executable }}"
+      - -c
+      - "import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)"
+  register: mac_watchdog_python_version
+  changed_when: false
+  when: mac_watchdog_python_stat.stat.exists
