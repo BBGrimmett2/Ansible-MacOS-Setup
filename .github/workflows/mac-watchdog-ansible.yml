@@ -24,5 +24,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Ansible
         run: python -m pip install 'ansible-core>=2.16,<2.21'
+      - name: Offline role and LaunchAgent tests
+        run: python -m unittest discover -s tests/unit -p test_mac_watchdog_role.py -v
       - name: Syntax-check targeted playbook
         run: ansible-playbook --syntax-check playbooks/install_mac_watchdog.yml
