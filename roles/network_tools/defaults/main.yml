@@ -76,3 +76,6 @@ network_tools_bruno_configure: false
 
 # Bruno configuration directory
 network_tools_bruno_config_dir: "{{ ansible_facts['env']['HOME'] }}/.bruno"
+
+# Bootstrap deploys trusted CAs before SSH; standalone runs retain this behavior.
+network_tools_deploy_certificates: true
