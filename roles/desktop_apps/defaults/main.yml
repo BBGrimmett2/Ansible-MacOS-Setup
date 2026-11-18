@@ -16,6 +16,15 @@ desktop_apps_state: present
 desktop_apps_install_all: false
 
 # -----------------------------------------------------------------------------
+# Mac App Store Apps (store IDs, not secret account details)
+# -----------------------------------------------------------------------------
+
+desktop_apps_app_store_enabled: true
+desktop_apps_app_store_apps:
+  - name: Dashlane
+    id: 517914548
+
+# -----------------------------------------------------------------------------
 # Individual App Control
 # -----------------------------------------------------------------------------
 
