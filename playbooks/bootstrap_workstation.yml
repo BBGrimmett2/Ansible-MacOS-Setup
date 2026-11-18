@@ -99,7 +99,7 @@
           tags: [foundation, security, certificates]
 
         - name: Run network_tools:deploy_certificates
-          ansible.builtin.import_role:
+          ansible.builtin.include_role:
             name: network_tools
             tasks_from: deploy_certificates
           when: certificates | default([]) | length > 0
