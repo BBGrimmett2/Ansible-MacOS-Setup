@@ -84,6 +84,16 @@
     - role: desktop_apps
       tags: [tools, desktop]
 
+    # Install Mac App Store applications after all standard desktop apps.
+    - role: desktop_apps
+      tasks_from: install_app_store
+      tags: [tools, desktop, app_store]
+
+    # Apply application-specific preferences only after software is installed.
+    - role: desktop_apps
+      tasks_from: configure_post_install
+      tags: [tools, desktop, desktop:configure]
+
     # Set Dock pins only after desktop apps have been installed.
     - role: macos_defaults
       tasks_from: manage_dock
