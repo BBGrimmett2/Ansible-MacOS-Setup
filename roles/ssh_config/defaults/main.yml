@@ -124,6 +124,8 @@ ssh_strict_host_key_checking: accept-new
 # Pre-populate known hosts for common services
 ssh_prepopulate_known_hosts: true
 
+# GitHub host keys are retrieved from its authenticated HTTPS metadata API.
+# Other hosts require trusted, explicitly pinned key material.
 ssh_known_hosts:
   - github.com
-  - gitlab.com
+ssh_known_hosts_pinned: []
