@@ -1,0 +1,71 @@
+---
+# Manage App Store applications only when missing. App bundle presence is a
+# local installed-state check, not a test of Apple Account authentication.
+- name: Validate Mac App Store app IDs and bundle names
+  ansible.builtin.assert:
+    that:
+      - item.id is defined
+      - item.id | int > 0
+      - item.name is defined
+      - item.name is match('^[A-Za-z0-9][A-Za-z0-9 ._-]*$')
+    fail_msg: "Each App Store entry needs a name suitable for an .app bundle and a positive numeric ID"
+  loop: "{{ desktop_apps_app_store_apps }}"
+  loop_control:
+    label: "{{ item.name | default('unidentified') }}"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
+
+- name: Check system Applications for managed App Store apps
+  ansible.builtin.stat:
+    path: "/Applications/{{ item.name }}.app"
+  loop: "{{ desktop_apps_app_store_apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: desktop_apps_store_system_apps
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
+
+- name: Check user Applications for managed App Store apps
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/Applications/{{ item.name }}.app"
+  loop: "{{ desktop_apps_app_store_apps }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: desktop_apps_store_user_apps
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
+
+- name: Build list of missing App Store application IDs
+  ansible.builtin.set_fact:
+    desktop_apps_store_missing_ids: "{{ desktop_apps_store_missing_ids | default([]) + [item.item.id | int] }}"
+  loop: "{{ desktop_apps_store_system_apps.results }}"
+  loop_control:
+    index_var: store_app_index
+    label: "{{ item.item.name }}"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
+    - not item.stat.exists
+    - not desktop_apps_store_user_apps.results[store_app_index].stat.exists
+
+- name: Install missing Mac App Store apps
+  community.general.mas:
+    id: "{{ desktop_apps_store_missing_ids }}"
+    state: present
+  environment:
+    PATH: "{{ homebrew_prefix }}/bin:{{ ansible_facts['env']['PATH'] }}"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
+    - desktop_apps_store_missing_ids | default([]) | length > 0
+
+- name: Report when all managed App Store apps are present
+  ansible.builtin.debug:
+    msg: "All managed Mac App Store applications are already installed; nothing to install."
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
+    - desktop_apps_store_missing_ids | default([]) | length == 0

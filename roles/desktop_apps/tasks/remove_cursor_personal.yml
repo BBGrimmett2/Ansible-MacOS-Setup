@@ -1,0 +1,18 @@
+---
+# Personal profile no longer manages Cursor. Remove its app bundle while
+# preserving the user's Cursor settings and project files.
+- name: Uninstall Homebrew-managed Cursor on personal workstation
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.cursor }}"
+    state: absent
+    update_homebrew: false
+
+- name: Remove remaining Cursor application bundles on personal workstation
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /Applications/Cursor.app
+    - "{{ ansible_facts['env']['HOME'] }}/Applications/Cursor.app"
+  loop_control:
+    label: "{{ item }}"

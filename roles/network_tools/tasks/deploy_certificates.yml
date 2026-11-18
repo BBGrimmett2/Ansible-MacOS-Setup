@@ -1,109 +1,32 @@
 ---
-# =============================================================================
-# Certificate Deployment
-# =============================================================================
-# Purpose: Deploy and install certificates from Google Drive via path stored in Dashlane
-# Configuration: Defined in inventories/host_vars/localhost.yml (certificates list)
-#
-# NOTE: On a fresh machine, Google Drive must be installed, signed in, and synced
-# before this role runs. The playbook installs certs to the System keychain using
-# `security add-trusted-cert`. If the automated install fails, manually trust each
-# cert via: sudo security add-trusted-cert -d -r trustRoot \
-#   -k /Library/Keychains/System.keychain <cert-file>
-# =============================================================================
+# Profile-scoped CA trust anchors; PEM content lives directly in Dashlane.
+- name: Reject certificates not designated for selected profile
+  ansible.builtin.assert:
+    that:
+      - item.profile is defined
+      - item.profile == workstation_profile
+      - item.dashlane_secret is defined
+      - item.file is defined
+    fail_msg: "CA '{{ item.name }}' has invalid profile or incomplete designation"
+  loop: "{{ certificates | selectattr('enabled', 'equalto', true) | list }}"
+  loop_control:
+    label: "{{ item.name }}"
 
-- name: Create certificates directory
+- name: Ensure certificate directory exists
   ansible.builtin.file:
-    path: "{{ ansible_facts['env']['HOME'] }}/.certs"
+    path: "{{ user_home }}/.certs"
     state: directory
     mode: '0755'
-  tags: [network, certificates]
 
-- name: Check Google Drive is mounted
-  ansible.builtin.stat:
-    path: "{{ google_drive_path }}"
-  register: google_drive_mount
-  tags: [network, certificates]
-
-- name: Fail if Google Drive is not mounted
-  ansible.builtin.fail:
-    msg: "Google Drive is not mounted at {{ google_drive_path }}. Open the Google Drive app and sign in first."
-  when: not google_drive_mount.stat.exists
-  tags: [network, certificates]
-
-- name: Fetch certificate paths from Dashlane
-  ansible.builtin.shell: |
-    dcli note "{{ item.dashlane_secret }}" --output text | tr -d '\n\r'
-  register: cert_path_results
-  no_log: true
-  changed_when: false
-  loop: "{{ certificates }}"
-  when:
-    - item.enabled | default(false)
-    - item.profile is defined
-    - item.profile == workstation_profile
-  loop_control:
-    label: "{{ item.name }}"
-  tags: [network, certificates]
-
-- name: Copy certificates from Google Drive
-  ansible.builtin.copy:
-    src: "{{ cert_path_results.results[loop_index].stdout | trim }}"
-    dest: "{{ item.file }}"
-    mode: '0644'
-    remote_src: true
-  loop: "{{ certificates }}"
-  loop_control:
-    label: "{{ item.name }}"
-    index_var: loop_index
-  when:
-    - item.enabled | default(false)
-    - item.profile is defined
-    - item.profile == workstation_profile
-    - cert_path_results.results[loop_index].rc == 0
-  tags: [network, certificates]
-
-- name: Check if certificates already installed in system keychain
-  ansible.builtin.shell: |
-    CN=$(openssl x509 -noout -subject -in "{{ item.file }}" | sed 's/.*CN *= *//' | sed 's/[,\/].*//')
-    security find-certificate -c "$CN" /Library/Keychains/System.keychain
-  register: cert_check
-  changed_when: false
-  failed_when: false
-  loop: "{{ certificates }}"
-  when:
-    - item.enabled | default(false)
-    - item.profile is defined
-    - item.profile == workstation_profile
-  loop_control:
-    label: "{{ item.name }}"
-  tags: [network, certificates]
-
-- name: Install certificates to system keychain
+- name: Read system keychain certificate identifiers
   ansible.builtin.command:
-    cmd: >
-      security add-trusted-cert
-      -d -r trustRoot
-      -k /Library/Keychains/System.keychain
-      {{ item.item.file }}
-  become: true
-  register: cert_install
-  changed_when: cert_install.rc == 0
-  loop: "{{ cert_check.results }}"
-  when:
-    - item.item.enabled | default(false)
-    - item.item.profile == workstation_profile
-    - item.rc != 0
-  loop_control:
-    label: "{{ item.item.name }}"
-  tags: [network, certificates]
+    argv: [security, find-certificate, -a, -Z, /Library/Keychains/System.keychain]
+  register: profile_installed_ca_inventory
+  changed_when: false
 
-- name: Display certificate installation status
-  ansible.builtin.debug:
-    msg: "Certificate '{{ item.item.name }}' {{ 'installed' if item.rc != 0 else 'already present' }} in system keychain"
-  loop: "{{ cert_check.results }}"
-  when:
-    - item.item.enabled | default(false)
+- name: Deploy and validate required profile CA certificates
+  ansible.builtin.include_tasks: deploy_certificate_item.yml
+  loop: "{{ certificates | selectattr('enabled', 'equalto', true) | list }}"
   loop_control:
-    label: "{{ item.item.name }}"
-  tags: [network, certificates]
+    loop_var: cert_item
+    label: "{{ cert_item.name }}"

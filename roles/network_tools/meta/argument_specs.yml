@@ -22,10 +22,16 @@ argument_specs:
           - absent
         description: Install or remove network tools
 
-      network_tools_install_all:
+      network_tools_deploy_certificates:
         type: bool
         required: false
         default: true
+        description: Deploy profile CA certificates as part of the network role
+
+      network_tools_install_all:
+        type: bool
+        required: false
+        default: false
         description: Install all tools or only enabled ones
 
       network_tools_bruno_enabled:
@@ -63,6 +69,24 @@ argument_specs:
         required: false
         default: false
         description: Enable nmap installation
+
+  deploy_certificates:
+    short_description: Deploy profile CA certificates from Dashlane
+    description: Validate and install profile-scoped root CAs before SSH and software setup
+    author: Brian Grimmett
+    options:
+      certificates:
+        type: list
+        elements: dict
+        required: true
+        description: Profile-scoped CA certificates with Dashlane PEM references
+      workstation_profile:
+        type: str
+        required: true
+        choices:
+          - personal
+          - work
+        description: Selected workstation profile
 
   install:
     short_description: Install all network tools

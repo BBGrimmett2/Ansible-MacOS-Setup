@@ -25,6 +25,8 @@ set -euo pipefail
 # =============================================================================
 
 readonly REPO_URL="https://github.com/BBGrimmett2/Ansible-MacOS-Setup.git"
+# Explicitly select the git branch for pre-merge testing; default is main.
+readonly WORKSTATION_GIT_REF="${WORKSTATION_GIT_REF:-main}"
 readonly REPO_DIR="${HOME}/ansible-macos-setup"
 readonly VENV_DIR="${HOME}/venv-ansible"
 readonly PYTHON_MIN_VERSION="3.9"
@@ -152,6 +154,32 @@ check_disk_space() {
 # =============================================================================
 # Installation Functions
 # =============================================================================
+
+prepare_app_store() {
+    print_section "Preparing Mac App Store"
+
+    # macOS 12+ does not expose a reliable programmatic App Store sign-in
+    # status (mas account is unsupported). Skip the sign-in prompt when the
+    # currently managed App Store application is already installed.
+    if [[ -d "/Applications/Dashlane.app" ]]; then
+        print_step "Dashlane is already installed; skipping App Store sign-in prompt"
+        return 0
+    fi
+
+    print_info "Dashlane is not installed. Apple Account sign-in may be needed."
+    print_info "Ansible will install Dashlane through the Mac App Store."
+    local needs_signin=""
+    read -r -p "Do you need to open App Store to sign in? (y/N): " needs_signin
+    if [[ "$needs_signin" =~ ^[Yy]$ ]]; then
+        if ! open -a "App Store"; then
+            print_warning "Could not open Mac App Store automatically"
+            return 0
+        fi
+        read -r -p "Press Return once App Store sign-in is complete: " _
+    else
+        print_info "Skipping App Store launch; the install task will report authentication errors if needed."
+    fi
+}
 
 install_xcode_cli_tools() {
     print_section "Installing Xcode Command Line Tools"
@@ -370,7 +398,12 @@ clone_repository() {
         if [[ -n "$(git -C "$REPO_DIR" status --porcelain)" ]]; then
             print_fatal "Existing checkout has local changes at $REPO_DIR; refusing to overwrite them."
         fi
-        (cd "$REPO_DIR" && git fetch origin && git merge --ff-only origin/main) &>/dev/null &
+        (cd "$REPO_DIR" && git fetch origin "$WORKSTATION_GIT_REF" && \
+          if git show-ref --verify --quiet "refs/heads/$WORKSTATION_GIT_REF"; then \
+            git checkout "$WORKSTATION_GIT_REF" && git merge --ff-only "origin/$WORKSTATION_GIT_REF"; \
+          else \
+            git checkout -b "$WORKSTATION_GIT_REF" "origin/$WORKSTATION_GIT_REF"; \
+          fi) &>/dev/null &
         local update_pid=$!
         spinner $update_pid "Updating repository"
         wait $update_pid
@@ -390,8 +423,8 @@ clone_repository() {
         return 0
     fi
 
-    print_info "Cloning repository from ${REPO_URL}..."
-    git clone "$REPO_URL" "$REPO_DIR" &>/dev/null &
+    print_info "Cloning repository branch ${WORKSTATION_GIT_REF} from ${REPO_URL}..."
+    git clone --branch "$WORKSTATION_GIT_REF" --single-branch "$REPO_URL" "$REPO_DIR" &>/dev/null &
     spinner $! "Cloning repository"
 
     print_step "Repository cloned to ${REPO_DIR}"
@@ -443,6 +476,55 @@ authenticate_codex_cli() {
         print_step "Codex authentication successful"
     else
         print_warning "Codex login is incomplete; rerun this installer to retry"
+    fi
+}
+
+# Personal Claude Code uses Claude subscription login. Work uses the
+# profile-specific Red Hat Vertex AI configuration managed by Ansible.
+authenticate_claude_cli() {
+    print_section "Authenticating Claude Code CLI"
+
+    local claude_cmd=""
+    if command -v claude &>/dev/null; then
+        claude_cmd="$(command -v claude)"
+    elif [[ -x "$HOME/.local/bin/claude" ]]; then
+        claude_cmd="$HOME/.local/bin/claude"
+    elif [[ -x "/opt/homebrew/bin/claude" ]]; then
+        claude_cmd="/opt/homebrew/bin/claude"
+    elif [[ -x "/usr/local/bin/claude" ]]; then
+        claude_cmd="/usr/local/bin/claude"
+    else
+        print_warning "Claude Code CLI is not installed; skipping authentication"
+        return 0
+    fi
+
+    # The profile is selected by the Ansible playbook, not this shell script.
+    # Read the profile from the structured report of the successful run.
+    local setup_report="$HOME/.local/state/ansible-macos-setup/latest.json"
+    local profile=""
+    if [[ -f "$setup_report" ]]; then
+        profile="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("profile", ""))' "$setup_report" 2>/dev/null || true)"
+    fi
+
+    if [[ "$profile" == "work" ]]; then
+        print_info "Work profile uses Red Hat Vertex AI; skipping Claude subscription login"
+        return 0
+    fi
+    if [[ "$profile" != "personal" ]]; then
+        print_warning "Unable to verify personal profile from run report; skipping Claude subscription login"
+        return 0
+    fi
+
+    if "$claude_cmd" auth status &>/dev/null; then
+        print_step "Claude Code is already authenticated"
+        return 0
+    fi
+
+    print_info "Starting Claude Code browser sign-in (no credentials are stored in Git)"
+    if "$claude_cmd" auth login && "$claude_cmd" auth status &>/dev/null; then
+        print_step "Claude Code authentication successful"
+    else
+        print_warning "Claude Code login is incomplete; run 'claude auth login' to retry"
     fi
 }
 
@@ -548,6 +630,7 @@ run_ansible_playbook() {
     # Change to repository directory
     cd "$REPO_DIR"
 
+    print_info "Running selected branch: ${WORKSTATION_GIT_REF}"
     print_info "Starting Ansible playbook execution..."
     print_info "You will be prompted for your sudo password and workstation profile"
     echo ""
@@ -581,8 +664,11 @@ main() {
     install_ansible
     install_dashlane_cli
 
-    # Setup repository
+    # Setup repository over HTTPS before SSH keys are available
     clone_repository
+
+    # App Store sign-in follows the toolchain/bootstrap prerequisites.
+    prepare_app_store
 
     # Ensure Homebrew tools are available before Dashlane auth
     # Source the shell config to pick up Homebrew PATH
@@ -605,6 +691,7 @@ main() {
     # Authenticate GitHub CLI (optional, after gh is installed by playbook)
     authenticate_github_cli
     authenticate_codex_cli
+    authenticate_claude_cli
 
     # Cleanup installation artifacts
     print_section "Cleanup"

@@ -1,0 +1,14 @@
+---
+- name: Validate component result
+  ansible.builtin.assert:
+    that:
+      - setup_reporting_component is string
+      - setup_reporting_component | length > 0
+      - setup_reporting_status in setup_reporting_status_choices
+    fail_msg: "Invalid workstation component report entry"
+  changed_when: false
+
+- name: Append component result
+  ansible.builtin.set_fact:
+    setup_reporting_results: "{{ setup_reporting_results | default([]) + [{'component': setup_reporting_component, 'status': setup_reporting_status, 'message': setup_reporting_message | default('')}] }}"
+  changed_when: false

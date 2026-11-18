@@ -22,10 +22,22 @@ argument_specs:
           - absent
         description: Install or remove desktop apps
 
-      desktop_apps_install_all:
+      desktop_apps_app_store_enabled:
         type: bool
         required: false
         default: true
+        description: Manage Mac App Store software after GUI sign-in
+
+      desktop_apps_app_store_apps:
+        type: list
+        elements: dict
+        required: false
+        description: Mac App Store application names and numeric app IDs
+
+      desktop_apps_install_all:
+        type: bool
+        required: false
+        default: false
         description: Install all apps or only enabled ones
 
       desktop_apps_chrome_enabled:
@@ -46,11 +58,90 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_unsloth_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Enable personal-only Unsloth Desktop
+
+      desktop_apps_canon_ij_scan_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Check Canon IJ Scan Utility Lite for PIXMA TR8520
+
+      desktop_apps_canon_ij_scan_download_url:
+        type: str
+        required: false
+        description: Canon official IJ Scan Utility Lite download page requiring disclaimer acceptance
+
+      desktop_apps_canon_ij_scan_dmg_filename:
+        type: str
+        required: false
+        description: Canon IJ Scan Utility Lite installer filename expected in Downloads
+
+      desktop_apps_microsoft_365_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Install Microsoft 365 Office suite on selected profiles
+
+      desktop_apps_appcleaner_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Install AppCleaner on selected profiles
+
+      desktop_apps_stats_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Install Stats menu bar system monitor on both profiles
+
+      desktop_apps_raycast_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Install Raycast launcher for personal and work
+
+      desktop_apps_chatgpt_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Install official ChatGPT desktop app for personal and work
+
       desktop_apps_configure_defaults:
         type: bool
         required: false
         default: true
         description: Configure default applications
+
+  install_app_store:
+    short_description: Install Mac App Store applications
+    description: Install profile-selected App Store apps after signing in via the GUI
+    author: Brian Grimmett
+    options:
+      desktop_apps_app_store_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable managed Mac App Store installations
+      desktop_apps_app_store_apps:
+        type: list
+        elements: dict
+        required: false
+        description: App Store name and identifier pairs
+
+  configure_post_install:
+    short_description: Configure installed desktop applications
+    description: Apply app preferences after package installation
+    author: Brian Grimmett
+    options:
+      desktop_apps_rectangle_configure:
+        type: bool
+        required: false
+        default: false
+        description: Apply Rectangle preferences after installation
 
   install:
     short_description: Install all desktop apps

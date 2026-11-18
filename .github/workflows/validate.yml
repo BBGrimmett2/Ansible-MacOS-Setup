@@ -32,6 +32,9 @@ jobs:
       # - name: Lint YAML
       #   run: yamllint .
 
+      - name: Test custom Dock filter
+        run: python -m unittest discover -s tests/unit -p 'test_*.py'
+
       - name: Lint Ansible
         run: ansible-lint
 

@@ -41,61 +41,389 @@
           - "=========================================="
           - "{% if workstation_profile == 'work' %}Work profile includes Red Hat-specific tools and configurations{% else %}Personal profile with standard development tools{% endif %}"
 
-  roles:
-    # Foundation - Required for all profiles
-    - role: homebrew
-      tags: [foundation, homebrew]
+    - name: Initialize structured workstation reporting
+      ansible.builtin.import_role:
+        name: setup_reporting
+        tasks_from: initialize
+      tags: [always]
 
-    - role: dashlane_secrets
-      tags: [foundation, secrets]
+  tasks:
+    - name: Apply workstation configuration in dependency order
+      block:
+        - name: Set active setup stage to foundation
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: foundation
+          changed_when: false
+          tags: [foundation, homebrew]
 
-    # System Configuration
-    - role: macos_defaults
-      tags: [system, macos_defaults]
+        - name: Run homebrew
+          ansible.builtin.import_role:
+            name: homebrew
+          tags: [foundation, homebrew]
 
-    # - role: pam_security
-    #   tags: [system, security, pam]
+        - name: Record foundation result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: foundation
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [foundation, homebrew]
 
-    - role: ssh_config
-      tags: [system, ssh]
+        - name: Set active setup stage to dashlane
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: dashlane
+          changed_when: false
+          tags: [foundation, secrets]
 
-    # CLI Tools
-    - role: cli_tools
-      tags: [tools, cli]
+        - name: Run dashlane_secrets
+          ansible.builtin.import_role:
+            name: dashlane_secrets
+          tags: [foundation, secrets]
 
-    - role: terminal
-      tags: [tools, terminal]
+        - name: Record dashlane result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: dashlane
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [foundation, secrets]
 
-    - role: cloud_cli
-      tags: [tools, cloud]
+        - name: Configure personal sudo policy before privileged certificate operations
+          ansible.builtin.import_role:
+            name: sudo_access
+          tags: [foundation, security, sudo]
 
-    - role: kubernetes_tools
-      tags: [tools, kubernetes]
+        - name: Set active setup stage to certificates
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: certificates
+          changed_when: false
+          tags: [foundation, security, certificates]
 
-    # Network Tools
-    - role: network_tools
-      tags: [tools, network]
+        - name: Run network_tools:deploy_certificates
+          ansible.builtin.include_role:
+            name: network_tools
+            tasks_from: deploy_certificates
+          when: certificates | default([]) | length > 0
+          tags: [foundation, security, certificates]
 
-    # Database and Container Tools
-    - role: database_tools
-      tags: [tools, database]
+        - name: Record certificates result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: certificates
+            setup_reporting_status: "{{ 'success' if certificates | default([]) | length > 0 else 'skipped' }}"
+            setup_reporting_message: Completed role execution
+          tags: [foundation, security, certificates]
 
-    # Desktop Applications
-    - role: desktop_apps
-      tags: [tools, desktop]
+        - name: Set active setup stage to ssh
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: ssh
+          changed_when: false
+          tags: [security, ssh]
 
-    # Apply file associations only after desktop apps (including VS Code) are installed.
-    - role: macos_defaults
-      tasks_from: configure_file_associations
-      tags: [macos_defaults, macos_defaults:file_associations]
+        - name: Run ssh_config
+          ansible.builtin.import_role:
+            name: ssh_config
+          tags: [security, ssh]
 
-    # Development Tools (includes work-specific tools like Claude Code)
-    - role: development_tools
-      tags: [tools, development]
+        - name: Record ssh result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: ssh
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [security, ssh]
 
-    # Shell Environment - Must be LAST as it integrates all installed tools
-    - role: shell_environment
-      tags: [config, shell]
+        - name: Set active setup stage to cli_tools
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: cli_tools
+          changed_when: false
+          tags: [tools, cli]
+
+        - name: Run cli_tools
+          ansible.builtin.import_role:
+            name: cli_tools
+          tags: [tools, cli]
+
+        - name: Record cli_tools result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: cli_tools
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, cli]
+
+        - name: Set active setup stage to terminal
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: terminal
+          changed_when: false
+          tags: [tools, terminal]
+
+        - name: Run terminal
+          ansible.builtin.import_role:
+            name: terminal
+          tags: [tools, terminal]
+
+        - name: Record terminal result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: terminal
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, terminal]
+
+        - name: Set active setup stage to cloud_cli
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: cloud_cli
+          changed_when: false
+          tags: [tools, cloud]
+
+        - name: Run cloud_cli
+          ansible.builtin.import_role:
+            name: cloud_cli
+          tags: [tools, cloud]
+
+        - name: Record cloud_cli result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: cloud_cli
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, cloud]
+
+        - name: Set active setup stage to kubernetes_tools
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: kubernetes_tools
+          changed_when: false
+          tags: [tools, kubernetes]
+
+        - name: Run kubernetes_tools
+          ansible.builtin.import_role:
+            name: kubernetes_tools
+          tags: [tools, kubernetes]
+
+        - name: Record kubernetes_tools result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: kubernetes_tools
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, kubernetes]
+
+        - name: Set active setup stage to network_tools
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: network_tools
+          changed_when: false
+          tags: [tools, network]
+
+        - name: Run network_tools
+          ansible.builtin.import_role:
+            name: network_tools
+          vars:
+            network_tools_deploy_certificates: false
+          tags: [tools, network]
+
+        - name: Record network_tools result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: network_tools
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, network]
+
+        - name: Set active setup stage to database_tools
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: database_tools
+          changed_when: false
+          tags: [tools, database]
+
+        - name: Run database_tools
+          ansible.builtin.import_role:
+            name: database_tools
+          tags: [tools, database]
+
+        - name: Record database_tools result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: database_tools
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, database]
+
+        - name: Set active setup stage to desktop_apps
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: desktop_apps
+          changed_when: false
+          tags: [tools, desktop]
+
+        - name: Run desktop_apps
+          ansible.builtin.import_role:
+            name: desktop_apps
+          tags: [tools, desktop]
+
+        - name: Record desktop_apps result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: desktop_apps
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, desktop]
+
+        - name: Set active setup stage to development_tools
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: development_tools
+          changed_when: false
+          tags: [tools, development]
+
+        - name: Run development_tools
+          ansible.builtin.import_role:
+            name: development_tools
+          tags: [tools, development]
+
+        - name: Record development_tools result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: development_tools
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [tools, development]
+
+        - name: Set active setup stage to shell_environment
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: shell_environment
+          changed_when: false
+          tags: [config, shell]
+
+        - name: Run shell_environment
+          ansible.builtin.import_role:
+            name: shell_environment
+          tags: [config, shell]
+
+        - name: Record shell_environment result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: shell_environment
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [config, shell]
+
+        - name: Set active setup stage to macos_preferences
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: macos_preferences
+          changed_when: false
+          tags: [system, macos_defaults]
+
+        - name: Run macos_defaults
+          ansible.builtin.import_role:
+            name: macos_defaults
+          tags: [system, macos_defaults]
+
+        - name: Record macos_preferences result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: macos_preferences
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [system, macos_defaults]
+
+        - name: Set active setup stage to file_associations
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: file_associations
+          changed_when: false
+          tags: [macos_defaults, macos_defaults:file_associations]
+
+        - name: Run macos_defaults:configure_file_associations
+          ansible.builtin.import_role:
+            name: macos_defaults
+            tasks_from: configure_file_associations
+          tags: [macos_defaults, macos_defaults:file_associations]
+
+        - name: Record file_associations result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: file_associations
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [macos_defaults, macos_defaults:file_associations]
+
+        - name: Set active setup stage to dock
+          ansible.builtin.set_fact:
+            setup_reporting_current_stage: dock
+          changed_when: false
+          tags: [macos_defaults, macos_defaults:dock]
+
+        - name: Run macos_defaults:manage_dock
+          ansible.builtin.import_role:
+            name: macos_defaults
+            tasks_from: manage_dock
+          tags: [macos_defaults, macos_defaults:dock]
+
+        - name: Record dock result
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: dock
+            setup_reporting_status: success
+            setup_reporting_message: Completed role execution
+          tags: [macos_defaults, macos_defaults:dock]
+
+      rescue:
+        - name: Capture sanitized setup failure
+          ansible.builtin.set_fact:
+            setup_reporting_failed: true
+            setup_reporting_failure_message: "Failed task: {{ ansible_failed_task.name | default('unknown') }}"
+          changed_when: false
+
+        - name: Record failed stage without storing secrets
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: record
+          vars:
+            setup_reporting_component: "{{ setup_reporting_current_stage | default('unknown') }}"
+            setup_reporting_status: failed
+            setup_reporting_message: "A task in this stage failed; inspect Ansible output"
+
+      always:
+        - name: Persist and display run summary even after failure
+          ansible.builtin.import_role:
+            name: setup_reporting
+            tasks_from: finalize
+          tags: [always]
+
+    - name: Stop playbook after failed required setup stage
+      ansible.builtin.fail:
+        msg: "Workstation setup failed; see {{ setup_reporting_state_dir }}/latest.json"
+      when: setup_reporting_failed | default(false) | bool
 
   post_tasks:
     - name: Find Ansible backup files to clean up
@@ -137,6 +465,11 @@
       register: brew_casks
       changed_when: false
       failed_when: false
+
+    - name: Display deferred configuration warnings
+      ansible.builtin.debug:
+        msg: "{{ workstation_setup_warnings | default([]) }}"
+      when: (workstation_setup_warnings | default([]) | length) > 0
 
     - name: Display installation summary
       ansible.builtin.debug:

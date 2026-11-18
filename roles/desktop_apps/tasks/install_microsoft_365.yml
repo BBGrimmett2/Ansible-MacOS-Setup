@@ -1,0 +1,9 @@
+---
+# Installs Word, Excel, PowerPoint, Outlook and bundled Microsoft applications.
+# Licensing and account sign-in remain user-managed and are not stored in Git.
+- name: Install Microsoft 365 Office suite via Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.microsoft_365 }}"
+    state: present
+    update_homebrew: false
+  when: desktop_apps_state == 'present'

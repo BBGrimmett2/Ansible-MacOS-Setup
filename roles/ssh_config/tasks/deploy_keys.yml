@@ -39,6 +39,7 @@
   loop: "{{ ssh_keys }}"
   when:
     - item.enabled | default(false)
+    - item.profile == workstation_profile
   loop_control:
     label: "{{ item.name }}"
   tags:

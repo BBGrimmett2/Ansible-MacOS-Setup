@@ -1,0 +1,4 @@
+---
+setup_reporting_schema_version: 1
+setup_reporting_state_dir: "{{ ansible_facts['env']['HOME'] }}/.local/state/ansible-macos-setup"
+setup_reporting_status_choices: [success, warning, failed, skipped]

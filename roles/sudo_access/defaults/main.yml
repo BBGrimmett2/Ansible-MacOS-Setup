@@ -1,0 +1,6 @@
+---
+# Personal macOS workstation only. Grants the selected local user full sudo
+# without password prompting. Never enabled for the work profile by default.
+sudo_access_passwordless_enabled: false
+sudo_access_username: "{{ ansible_facts['env']['USER'] }}"
+sudo_access_dropin_path: /private/etc/sudoers.d/90-starbase-personal

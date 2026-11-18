@@ -42,3 +42,7 @@
   tags:
     - ssh_config
     - ssh_config:summary
+
+- name: Verify GitHub SSH authentication after configuring host and key
+  ansible.builtin.import_tasks: verify_github.yml
+  tags: [ssh_config, ssh_config:verify]

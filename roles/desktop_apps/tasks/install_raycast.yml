@@ -1,0 +1,8 @@
+---
+# Raycast macOS launcher is shared across personal and work profiles.
+- name: Install Raycast using Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.raycast }}"
+    state: present
+    update_homebrew: false
+  when: desktop_apps_state == 'present'

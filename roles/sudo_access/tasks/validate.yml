@@ -1,0 +1,26 @@
+---
+- name: Validate sudoers policy applies only to personal macOS profile
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] == 'Darwin'
+      - workstation_profile == 'personal'
+      - sudo_access_username is match('^[a-z_][a-z0-9_-]*$')
+      - sudo_access_username == ansible_facts['env']['USER']
+      - sudo_access_dropin_path == '/private/etc/sudoers.d/90-starbase-personal'
+    fail_msg: "Passwordless sudo may only be configured for the current personal macOS account."
+    quiet: true
+  when: sudo_access_passwordless_enabled | bool
+
+- name: Check visudo is available
+  ansible.builtin.stat:
+    path: /usr/sbin/visudo
+  register: sudo_access_visudo
+  when: sudo_access_passwordless_enabled | bool
+
+- name: Require visudo validation before installing a sudoers policy
+  ansible.builtin.assert:
+    that:
+      - sudo_access_visudo.stat.exists
+    fail_msg: "/usr/sbin/visudo is required for validated sudoers.d changes."
+    quiet: true
+  when: sudo_access_passwordless_enabled | bool

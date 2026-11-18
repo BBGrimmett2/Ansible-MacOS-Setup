@@ -20,3 +20,12 @@
   when:
     - development_tools_state == 'present'
     - development_tools_configure_git
+
+# Signing must be applied after profile-specific .gitconfig so it is not
+# overwritten by a subsequent Git configuration deployment.
+- name: Configure profile-specific GitHub GPG signing
+  ansible.builtin.import_tasks: configure_gpg.yml
+  tags: [configure, git, gpg]
+  when:
+    - development_tools_state == 'present'
+    - development_tools_gpg_enabled | default(true) | bool

@@ -38,19 +38,63 @@
     mode: '0700'
 
 - name: Fetch SSH key from Dashlane
-  ansible.builtin.shell: |
-    {{ dashlane_cli }} note "{{ dashlane_secret_name }}" --output text
+  ansible.builtin.command:
+    argv:
+      - "{{ dashlane_cli }}"
+      - note
+      - "{{ dashlane_secret_name }}"
+      - --output
+      - text
   register: dashlane_ssh_key
-  failed_when:
-    - dashlane_ssh_key.rc != 0
-    - dashlane_fail_on_missing
+  failed_when: false
   changed_when: false
-  no_log: "{{ dashlane_no_log }}"
+  no_log: true
   timeout: "{{ dashlane_timeout }}"
 
-- name: Check if SSH key was retrieved
+- name: Check whether Dashlane returned an SSH private key
   ansible.builtin.set_fact:
-    dashlane_key_retrieved: "{{ dashlane_ssh_key.rc == 0 }}"
+    dashlane_key_retrieved: >-
+      {{ dashlane_ssh_key.rc == 0 and
+         (dashlane_ssh_key.stdout | default('')) is search('-----BEGIN (OPENSSH|RSA|EC|DSA) PRIVATE KEY-----') }}
+  no_log: true
+
+- name: Fail clearly when a required SSH key is missing or invalid
+  ansible.builtin.assert:
+    that:
+      - dashlane_key_retrieved | bool
+    fail_msg: >-
+      Required SSH private key '{{ dashlane_secret_name }}' could not be
+      retrieved as a supported SSH private key from Dashlane (dcli exit
+      status {{ dashlane_ssh_key.rc }}). Create/import this secure note in
+      Dashlane and rerun setup. Target path: {{ dashlane_secret_output_path }}.
+      The installer will not silently generate or replace your SSH identity.
+    quiet: true
+  when: dashlane_fail_on_missing | bool
+
+- name: Check for an existing SSH private key
+  ansible.builtin.stat:
+    path: "{{ dashlane_secret_output_path }}"
+  register: existing_profile_ssh_key
+  when: dashlane_key_retrieved
+
+- name: Read existing private key without exposing it
+  ansible.builtin.slurp:
+    src: "{{ dashlane_secret_output_path }}"
+  register: existing_profile_ssh_content
+  when:
+    - dashlane_key_retrieved
+    - existing_profile_ssh_key.stat.exists
+  no_log: true
+
+- name: Refuse to overwrite a different SSH identity
+  ansible.builtin.assert:
+    that:
+      - (existing_profile_ssh_content.content | b64decode | trim) == (dashlane_ssh_key.stdout | trim)
+    fail_msg: "Existing SSH private key conflicts with Dashlane: {{ dashlane_secret_output_path }}. Resolve manually; no key was overwritten."
+  when:
+    - dashlane_key_retrieved
+    - existing_profile_ssh_key.stat.exists
+  no_log: true
 
 - name: Deploy SSH key to filesystem
   ansible.builtin.copy:

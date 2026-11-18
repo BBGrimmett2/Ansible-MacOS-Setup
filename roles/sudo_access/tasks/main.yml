@@ -1,0 +1,33 @@
+---
+- name: Validate personal passwordless sudo configuration
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Configure personal passwordless sudo
+  when: sudo_access_passwordless_enabled | bool
+  block:
+    - name: Ensure macOS sudoers.d directory exists
+      ansible.builtin.file:
+        path: /private/etc/sudoers.d
+        state: directory
+        owner: root
+        group: wheel
+        mode: '0755'
+      become: true
+
+    - name: Install validated root-owned personal sudoers drop-in
+      ansible.builtin.copy:
+        dest: "{{ sudo_access_dropin_path }}"
+        content: |
+          # Personal workstation only; managed by Ansible.
+          {{ sudo_access_username }} ALL=(ALL) NOPASSWD: ALL
+        owner: root
+        group: wheel
+        mode: '0440'
+        validate: /usr/sbin/visudo -cf %s
+      become: true
+
+    - name: Verify passwordless sudo works without prompting
+      ansible.builtin.command:
+        argv: [sudo, -n, -u, root, /usr/bin/true]
+      changed_when: false
+      when: not ansible_check_mode

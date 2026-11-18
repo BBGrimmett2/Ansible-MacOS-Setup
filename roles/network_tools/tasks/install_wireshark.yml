@@ -1,20 +1,7 @@
 ---
-# =============================================================================
-# Network Tools Role - Install Wireshark (Public Function)
-# =============================================================================
-# Installs Wireshark network protocol analyzer
-# =============================================================================
-
-- name: Check if Wireshark is installed
-  ansible.builtin.stat:
-    path: /Applications/Wireshark.app
-  register: network_tools_wireshark_check
-
-- name: Install Wireshark via Homebrew
-  ansible.builtin.command: brew install --cask wireshark
-  when:
-    - network_tools_state == 'present'
-    - network_tools_wireshark_enabled | default(true)
-    - not network_tools_wireshark_check.stat.exists
-  register: network_tools_wireshark_install
-  changed_when: network_tools_wireshark_install.rc == 0
+# Wireshark is installed only for profiles enabling the GUI analyzer.
+- name: Install Wireshark
+  community.general.homebrew_cask:
+    name: "{{ network_tools_packages.wireshark }}"
+    state: present
+  when: network_tools_state == 'present'

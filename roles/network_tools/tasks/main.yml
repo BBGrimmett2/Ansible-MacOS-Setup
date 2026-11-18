@@ -19,7 +19,11 @@
   when: vpn_profiles | default([]) | length > 0
   tags: [network, vpn]
 
+# Standalone role runs still deploy certificates by default. Bootstrap opts out
+# because it deploys trusted CAs earlier, before SSH.
 - name: Deploy certificates
   ansible.builtin.import_tasks: deploy_certificates.yml
-  when: certificates | default([]) | length > 0
+  when:
+    - network_tools_deploy_certificates | default(true) | bool
+    - certificates | default([]) | length > 0
   tags: [network, certificates]

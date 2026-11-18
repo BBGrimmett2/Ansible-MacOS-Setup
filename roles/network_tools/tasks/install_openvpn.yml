@@ -1,20 +1,52 @@
 ---
-# =============================================================================
-# Network Tools Role - Install OpenVPN (Public Function)
-# =============================================================================
-# Installs OpenVPN client
-# =============================================================================
+# OpenVPN CLI is shared by personal and work profiles.
+# A read-only Homebrew formula query is needed because the macOS Homebrew
+# module returned an error for an already-installed OpenVPN formula.
+# The query never changes the system; the collection module owns installation.
 
-- name: Check if OpenVPN is installed
-  ansible.builtin.command: brew list --formula openvpn
-  register: network_tools_openvpn_check
+- name: Inspect installed OpenVPN Homebrew formula
+  ansible.builtin.command:
+    argv:
+      - "{{ homebrew_prefix }}/bin/brew"
+      - list
+      - --versions
+      - "{{ network_tools_packages.openvpn }}"
+  register: network_tools_openvpn_installed
   changed_when: false
   failed_when: false
+  check_mode: false
+  when: network_tools_state == 'present'
 
-- name: Install OpenVPN via Homebrew
-  ansible.builtin.command: brew install openvpn
+- name: Install OpenVPN with Homebrew when missing
+  community.general.homebrew:
+    name: "{{ network_tools_packages.openvpn }}"
+    state: present
+    update_homebrew: false
   when:
     - network_tools_state == 'present'
-    - network_tools_openvpn_check.rc != 0
-  register: network_tools_openvpn_install
-  changed_when: network_tools_openvpn_install.rc == 0
+    - network_tools_openvpn_installed.rc != 0 or (network_tools_openvpn_installed.stdout | trim | length == 0)
+
+- name: Verify installed OpenVPN formula
+  ansible.builtin.command:
+    argv:
+      - "{{ homebrew_prefix }}/bin/brew"
+      - list
+      - --versions
+      - "{{ network_tools_packages.openvpn }}"
+  register: network_tools_openvpn_verified
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when:
+    - network_tools_state == 'present'
+    - not ansible_check_mode
+
+- name: Assert OpenVPN is installed after reconciliation
+  ansible.builtin.assert:
+    that:
+      - network_tools_openvpn_verified.rc == 0
+      - network_tools_openvpn_verified.stdout | trim | length > 0
+    fail_msg: "OpenVPN Homebrew formula is missing after installation."
+  when:
+    - network_tools_state == 'present'
+    - not ansible_check_mode

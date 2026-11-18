@@ -13,23 +13,67 @@
   ansible.builtin.include_tasks: install_vscode.yml
   when: desktop_apps_install_all or desktop_apps_vscode_enabled
 
-- name: Install Cursor
+- name: Install Cursor (work profile)
   ansible.builtin.include_tasks: install_cursor.yml
-  when: desktop_apps_install_all or desktop_apps_cursor_enabled
+  when:
+    - workstation_profile == 'work'
+    - desktop_apps_install_all or desktop_apps_cursor_enabled
 
-- name: Install Google Drive
-  ansible.builtin.include_tasks: install_google_drive.yml
-  when: desktop_apps_install_all or desktop_apps_google_drive_enabled
+- name: Remove Cursor from personal workstation
+  ansible.builtin.include_tasks: remove_cursor_personal.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_state == 'present'
+
+- name: Install Claude Desktop (personal profile)
+  ansible.builtin.include_tasks: install_claude.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_claude_enabled | bool
+
+- name: Install Unsloth Desktop (personal only)
+  ansible.builtin.include_tasks: install_unsloth.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_unsloth_enabled | bool
+
+- name: Check Canon IJ Scan Utility Lite for TR8520
+  ansible.builtin.include_tasks: install_canon_ij_scan.yml
+  when: desktop_apps_canon_ij_scan_enabled | bool
+
+- name: Install Microsoft 365
+  ansible.builtin.include_tasks: install_microsoft_365.yml
+  when: desktop_apps_microsoft_365_enabled | bool
+
+- name: Install AppCleaner
+  ansible.builtin.include_tasks: install_appcleaner.yml
+  when: desktop_apps_install_all or desktop_apps_appcleaner_enabled
+
+- name: Install Stats
+  ansible.builtin.include_tasks: install_stats.yml
+  when: desktop_apps_install_all or desktop_apps_stats_enabled
+
+- name: Install Raycast
+  ansible.builtin.include_tasks: install_raycast.yml
+  when: desktop_apps_install_all or desktop_apps_raycast_enabled
+
+- name: Install ChatGPT Desktop
+  ansible.builtin.include_tasks: install_chatgpt.yml
+  when: desktop_apps_install_all or desktop_apps_chatgpt_enabled
+
+- name: Install Nextcloud
+  ansible.builtin.include_tasks: install_nextcloud.yml
+  when: desktop_apps_install_all or desktop_apps_nextcloud_enabled
 
 - name: Install Rectangle
   ansible.builtin.include_tasks: install_rectangle.yml
   when: desktop_apps_install_all or desktop_apps_rectangle_enabled
 
-- name: Configure Rectangle
+- name: Configure Rectangle immediately after installation
   ansible.builtin.include_tasks: configure_rectangle.yml
   when:
     - desktop_apps_install_all or desktop_apps_rectangle_enabled
-    - desktop_apps_rectangle_configure | default(false)
+    - desktop_apps_rectangle_configure | bool
 
 - name: Install DisplayLink
   ansible.builtin.include_tasks: install_displaylink.yml

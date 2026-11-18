@@ -1,10 +1,12 @@
 ---
 # Non-secret personal workstation controls. Secret values live in the secret manager.
+# Allow the signed-in administrator to run any sudo command without a password.
+sudo_access_passwordless_enabled: true
 ssh_keys:
   - name: github_personal
     profile: personal
-    dashlane_secret: ssh_key_github
-    file: "{{ ssh_config_dir }}/id_github"
+    dashlane_secret: ssh_key_personal_github
+    file: "{{ ssh_config_dir }}/id_github_personal"
     enabled: true
 
 ssh_host_configs:
@@ -13,16 +15,69 @@ ssh_host_configs:
     host_pattern: github.com
     hostname: github.com
     user: git
-    identity_file: "~/.ssh/id_github"
+    identity_file: "~/.ssh/id_github_personal"
     options:
       IdentitiesOnly: "yes"
     enabled: true
 
 vpn_profiles: []
-certificates: []
+# Required personal trust anchor; PEM contents come directly from Dashlane.
+certificates:
+  - name: starbase_root_ca
+    profile: personal
+    dashlane_secret: cert_starbase_root_ca
+    file: "{{ user_home }}/.certs/starbase_root_ca.pem"
+    enabled: true
+    required: true
+
 development_tools_aap_demo_enabled: false
 development_tools_mcp_servers: []
-google_drive_path: "{{ user_home }}/Google Drive/My Drive"
+
 
 # Additional CLI packages for the personal profile; appended to common list.
 cli_tools_packages_extra: []
+
+# Discord developer and community collaboration.
+desktop_apps_discord_enabled: true
+
+# Raycast launcher and productivity workflows.
+desktop_apps_raycast_enabled: true
+
+# Network diagnostics and VPN client selection.
+network_tools_openvpn_enabled: true
+network_tools_wireshark_enabled: true
+
+# macOS menu bar system monitoring.
+desktop_apps_stats_enabled: true
+
+# App removal utility for personal workstation.
+desktop_apps_appcleaner_enabled: true
+
+# Unsloth Desktop is personal-only.
+desktop_apps_unsloth_enabled: true
+
+# Claude Desktop for personal workstation; Claude Code CLI is separate.
+desktop_apps_claude_enabled: true
+
+# Cursor is reserved for work workstations.
+desktop_apps_cursor_enabled: false
+
+# Microsoft 365 Office suite for personal business development.
+desktop_apps_microsoft_365_enabled: true
+
+# Canon PIXMA TR8520 document scanning support.
+desktop_apps_canon_ij_scan_enabled: true
+
+# Fully managed Dock, in display order. Finder is managed by macOS and is
+# deliberately omitted from this list. Apply after desktop apps are installed.
+macos_dock_apps:
+  - /Applications/Google Chrome.app
+  - /Applications/Visual Studio Code.app
+  - /Applications/ChatGPT.app
+  - /Applications/Claude.app
+  - /Applications/Microsoft Outlook.app
+  - /Applications/Obsidian.app
+  - /System/Applications/System Settings.app
+
+# GitHub GPG signing: referenced only; Ansible never generates key material.
+development_tools_gpg_secret: gpg_key_personal_github

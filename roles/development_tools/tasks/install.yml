@@ -25,7 +25,7 @@
   ansible.builtin.include_tasks: install_claude_code.yml
   when:
     - development_tools_claude_code_enabled
-    - workstation_profile == 'work'
+    - workstation_profile in ['personal', 'work']
 
 - name: Install AAP demo tools
   ansible.builtin.include_tasks: install_aap_demo.yml

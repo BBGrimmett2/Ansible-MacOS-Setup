@@ -13,3 +13,8 @@
   ansible.builtin.import_tasks: install.yml
   tags: [install]
   when: desktop_apps_state == 'present'
+
+- name: Install managed App Store applications
+  ansible.builtin.import_tasks: install_app_store.yml
+  tags: [install, app_store]
+  when: desktop_apps_state == 'present'

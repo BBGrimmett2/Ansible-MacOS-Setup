@@ -13,7 +13,16 @@
 desktop_apps_state: present
 
 # Install all apps (if false, only install enabled apps)
-desktop_apps_install_all: true
+desktop_apps_install_all: false
+
+# -----------------------------------------------------------------------------
+# Mac App Store Apps (store IDs, not secret account details)
+# -----------------------------------------------------------------------------
+
+desktop_apps_app_store_enabled: true
+desktop_apps_app_store_apps:
+  - name: Dashlane
+    id: 517914548
 
 # -----------------------------------------------------------------------------
 # Individual App Control
@@ -28,20 +37,48 @@ desktop_apps_vscode_enabled: true
 # Cursor - AI-powered code editor
 desktop_apps_cursor_enabled: true
 
-# Google Drive - Cloud storage
-desktop_apps_google_drive_enabled: true
+# Claude Desktop GUI (distinct from Claude Code CLI)
+desktop_apps_claude_enabled: false
+
+# Canon PIXMA TR8520 scanning utility (personal-only; Canon download)
+desktop_apps_canon_ij_scan_enabled: false
+# Manual installer launch must be explicitly opted into; never reopen on each run.
+desktop_apps_canon_ij_scan_open_installer: false
+desktop_apps_canon_ij_scan_download_url: https://asia.canon/en/support/0200531730/
+desktop_apps_canon_ij_scan_dmg_filename: msul-mac-4_2_1-ea21_3.dmg
+
+# Unsloth Desktop (personal only)
+desktop_apps_unsloth_enabled: false
+
+# Microsoft 365 Office suite (personal only)
+desktop_apps_microsoft_365_enabled: false
+
+# AppCleaner - app removal and related-file cleanup (personal only)
+desktop_apps_appcleaner_enabled: false
+
+# Stats - macOS menu bar system monitoring (both profiles)
+desktop_apps_stats_enabled: true
+
+# Raycast - macOS launcher and productivity commands (both profiles)
+desktop_apps_raycast_enabled: true
+
+# ChatGPT - Official OpenAI desktop application (both profiles)
+desktop_apps_chatgpt_enabled: true
+
+# Nextcloud - Self-hosted cloud sync
+desktop_apps_nextcloud_enabled: true
 
 # Rectangle - Window management
 desktop_apps_rectangle_enabled: true
 
 # DisplayLink Manager - Multi-monitor support
-desktop_apps_displaylink_enabled: false
+desktop_apps_displaylink_enabled: true
 
 # Elgato Camera Hub - Webcam software
-desktop_apps_elgato_camera_hub_enabled: false
+desktop_apps_elgato_camera_hub_enabled: true
 
 # Elgato Control Center - Stream Deck/lighting control
-desktop_apps_elgato_control_center_enabled: false
+desktop_apps_elgato_control_center_enabled: true
 
 # Obsidian - Note-taking app
 desktop_apps_obsidian_enabled: true
@@ -63,7 +100,14 @@ desktop_apps_packages:
   chrome: google-chrome
   vscode: visual-studio-code
   cursor: cursor
-  google_drive: google-drive
+  claude: claude
+  unsloth: unsloth
+  microsoft_365: microsoft-office
+  appcleaner: appcleaner
+  stats: stats
+  raycast: raycast
+  chatgpt: chatgpt
+  nextcloud: nextcloud
   rectangle: rectangle
   displaylink: displaylink
   obsidian: obsidian
@@ -95,15 +139,11 @@ desktop_apps_vscode_file_associations:
   - txt
 
 # -----------------------------------------------------------------------------
-# Google Drive Configuration
+# Nextcloud Configuration
 # -----------------------------------------------------------------------------
 
-# Open Google Drive for configuration after installation
-desktop_apps_google_drive_configure: false
-
-# Google Drive sync preferences (future implementation)
-# desktop_apps_google_drive_sync_folders: []
-# desktop_apps_google_drive_streaming_mode: true
+# Launch Nextcloud after a new installation so the account can be connected.
+desktop_apps_nextcloud_open: false
 
 # -----------------------------------------------------------------------------
 # Rectangle Configuration

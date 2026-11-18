@@ -1,0 +1,66 @@
+---
+# Canon IJ Scan Utility Lite for PIXMA TR8520.
+# Canon's installer has no verified Homebrew cask, so check both system and
+# per-user application directories before opening the manual download workflow.
+
+- name: Check for installed Canon IJ Scan Utility Lite app
+  ansible.builtin.find:
+    paths:
+      - /Applications
+      - "{{ ansible_facts['env']['HOME'] }}/Applications"
+    patterns:
+      - Canon IJ Scan Utility Lite.app
+      - IJ Scan Utility Lite.app
+      - IJ Scan Utility.app
+    file_type: directory
+    recurse: true
+  register: desktop_apps_canon_ij_scan_found
+  failed_when: false
+  changed_when: false
+  when: desktop_apps_state == 'present'
+
+- name: Check for downloaded Canon IJ Scan Utility Lite DMG
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/Downloads/{{ desktop_apps_canon_ij_scan_dmg_filename }}"
+  register: desktop_apps_canon_ij_scan_dmg
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_canon_ij_scan_found.matched | default(0) | int == 0
+
+- name: Open downloaded Canon IJ Scan Utility Lite DMG
+  ansible.builtin.command:
+    argv:
+      - open
+      - "{{ ansible_facts['env']['HOME'] }}/Downloads/{{ desktop_apps_canon_ij_scan_dmg_filename }}"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_canon_ij_scan_found.matched | default(0) | int == 0
+    - desktop_apps_canon_ij_scan_dmg.stat.exists
+    - desktop_apps_canon_ij_scan_open_installer | bool
+    - not ansible_check_mode
+  changed_when: false
+
+- name: Open official Canon IJ Scan Utility Lite download page
+  ansible.builtin.command:
+    argv:
+      - open
+      - "{{ desktop_apps_canon_ij_scan_download_url }}"
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_canon_ij_scan_found.matched | default(0) | int == 0
+    - not desktop_apps_canon_ij_scan_dmg.stat.exists
+    - desktop_apps_canon_ij_scan_open_installer | bool
+    - not ansible_check_mode
+  changed_when: false
+
+- name: Display Canon IJ Scan Utility Lite installation status
+  ansible.builtin.debug:
+    msg: >-
+      {{
+        'Canon IJ Scan Utility Lite is already installed at ' ~ desktop_apps_canon_ij_scan_found.files[0].path
+        if desktop_apps_canon_ij_scan_found.matched | default(0) | int > 0
+        else 'Canon IJ Scan Utility Lite is missing. ' ~
+          ('Installer already downloaded; open the DMG manually if needed.' if desktop_apps_canon_ij_scan_dmg.stat.exists
+            else 'Installer not found; download from the official Canon page when needed.')
+      }}
+  when: desktop_apps_state == 'present'

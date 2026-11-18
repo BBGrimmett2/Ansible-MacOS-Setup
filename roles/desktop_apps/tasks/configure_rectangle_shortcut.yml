@@ -1,0 +1,46 @@
+---
+# community.general.osx_defaults versions prior to dict support cannot write
+# Rectangle's keyCode/modifierFlags dictionary. Use macOS defaults with a
+# read-before-write guard instead of an unsupported module type.
+- name: Validate Rectangle {{ rectangle_shortcut.key }} shortcut mapping
+  ansible.builtin.assert:
+    that:
+      - rectangle_shortcut.value is mapping
+      - rectangle_shortcut.value.keyCode is defined
+      - rectangle_shortcut.value.modifierFlags is defined
+      - rectangle_shortcut.value.keyCode | int >= 0
+      - rectangle_shortcut.value.modifierFlags | int >= 0
+    fail_msg: "Rectangle shortcut '{{ rectangle_shortcut.key }}' needs nonnegative keyCode and modifierFlags."
+
+- name: Read Rectangle {{ rectangle_shortcut.key }} shortcut
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/defaults
+      - read
+      - com.knollsoft.Rectangle
+      - "{{ rectangle_shortcut.key }}"
+  register: rectangle_shortcut_current
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Set Rectangle {{ rectangle_shortcut.key }} shortcut when different
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/defaults
+      - write
+      - com.knollsoft.Rectangle
+      - "{{ rectangle_shortcut.key }}"
+      - -dict
+      - keyCode
+      - -int
+      - "{{ rectangle_shortcut.value.keyCode }}"
+      - modifierFlags
+      - -int
+      - "{{ rectangle_shortcut.value.modifierFlags }}"
+  when:
+    - rectangle_shortcut_current.rc != 0 or
+      ('keyCode = ' ~ (rectangle_shortcut.value.keyCode | string) ~ ';') not in rectangle_shortcut_current.stdout or
+      ('modifierFlags = ' ~ (rectangle_shortcut.value.modifierFlags | string) ~ ';') not in rectangle_shortcut_current.stdout
+    - not ansible_check_mode
+  changed_when: true

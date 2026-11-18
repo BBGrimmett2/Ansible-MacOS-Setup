@@ -1,0 +1,9 @@
+---
+# Claude Desktop is the GUI application, not the Claude Code CLI.
+# Install it before the managed Dock runs.
+- name: Install Claude Desktop via Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.claude }}"
+    state: present
+    update_homebrew: false
+  when: desktop_apps_state == 'present'
