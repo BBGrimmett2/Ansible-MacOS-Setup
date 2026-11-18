@@ -1,0 +1,22 @@
+---
+# GitHub's ssh -T success response exits 1 rather than 0.
+# Use the configured host alias and prepopulated known_hosts to avoid
+# accepting an unverified host key during this check.
+- name: Verify profile GitHub SSH authentication
+  ansible.builtin.command:
+    argv:
+      - ssh
+      - -T
+      - -o
+      - BatchMode=yes
+      - -o
+      - StrictHostKeyChecking=yes
+      - -o
+      - ConnectTimeout=15
+      - git@github.com
+  register: github_ssh_auth
+  changed_when: false
+  failed_when: >-
+    github_ssh_auth.rc != 1 or
+    'successfully authenticated' not in (github_ssh_auth.stderr | lower)
+  when: ssh_host_configs | selectattr('host_pattern', 'equalto', 'github.com') | list | length > 0
