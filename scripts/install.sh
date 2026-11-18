@@ -373,7 +373,11 @@ clone_repository() {
             print_fatal "Existing checkout has local changes at $REPO_DIR; refusing to overwrite them."
         fi
         (cd "$REPO_DIR" && git fetch origin "$WORKSTATION_GIT_REF" && \
-          git checkout -B "$WORKSTATION_GIT_REF" "origin/$WORKSTATION_GIT_REF") &>/dev/null &
+          if git show-ref --verify --quiet "refs/heads/$WORKSTATION_GIT_REF"; then \
+            git checkout "$WORKSTATION_GIT_REF" && git merge --ff-only "origin/$WORKSTATION_GIT_REF"; \
+          else \
+            git checkout -b "$WORKSTATION_GIT_REF" "origin/$WORKSTATION_GIT_REF"; \
+          fi) &>/dev/null &
         local update_pid=$!
         spinner $update_pid "Updating repository"
         wait $update_pid
