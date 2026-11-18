@@ -164,3 +164,13 @@ argument_specs:
         type: str
         required: false
         default: present
+
+  deploy_certificate_item:
+    short_description: deploy certificate item operation for network tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  deploy_vpn:
+    short_description: deploy vpn operation for network tools
+    description: Documented task entry point callable with tasks_from
+    options: {}

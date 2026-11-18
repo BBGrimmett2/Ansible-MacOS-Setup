@@ -157,3 +157,8 @@ argument_specs:
         type: str
         required: false
         default: present
+
+  install_skopeo:
+    short_description: install skopeo operation for kubernetes tools
+    description: Documented task entry point callable with tasks_from
+    options: {}

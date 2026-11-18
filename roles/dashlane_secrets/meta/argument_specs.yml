@@ -130,3 +130,8 @@ argument_specs:
         type: bool
         required: false
         default: true
+
+  fetch_secret:
+    short_description: fetch secret operation for dashlane secrets
+    description: Documented task entry point callable with tasks_from
+    options: {}

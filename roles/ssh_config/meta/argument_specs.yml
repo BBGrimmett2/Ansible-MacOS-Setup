@@ -75,3 +75,23 @@ argument_specs:
         type: list
         required: false
         description: List of work SSH keys
+
+  deploy_config:
+    short_description: deploy config operation for ssh config
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  deploy_keys:
+    short_description: deploy keys operation for ssh config
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  manage_known_hosts:
+    short_description: manage known hosts operation for ssh config
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  verify_github:
+    short_description: verify github operation for ssh config
+    description: Documented task entry point callable with tasks_from
+    options: {}

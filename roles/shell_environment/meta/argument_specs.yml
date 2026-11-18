@@ -63,3 +63,8 @@ argument_specs:
         type: str
         required: false
         default: present
+
+  install_ohmyzsh:
+    short_description: install ohmyzsh operation for shell environment
+    description: Documented task entry point callable with tasks_from
+    options: {}
