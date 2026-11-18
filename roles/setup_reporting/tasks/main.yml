@@ -1,0 +1,3 @@
+---
+- name: Initialize workstation reporting
+  ansible.builtin.import_tasks: initialize.yml
