@@ -11,7 +11,9 @@
   loop: "{{ desktop_apps_app_store_apps }}"
   loop_control:
     label: "{{ item.name | default('unidentified') }}"
-  when: desktop_apps_app_store_enabled | bool
+  when:
+    - desktop_apps_state == 'present'
+    - desktop_apps_app_store_enabled | bool
 
 - name: Install mas CLI for App Store management
   community.general.homebrew:
@@ -19,6 +21,7 @@
     state: present
     update_homebrew: false
   when:
+    - desktop_apps_state == 'present'
     - desktop_apps_app_store_enabled | bool
     - desktop_apps_app_store_apps | length > 0
 
@@ -29,6 +32,7 @@
   environment:
     PATH: "{{ homebrew_prefix }}/bin:{{ ansible_facts['env']['PATH'] }}"
   when:
+    - desktop_apps_state == 'present'
     - desktop_apps_app_store_enabled | bool
     - desktop_apps_app_store_apps | length > 0
   # mas may report authentication failure on macOS 12+, even though sign-in
