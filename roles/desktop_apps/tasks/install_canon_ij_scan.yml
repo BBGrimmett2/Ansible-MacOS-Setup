@@ -9,6 +9,7 @@
       - /Applications
       - "{{ ansible_facts['env']['HOME'] }}/Applications"
     patterns:
+      - Canon IJ Scan Utility Lite.app
       - IJ Scan Utility Lite.app
       - IJ Scan Utility.app
     file_type: directory
