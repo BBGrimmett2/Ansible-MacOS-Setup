@@ -1,0 +1,13 @@
+---
+# Deploy personal Mac watchdog independently of full bootstrap.
+# Usage: ansible-playbook playbooks/install_mac_watchdog.yml -e workstation_profile=personal
+- name: Install personal macOS configuration watchdog
+  hosts: localhost
+  gather_facts: true
+  vars:
+    workstation_profile: personal
+  tasks:
+    - name: Deploy personal watchdog
+      ansible.builtin.import_role:
+        name: mac_watchdog
+  tags: [mac_watchdog]
