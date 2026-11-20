@@ -64,6 +64,12 @@ argument_specs:
         default: false
         description: Install Ollama only on personal Macs
 
+      desktop_apps_ollama_models:
+        type: list
+        elements: str
+        required: false
+        description: Local model tags to pull, only on personal machines
+
       desktop_apps_ollama_open:
         type: bool
         required: false
