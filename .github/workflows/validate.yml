@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Confirm runner execution
         run: |
-          echo "GitHub Actions runner started successfully"
+          echo "GitHub Actions runner started successfully for Validate"
           echo "Event: $GITHUB_EVENT_NAME"
           echo "Ref: $GITHUB_REF"
 
