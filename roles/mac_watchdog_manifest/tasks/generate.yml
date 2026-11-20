@@ -1,0 +1,20 @@
+---
+- name: Prepare validated expected-state data
+  ansible.builtin.set_fact:
+    mac_watchdog_manifest_document: >-
+      {{ mac_watchdog_manifest_formulae_common | watchdog_manifest(
+           mac_watchdog_manifest_formulae_extra, mac_watchdog_manifest_resources) }}
+  changed_when: false
+  no_log: true
+
+- name: Create private expected-state directory
+  ansible.builtin.file:
+    path: "{{ mac_watchdog_manifest_path | dirname }}"
+    state: directory
+    mode: '0700'
+
+- name: Write private expected-state manifest only when content changes
+  ansible.builtin.copy:
+    content: "{{ mac_watchdog_manifest_document | to_nice_json(indent=2) }}\n"
+    dest: "{{ mac_watchdog_manifest_path }}"
+    mode: '0600'
