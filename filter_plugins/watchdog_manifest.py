@@ -1,6 +1,9 @@
 """Build the watchdog's strict JSON contract from non-secret Ansible variables."""
 from __future__ import annotations
 
+from pathlib import Path
+import yaml
+
 
 def watchdog_manifest(common, extra, resources, selected=None):
     if not all(isinstance(values, list) for values in (common, extra, resources)):
@@ -90,10 +93,21 @@ _ROLE_PACKAGES = {
 }
 
 
-def watchdog_role_packages(defaults_by_role, profile):
-    """Resolve allowlisted Homebrew installation intent from roles + personal overrides."""
-    if not isinstance(defaults_by_role, dict) or not isinstance(profile, dict):
-        raise ValueError("Role defaults and profile must be mappings")
+def watchdog_role_packages(repo_root, profile=None):
+    """Parse package metadata without expanding unrelated Jinja or secret variables."""
+    root = Path(repo_root)
+    if profile is None:
+        profile = yaml.safe_load(
+            (root / "inventories/group_vars/profiles/personal.yml").read_text()
+        )
+    if not isinstance(profile, dict):
+        raise ValueError("Personal profile must be a mapping")
+    defaults_by_role = {}
+    for role in _ROLE_PACKAGES:
+        defaults = yaml.safe_load((root / "roles" / role / "defaults/main.yml").read_text())
+        if not isinstance(defaults, dict):
+            raise ValueError("Missing package role defaults: " + role)
+        defaults_by_role[role] = defaults
     selection = {"brew_formula": set(), "brew_cask": set()}
     for role, categories in _ROLE_PACKAGES.items():
         defaults = defaults_by_role.get(role)
