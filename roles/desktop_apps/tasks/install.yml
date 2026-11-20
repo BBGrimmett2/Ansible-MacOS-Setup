@@ -31,6 +31,12 @@
     - workstation_profile == 'personal'
     - desktop_apps_claude_enabled | bool
 
+- name: Install Ollama Desktop (personal only)
+  ansible.builtin.include_tasks: install_ollama.yml
+  when:
+    - workstation_profile == 'personal'
+    - desktop_apps_ollama_enabled | bool
+
 - name: Install Unsloth Desktop (personal only)
   ansible.builtin.include_tasks: install_unsloth.yml
   when:
