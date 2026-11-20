@@ -2,11 +2,19 @@
 - name: Validate manifest inputs for standalone generation
   ansible.builtin.import_tasks: validate.yml
 
+- name: Select Homebrew packages configured by Ansible roles
+  ansible.builtin.set_fact:
+    mac_watchdog_manifest_selected: >-
+      {{ mac_watchdog_manifest_repo_root | watchdog_role_packages }}
+  changed_when: false
+  no_log: true
+
 - name: Prepare validated expected-state data
   ansible.builtin.set_fact:
     mac_watchdog_manifest_document: >-
       {{ mac_watchdog_manifest_formulae_common | watchdog_manifest(
-           mac_watchdog_manifest_formulae_extra, mac_watchdog_manifest_resources) }}
+           mac_watchdog_manifest_formulae_extra, mac_watchdog_manifest_resources,
+           mac_watchdog_manifest_selected) }}
   changed_when: false
   no_log: true
 

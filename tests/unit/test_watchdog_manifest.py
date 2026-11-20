@@ -59,6 +59,53 @@ class ExpectedStateManifestTests(unittest.TestCase):
             with self.subTest(item=item), self.assertRaises(ValueError):
                 build([], [], [item])
 
+
+    def test_role_defaults_expand_formula_and_cask_coverage(self):
+        role_names = ("cloud_cli", "kubernetes_tools", "network_tools",
+                      "development_tools", "desktop_apps", "database_tools", "terminal")
+        defaults = {
+            role: yaml.safe_load((ROOT / "roles" / role / "defaults/main.yml").read_text())
+            for role in role_names
+        }
+        profile = yaml.safe_load(
+            (ROOT / "inventories/group_vars/profiles/personal.yml").read_text()
+        )
+        selected = module.watchdog_role_packages(ROOT, profile)
+        self.assertIn("awscli", selected["brew_formula"])
+        self.assertIn("gh", selected["brew_formula"])
+        self.assertIn("helm", selected["brew_formula"])
+        self.assertIn("kubernetes-cli", selected["brew_formula"])
+        self.assertIn("node", selected["brew_formula"])
+        self.assertIn("openvpn", selected["brew_formula"])
+        self.assertIn("wireshark", selected["brew_cask"])
+        self.assertIn("google-chrome", selected["brew_cask"])
+        self.assertIn("claude", selected["brew_cask"])
+        self.assertIn("font-meslo-lg-nerd-font", selected["brew_cask"])
+        self.assertNotIn("cursor", selected["brew_cask"])
+        self.assertNotIn("ghostty", selected["brew_cask"])
+        self.assertNotIn("nmap", selected["brew_formula"])
+        final = build(["bat"], [], [], selected)
+        self.assertIn("brew_cask", final["managed_categories"])
+        ids = {r["resource_id"] for r in final["resources"]}
+        self.assertIn("brew_formula:awscli", ids)
+        self.assertIn("brew_cask:google-chrome", ids)
+
+    def test_enabled_flags_respect_personal_overrides(self):
+        role_names = ("cloud_cli", "kubernetes_tools", "network_tools",
+                      "development_tools", "desktop_apps", "database_tools", "terminal")
+        defaults = {
+            role: yaml.safe_load((ROOT / "roles" / role / "defaults/main.yml").read_text())
+            for role in role_names
+        }
+        profile = {"network_tools_openvpn_enabled": False,
+                   "desktop_apps_discord_enabled": False}
+        selected = module.watchdog_role_packages(ROOT, profile)
+        self.assertNotIn("openvpn", selected["brew_formula"])
+        self.assertNotIn("discord", selected["brew_cask"])
+        profile["cloud_cli_state"] = "absent"
+        selected = module.watchdog_role_packages(ROOT, profile)
+        self.assertNotIn("awscli", selected["brew_formula"])
+
     def test_role_contract_and_profile_isolation(self):
         role = ROOT / "roles/mac_watchdog_manifest"
         for filename in ("defaults/main.yml", "meta/argument_specs.yml",

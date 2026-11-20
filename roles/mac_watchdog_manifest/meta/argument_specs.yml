@@ -22,6 +22,9 @@ argument_specs:
         type: list
         elements: dict
         required: false
+      mac_watchdog_manifest_repo_root:
+        type: path
+        required: false
   generate:
     short_description: Generate personal expected-state manifest
     options:
@@ -39,4 +42,10 @@ argument_specs:
       mac_watchdog_manifest_resources:
         type: list
         elements: dict
+        required: false
+      mac_watchdog_manifest_role_defaults:
+        type: dict
+        required: false
+      mac_watchdog_manifest_profile:
+        type: dict
         required: false
