@@ -19,7 +19,7 @@ class OllamaSetupTests(unittest.TestCase):
 
     def test_launch_is_conditional_and_never_approves_security_prompts(self):
         tasks = yaml.safe_load((ROOT / "roles/desktop_apps/tasks/install_ollama.yml").read_text())
-        cask, api, open_task = tasks
+        cask, api, open_task, wait_task, pull_task = tasks
         assert cask["community.general.homebrew_cask"]["state"] == "present"
         assert api["changed_when"] is False
         assert api["failed_when"] is False
@@ -27,7 +27,9 @@ class OllamaSetupTests(unittest.TestCase):
         assert open_task["ansible.builtin.command"]["argv"] == ["/usr/bin/open", "-a", "Ollama"]
         assert "not ansible_check_mode" in open_task["when"]
         assert any("desktop_apps_ollama_api.status" in x for x in open_task["when"])
-        assert "ollama pull" not in str(tasks)
+        assert pull_task["ansible.builtin.command"]["argv"][1] == "pull"
+        assert "not ansible_check_mode" in pull_task["when"]
+        assert wait_task["changed_when"] is False
         assert "sudo" not in str(tasks)
 
 
