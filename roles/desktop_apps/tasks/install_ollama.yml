@@ -1,0 +1,32 @@
+---
+# Ollama is personal-only. The app's first-launch macOS approval is user-owned.
+- name: Install Ollama Desktop via Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.ollama }}"
+    state: present
+    update_homebrew: false
+
+- name: Check Ollama local API readiness
+  ansible.builtin.uri:
+    url: http://127.0.0.1:11434/api/tags
+    method: GET
+    return_content: false
+    status_code: 200
+    timeout: 3
+  register: desktop_apps_ollama_api
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when: desktop_apps_ollama_open | bool
+
+- name: Open Ollama when local API is unavailable
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/open
+      - -a
+      - Ollama
+  changed_when: true
+  when:
+    - desktop_apps_ollama_open | bool
+    - desktop_apps_ollama_api.status | default(0) != 200
+    - not ansible_check_mode
