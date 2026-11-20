@@ -1,0 +1,65 @@
+---
+# Ollama is personal-only. The app's first-launch macOS approval is user-owned.
+- name: Install Ollama Desktop via Homebrew Cask
+  community.general.homebrew_cask:
+    name: "{{ desktop_apps_packages.ollama }}"
+    state: present
+    update_homebrew: false
+
+- name: Check Ollama local API readiness
+  ansible.builtin.uri:
+    url: http://127.0.0.1:11434/api/tags
+    method: GET
+    return_content: false
+    status_code: 200
+    timeout: 3
+  register: desktop_apps_ollama_api
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when: desktop_apps_ollama_open | bool
+
+- name: Open Ollama when local API is unavailable
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/open
+      - -a
+      - Ollama
+  changed_when: true
+  when:
+    - desktop_apps_ollama_open | bool
+    - desktop_apps_ollama_api.status | default(0) != 200
+    - not ansible_check_mode
+
+- name: Wait for Ollama API before managing models
+  ansible.builtin.uri:
+    url: http://127.0.0.1:11434/api/tags
+    method: GET
+    status_code: 200
+    return_content: true
+    timeout: 3
+  register: desktop_apps_ollama_models_response
+  changed_when: false
+  retries: 6
+  delay: 2
+  until: desktop_apps_ollama_models_response.status | default(0) == 200
+  when:
+    - desktop_apps_ollama_models | length > 0
+    - not ansible_check_mode
+
+- name: Pull missing locally managed Ollama models
+  ansible.builtin.command:
+    argv:
+      - >-
+        {{ '/opt/homebrew/bin/ollama'
+        if ansible_facts['architecture'] == 'arm64'
+        else '/usr/local/bin/ollama' }}
+      - pull
+      - "{{ item }}"
+  loop: "{{ desktop_apps_ollama_models }}"
+  when:
+    - not ansible_check_mode
+    - >-
+      item not in (desktop_apps_ollama_models_response.json.models
+      | default([]) | map(attribute='name') | list)
+  changed_when: true

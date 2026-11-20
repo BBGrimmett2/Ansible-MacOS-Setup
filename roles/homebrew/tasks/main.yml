@@ -31,7 +31,10 @@
       ansible.builtin.command: "{{ homebrew_bin }} --version"
       register: homebrew_version
       changed_when: false
+      check_mode: false
 
     - name: Display Homebrew version
       ansible.builtin.debug:
-        msg: "{{ homebrew_version.stdout_lines[0] }}"
+        msg: >-
+          {{ homebrew_version.stdout_lines
+          | default([]) | first | default('Homebrew version unavailable') }}

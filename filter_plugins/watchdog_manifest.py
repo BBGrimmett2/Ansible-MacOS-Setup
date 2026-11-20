@@ -9,7 +9,10 @@ def watchdog_manifest(common, extra, resources, selected=None):
     if not all(isinstance(values, list) for values in (common, extra, resources)):
         raise ValueError("Expected-state package and resource inputs must be lists")
     selected = selected if selected is not None else {"brew_formula": [], "brew_cask": []}
-    if not isinstance(selected, dict) or set(selected) != {"brew_formula", "brew_cask"}:
+    if not isinstance(selected, dict) or set(selected) not in (
+        frozenset({"brew_formula", "brew_cask"}),
+        frozenset({"brew_formula", "brew_cask", "ollama_model"}),
+    ):
         raise ValueError("Invalid selected package groups")
     if not all(isinstance(selected[group], list) for group in selected):
         raise ValueError("Selected packages must be lists")
@@ -19,6 +22,11 @@ def watchdog_manifest(common, extra, resources, selected=None):
             raise ValueError("Invalid Homebrew formula name")
         rid = "brew_formula:" + name
         entries[rid] = {"resource_id": rid, "category": "brew_formula"}
+    for name in selected["ollama_model"] if "ollama_model" in selected else []:
+        if not isinstance(name, str) or not name or name.strip() != name:
+            raise ValueError("Invalid Ollama model name")
+        rid = "ollama_model:" + name
+        entries[rid] = {"resource_id": rid, "category": "ollama_model"}
     for name in selected["brew_cask"]:
         if not isinstance(name, str) or not name or name.strip() != name:
             raise ValueError("Invalid Homebrew cask name")
@@ -31,7 +39,7 @@ def watchdog_manifest(common, extra, resources, selected=None):
             raise ValueError("Expected resource requires resource_id and category")
         rid, category = item["resource_id"], item["category"]
         if not isinstance(rid, str) or not rid or not isinstance(category, str) or category not in (
-            "brew_formula", "brew_cask", "app", "pkg_receipt", "launchd", "macos_build"
+            "brew_formula", "brew_cask", "app", "pkg_receipt", "launchd", "macos_build", "ollama_model"
         ):
             raise ValueError("Invalid expected resource")
         prefix = "macos" if category == "macos_build" else category
@@ -83,6 +91,7 @@ _ROLE_PACKAGES = {
         "brew_cask": {
             "chrome": "google-chrome", "vscode": "visual-studio-code",
             "claude": "claude", "microsoft_365": "microsoft-office",
+            "ollama": "ollama-app",
             "appcleaner": "appcleaner", "stats": "stats", "raycast": "raycast",
             "chatgpt": "chatgpt", "nextcloud": "nextcloud",
             "rectangle": "rectangle", "displaylink": "displaylink",
@@ -109,7 +118,7 @@ def watchdog_role_packages(repo_root, profile=None):
         if not isinstance(defaults, dict):
             raise ValueError("Missing package role defaults: " + role)
         defaults_by_role[role] = defaults
-    selection = {"brew_formula": set(), "brew_cask": set()}
+    selection = {"brew_formula": set(), "brew_cask": set(), "ollama_model": set()}
     for role, categories in _ROLE_PACKAGES.items():
         defaults = defaults_by_role.get(role)
         if not isinstance(defaults, dict):
@@ -133,7 +142,7 @@ def watchdog_role_packages(repo_root, profile=None):
                     raise ValueError("Invalid package enabled flag: " + prefix + key)
                 # desktop apps Claude/Microsoft 365 explicitly check their enabled
                 # flags without the install_all fallback.
-                explicit = role == "desktop_apps" and key in {"claude", "microsoft_365"}
+                explicit = role == "desktop_apps" and key in {"claude", "microsoft_365", "ollama"}
                 if enabled or (install_all and not explicit):
                     selection[category].add(package)
     terminal = defaults_by_role["terminal"]
@@ -150,6 +159,13 @@ def watchdog_role_packages(repo_root, profile=None):
             raise ValueError("Invalid terminal emulator")
         unselected = {"ghostty" if emulator == "iterm2" else "iterm2"}
         selection["brew_cask"].difference_update(unselected)
+    desktop_defaults = defaults_by_role["desktop_apps"]
+    enabled = profile.get("desktop_apps_ollama_enabled", desktop_defaults["desktop_apps_ollama_enabled"])
+    models = profile.get("desktop_apps_ollama_models", desktop_defaults["desktop_apps_ollama_models"])
+    if not isinstance(models, list) or any(not isinstance(name, str) or not name for name in models):
+        raise ValueError("Invalid Ollama model list")
+    if enabled and "ollama-app" in selection["brew_cask"]:
+        selection["ollama_model"].update(models)
     return {category: sorted(selection[category]) for category in selection}
 
 

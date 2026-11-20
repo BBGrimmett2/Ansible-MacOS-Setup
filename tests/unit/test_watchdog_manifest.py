@@ -85,15 +85,19 @@ class ExpectedStateManifestTests(unittest.TestCase):
         self.assertNotIn("google-cloud-sdk", selected["brew_cask"])
         self.assertNotIn("wireshark", selected["brew_cask"])
         self.assertIn("claude", selected["brew_cask"])
+        self.assertIn("ollama-app", selected["brew_cask"])
+        self.assertIn("qwen3:8b", selected["ollama_model"])
         self.assertIn("font-meslo-lg-nerd-font", selected["brew_cask"])
         self.assertNotIn("cursor", selected["brew_cask"])
         self.assertNotIn("ghostty", selected["brew_cask"])
         self.assertNotIn("nmap", selected["brew_formula"])
         final = build(["bat"], [], [], selected)
         self.assertIn("brew_cask", final["managed_categories"])
+        self.assertIn("ollama_model", final["managed_categories"])
         ids = {r["resource_id"] for r in final["resources"]}
         self.assertIn("brew_formula:awscli", ids)
         self.assertIn("brew_cask:google-chrome", ids)
+        self.assertIn("ollama_model:qwen3:8b", ids)
 
     def test_enabled_flags_respect_personal_overrides(self):
         role_names = ("cloud_cli", "kubernetes_tools", "network_tools",
@@ -106,6 +110,8 @@ class ExpectedStateManifestTests(unittest.TestCase):
                    "desktop_apps_discord_enabled": False}
         selected = module.watchdog_role_packages(ROOT, profile)
         self.assertNotIn("openvpn", selected["brew_formula"])
+        self.assertNotIn("ollama-app", selected["brew_cask"])
+        self.assertNotIn("qwen3:8b", selected["ollama_model"])
         self.assertNotIn("discord", selected["brew_cask"])
         profile["cloud_cli_state"] = "absent"
         selected = module.watchdog_role_packages(ROOT, profile)
