@@ -35,4 +35,6 @@
 
     - name: Display Homebrew version
       ansible.builtin.debug:
-        msg: "{{ homebrew_version.stdout_lines | default([]) | first | default('Homebrew version unavailable') }}"
+        msg: >-
+          {{ homebrew_version.stdout_lines
+          | default([]) | first | default('Homebrew version unavailable') }}

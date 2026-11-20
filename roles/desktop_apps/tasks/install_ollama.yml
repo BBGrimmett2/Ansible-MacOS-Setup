@@ -50,11 +50,16 @@
 - name: Pull missing locally managed Ollama models
   ansible.builtin.command:
     argv:
-      - "{{ '/opt/homebrew/bin/ollama' if ansible_facts['architecture'] == 'arm64' else '/usr/local/bin/ollama' }}"
+      - >-
+        {{ '/opt/homebrew/bin/ollama'
+        if ansible_facts['architecture'] == 'arm64'
+        else '/usr/local/bin/ollama' }}
       - pull
       - "{{ item }}"
   loop: "{{ desktop_apps_ollama_models }}"
   when:
     - not ansible_check_mode
-    - item not in (desktop_apps_ollama_models_response.json.models | default([]) | map(attribute='name') | list)
+    - >-
+      item not in (desktop_apps_ollama_models_response.json.models
+      | default([]) | map(attribute='name') | list)
   changed_when: true
