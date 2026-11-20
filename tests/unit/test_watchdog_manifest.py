@@ -84,6 +84,7 @@ class ExpectedStateManifestTests(unittest.TestCase):
         self.assertNotIn("google-cloud-sdk", selected["brew_cask"])
         self.assertNotIn("wireshark", selected["brew_cask"])
         self.assertIn("claude", selected["brew_cask"])
+        self.assertIn("ollama-app", selected["brew_cask"])
         self.assertIn("font-meslo-lg-nerd-font", selected["brew_cask"])
         self.assertNotIn("cursor", selected["brew_cask"])
         self.assertNotIn("ghostty", selected["brew_cask"])
@@ -105,6 +106,7 @@ class ExpectedStateManifestTests(unittest.TestCase):
                    "desktop_apps_discord_enabled": False}
         selected = module.watchdog_role_packages(ROOT, profile)
         self.assertNotIn("openvpn", selected["brew_formula"])
+        self.assertNotIn("ollama-app", selected["brew_cask"])
         self.assertNotIn("discord", selected["brew_cask"])
         profile["cloud_cli_state"] = "absent"
         selected = module.watchdog_role_packages(ROOT, profile)
