@@ -47,6 +47,10 @@ desktop_apps_canon_ij_scan_open_installer: false
 desktop_apps_canon_ij_scan_download_url: https://asia.canon/en/support/0200531730/
 desktop_apps_canon_ij_scan_dmg_filename: msul-mac-4_2_1-ea21_3.dmg
 
+# Ollama Desktop and local inference backend (personal only)
+desktop_apps_ollama_enabled: false
+desktop_apps_ollama_open: true
+
 # Unsloth Desktop (personal only)
 desktop_apps_unsloth_enabled: false
 
@@ -102,6 +106,7 @@ desktop_apps_packages:
   cursor: cursor
   claude: claude
   unsloth: unsloth
+  ollama: ollama-app
   microsoft_365: microsoft-office
   appcleaner: appcleaner
   stats: stats
