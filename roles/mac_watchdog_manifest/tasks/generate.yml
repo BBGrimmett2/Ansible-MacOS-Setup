@@ -1,4 +1,7 @@
 ---
+- name: Validate manifest inputs for standalone generation
+  ansible.builtin.import_tasks: validate.yml
+
 - name: Prepare validated expected-state data
   ansible.builtin.set_fact:
     mac_watchdog_manifest_document: >-
