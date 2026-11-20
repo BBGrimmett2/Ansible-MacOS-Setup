@@ -76,6 +76,7 @@ _ROLE_PACKAGES = {
         "brew_formula": {"nodejs": "node", "precommit": "pre-commit"},
     },
     "database_tools": {
+        "brew_formula": {"podman": "podman"},
         "brew_cask": {"pgadmin": "pgadmin4", "podman_desktop": "podman-desktop"},
     },
     "desktop_apps": {

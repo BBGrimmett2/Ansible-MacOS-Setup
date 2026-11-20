@@ -22,6 +22,11 @@ database_tools_install_all: true
 # pgAdmin - PostgreSQL management tool
 database_tools_pgadmin_enabled: true
 
+# Podman CLI and local macOS Linux VM (personal and work profiles)
+database_tools_podman_enabled: true
+database_tools_podman_machine_enabled: true
+database_tools_podman_machine_name: podman-machine-default
+
 # Podman Desktop - Container management GUI
 database_tools_podman_desktop_enabled: true
 
@@ -30,5 +35,6 @@ database_tools_podman_desktop_enabled: true
 # -----------------------------------------------------------------------------
 
 database_tools_packages:
+  podman: podman
   pgadmin: pgadmin4
   podman_desktop: podman-desktop

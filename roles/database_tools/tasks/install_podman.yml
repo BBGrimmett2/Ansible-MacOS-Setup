@@ -1,0 +1,71 @@
+---
+# Homebrew is the installation authority; Podman Machine is user-scoped.
+- name: Install Podman CLI
+  community.general.homebrew:
+    name: "{{ database_tools_packages.podman }}"
+    state: present
+    update_homebrew: false
+
+- name: Inspect local Podman machines
+  ansible.builtin.command:
+    argv:
+      - "{{ '/opt/homebrew/bin/podman' if ansible_facts['architecture'] == 'arm64' else '/usr/local/bin/podman' }}"
+      - machine
+      - list
+      - --format
+      - json
+  register: database_tools_podman_machine_list
+  changed_when: false
+  check_mode: false
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - not ansible_check_mode
+
+- name: Decode machine state
+  ansible.builtin.set_fact:
+    database_tools_podman_machines: "{{ database_tools_podman_machine_list.stdout | from_json }}"
+  changed_when: false
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - not ansible_check_mode
+
+- name: Initialize Podman machine only when absent
+  ansible.builtin.command:
+    argv:
+      - "{{ '/opt/homebrew/bin/podman' if ansible_facts['architecture'] == 'arm64' else '/usr/local/bin/podman' }}"
+      - machine
+      - init
+      - "{{ database_tools_podman_machine_name }}"
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - database_tools_podman_machine_name not in (database_tools_podman_machines | map(attribute='Name') | list)
+    - not ansible_check_mode
+  changed_when: true
+
+- name: Reinspect Podman machine after possible initialization
+  ansible.builtin.command:
+    argv:
+      - "{{ '/opt/homebrew/bin/podman' if ansible_facts['architecture'] == 'arm64' else '/usr/local/bin/podman' }}"
+      - machine
+      - list
+      - --format
+      - json
+  register: database_tools_podman_machine_after
+  changed_when: false
+  check_mode: false
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - not ansible_check_mode
+
+- name: Start Podman machine only when stopped
+  ansible.builtin.command:
+    argv:
+      - "{{ '/opt/homebrew/bin/podman' if ansible_facts['architecture'] == 'arm64' else '/usr/local/bin/podman' }}"
+      - machine
+      - start
+      - "{{ database_tools_podman_machine_name }}"
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - not ansible_check_mode
+    - not ((database_tools_podman_machine_after.stdout | from_json) | selectattr('Name', 'equalto', database_tools_podman_machine_name) | selectattr('Running', 'equalto', true) | list | length > 0)
+  changed_when: true
