@@ -19,7 +19,7 @@
       - read
       - com.knollsoft.Rectangle
       - "{{ rectangle_shortcut.key }}"
-  register: rectangle_shortcut_current
+  register: desktop_apps_rectangle_shortcut_current
   changed_when: false
   failed_when: false
   check_mode: false
@@ -39,8 +39,8 @@
       - -int
       - "{{ rectangle_shortcut.value.modifierFlags }}"
   when:
-    - rectangle_shortcut_current.rc != 0 or
-      ('keyCode = ' ~ (rectangle_shortcut.value.keyCode | string) ~ ';') not in rectangle_shortcut_current.stdout or
-      ('modifierFlags = ' ~ (rectangle_shortcut.value.modifierFlags | string) ~ ';') not in rectangle_shortcut_current.stdout
+    - desktop_apps_rectangle_shortcut_current.rc != 0 or
+      ('keyCode = ' ~ (rectangle_shortcut.value.keyCode | string) ~ ';') not in desktop_apps_rectangle_shortcut_current.stdout or
+      ('modifierFlags = ' ~ (rectangle_shortcut.value.modifierFlags | string) ~ ';') not in desktop_apps_rectangle_shortcut_current.stdout
     - not ansible_check_mode
   changed_when: true

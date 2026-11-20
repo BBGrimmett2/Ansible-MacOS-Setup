@@ -21,27 +21,27 @@ Configure Touch ID and YubiKey hardware authentication for sudo on macOS.
 
 ```yaml
 # Enable Touch ID for sudo
-pam_touchid_enabled: true
+pam_security_touchid_enabled: true
 
 # Backup original PAM configuration
-pam_backup_original: true
-pam_backup_dir: /etc/pam.d/backups
+pam_security_backup_original: true
+pam_security_backup_dir: /etc/pam.d/backups
 ```
 
 ### YubiKey Settings
 
 ```yaml
 # Enable YubiKey authentication
-pam_yubikey_enabled: false
+pam_security_yubikey_enabled: false
 
 # Install pam-u2f via Homebrew
-pam_yubikey_install_module: true
+pam_security_yubikey_install_module: true
 
 # Authentication mode
-pam_yubikey_mode: sufficient  # required, sufficient, optional
+pam_security_yubikey_mode: sufficient  # required, sufficient, optional
 
 # U2F keys file location
-pam_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
+pam_security_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
 ```
 
 ## Dependencies
@@ -60,8 +60,8 @@ pam_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
   roles:
     - role: pam_security
       vars:
-        pam_touchid_enabled: true
-        pam_yubikey_enabled: false
+        pam_security_touchid_enabled: true
+        pam_security_yubikey_enabled: false
 ```
 
 ### Touch ID + YubiKey
@@ -74,9 +74,9 @@ pam_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
   roles:
     - role: pam_security
       vars:
-        pam_touchid_enabled: true
-        pam_yubikey_enabled: true
-        pam_yubikey_mode: sufficient
+        pam_security_touchid_enabled: true
+        pam_security_yubikey_enabled: true
+        pam_security_yubikey_mode: sufficient
 ```
 
 ### YubiKey Required (No Password Fallback)
@@ -89,9 +89,9 @@ pam_u2f_authfile: "{{ ansible_env.HOME }}/.config/Yubico/u2f_keys"
   roles:
     - role: pam_security
       vars:
-        pam_touchid_enabled: false
-        pam_yubikey_enabled: true
-        pam_yubikey_mode: required
+        pam_security_touchid_enabled: false
+        pam_security_yubikey_enabled: true
+        pam_security_yubikey_mode: required
 ```
 
 ## Public Functions
@@ -106,7 +106,7 @@ Configure Touch ID only.
     name: pam_security
     tasks_from: configure_touchid
   vars:
-    pam_touchid_enabled: true
+    pam_security_touchid_enabled: true
 ```
 
 ### configure_yubikey
@@ -119,8 +119,8 @@ Configure YubiKey only.
     name: pam_security
     tasks_from: configure_yubikey
   vars:
-    pam_yubikey_enabled: true
-    pam_yubikey_mode: sufficient
+    pam_security_yubikey_enabled: true
+    pam_security_yubikey_mode: sufficient
 ```
 
 ## YubiKey Setup Instructions

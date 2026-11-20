@@ -3,7 +3,7 @@
 # SSH Config Role - Deploy SSH Config File
 # =============================================================================
 # Deploy SSH client configuration from template or Dashlane.
-# Configuration: inventories/host_vars/localhost.yml (ssh_host_configs)
+# Configuration: inventories/host_vars/localhost.yml (ssh_config_host_configs)
 # =============================================================================
 
 # The template module creates a backup only when content actually changes.
@@ -17,9 +17,9 @@
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "{{ ssh_config_dashlane_secret }}"
-        dashlane_secret_output_path: "{{ ssh_config_file }}"
-        dashlane_secret_permissions: "{{ ssh_config_permissions }}"
+        dashlane_secrets_secret_name: "{{ ssh_config_dashlane_secret }}"
+        dashlane_secrets_secret_output_path: "{{ ssh_config_file }}"
+        dashlane_secrets_secret_permissions: "{{ ssh_config_permissions }}"
 
     - name: Display SSH config deployment status
       ansible.builtin.debug:
@@ -30,10 +30,10 @@
     src: ssh_config.j2
     dest: "{{ ssh_config_file }}"
     mode: "{{ ssh_config_permissions }}"
-    backup: "{{ ssh_backup_existing }}"
+    backup: "{{ ssh_config_backup_existing }}"
   when: not ssh_config_from_dashlane
 
 - name: Display SSH config deployment status (template)
   ansible.builtin.debug:
-    msg: "SSH config deployed from template ({{ ssh_host_configs | selectattr('enabled', 'equalto', true) | list | length }} host configs enabled)"
+    msg: "SSH config deployed from template ({{ ssh_config_host_configs | selectattr('enabled', 'equalto', true) | list | length }} host configs enabled)"
   when: not ssh_config_from_dashlane

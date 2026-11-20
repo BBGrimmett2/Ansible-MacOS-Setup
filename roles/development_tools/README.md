@@ -41,12 +41,12 @@ development_tools_custom_scripts_enabled: true
 
 ```yaml
 # Personal profile
-git_user_name_personal: "Your Name"
-git_user_email_personal: "you@personal.com"
+development_tools_git_user_name_personal: "Your Name"
+development_tools_git_user_email_personal: "you@personal.com"
 
 # Work profile
-git_user_name_work: "Your Name"
-git_user_email_work: "you@company.com"
+development_tools_git_user_name_work: "Your Name"
+development_tools_git_user_email_work: "you@company.com"
 
 # Git settings
 development_tools_git_default_branch: main

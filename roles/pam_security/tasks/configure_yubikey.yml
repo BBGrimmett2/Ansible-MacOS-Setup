@@ -8,59 +8,59 @@
 
 - name: Check if pam-u2f is installed
   ansible.builtin.command: brew list --formula pam-u2f
-  register: pam_u2f_check
+  register: pam_security_u2f_check
   failed_when: false
   changed_when: false
-  when: pam_yubikey_enabled
+  when: pam_security_yubikey_enabled
 
 - name: Install pam-u2f module
   ansible.builtin.command: brew install pam-u2f
   when:
-    - pam_yubikey_enabled
-    - pam_yubikey_install_module
-    - pam_u2f_check.rc != 0
-  register: pam_u2f_install
-  changed_when: pam_u2f_install.rc == 0
+    - pam_security_yubikey_enabled
+    - pam_security_yubikey_install_module
+    - pam_security_u2f_check.rc != 0
+  register: pam_security_u2f_install
+  changed_when: pam_security_u2f_install.rc == 0
 
 - name: Check if YubiKey is already configured in PAM
-  ansible.builtin.command: grep -q "pam_u2f.so" {{ pam_sudo_config }}
-  register: yubikey_check
+  ansible.builtin.command: grep -q "pam_u2f.so" {{ pam_security_sudo_config }}
+  register: pam_security_yubikey_check
   failed_when: false
   changed_when: false
 
 - name: Display YubiKey configuration status
   ansible.builtin.debug:
-    msg: "YubiKey {{ 'already configured' if yubikey_check.rc == 0 else 'not configured' }}"
+    msg: "YubiKey {{ 'already configured' if pam_security_yubikey_check.rc == 0 else 'not configured' }}"
 
 - name: Configure YubiKey for sudo
   when:
-    - pam_yubikey_enabled
-    - yubikey_check.rc != 0
+    - pam_security_yubikey_enabled
+    - pam_security_yubikey_check.rc != 0
   become: true
   block:
     - name: Create Yubico config directory
       ansible.builtin.file:
-        path: "{{ pam_u2f_authfile | dirname }}"
+        path: "{{ pam_security_u2f_authfile | dirname }}"
         state: directory
         mode: '0700'
       become: false
 
     - name: Backup PAM sudo configuration
       ansible.builtin.copy:
-        src: "{{ pam_sudo_config }}"
-        dest: "{{ pam_backup_dir }}/sudo.{{ ansible_date_time.epoch }}.yubikey"
+        src: "{{ pam_security_sudo_config }}"
+        dest: "{{ pam_security_backup_dir }}/sudo.{{ ansible_facts['date_time']['epoch'] }}.yubikey"
         remote_src: true
         mode: '0644'
-      when: pam_backup_original
+      when: pam_security_backup_original
 
     - name: Add YubiKey to PAM sudo configuration
       ansible.builtin.lineinfile:
-        path: "{{ pam_sudo_config }}"
-        line: "auth       {{ pam_yubikey_mode }}     pam_u2f.so"
+        path: "{{ pam_security_sudo_config }}"
+        line: "auth       {{ pam_security_yubikey_mode }}     pam_u2f.so"
         insertafter: "^auth.*pam_tid.so"
         state: present
         validate: "/usr/bin/grep -q 'auth' %s"
-      register: yubikey_config
+      register: pam_security_yubikey_config
 
     - name: Display YubiKey configuration instructions
       ansible.builtin.debug:
@@ -71,23 +71,23 @@
 
           To register your YubiKey:
           1. Insert your YubiKey
-          2. Run: mkdir -p {{ pam_u2f_authfile | dirname }}
-          3. Run: pamu2fcfg > {{ pam_u2f_authfile }}
+          2. Run: mkdir -p {{ pam_security_u2f_authfile | dirname }}
+          3. Run: pamu2fcfg > {{ pam_security_u2f_authfile }}
           4. Touch your YubiKey when it blinks
-          5. For additional keys, run: pamu2fcfg -n >> {{ pam_u2f_authfile }}
+          5. For additional keys, run: pamu2fcfg -n >> {{ pam_security_u2f_authfile }}
 
           Test with: sudo -k && sudo ls
-      when: yubikey_config.changed
+      when: pam_security_yubikey_config.changed
 
 - name: Remove YubiKey configuration
   when:
-    - not pam_yubikey_enabled
-    - yubikey_check.rc == 0
+    - not pam_security_yubikey_enabled
+    - pam_security_yubikey_check.rc == 0
   become: true
   block:
     - name: Remove YubiKey from PAM sudo configuration
       ansible.builtin.lineinfile:
-        path: "{{ pam_sudo_config }}"
+        path: "{{ pam_security_sudo_config }}"
         regexp: "^auth.*pam_u2f.so"
         state: absent
 

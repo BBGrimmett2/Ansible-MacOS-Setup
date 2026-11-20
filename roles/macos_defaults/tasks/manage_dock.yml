@@ -10,34 +10,34 @@
 - name: Validate managed Dock settings
   ansible.builtin.assert:
     that:
-      - macos_dock_apps is sequence
-      - macos_dock_apps is not string
-      - macos_dock_apps | length > 0
-      - macos_dock_apps | unique | length == macos_dock_apps | length
-    fail_msg: "macos_dock_apps must be a nonempty list of unique app bundle paths"
-  when: macos_dock_manage_apps | bool
+      - macos_defaults_dock_apps is sequence
+      - macos_defaults_dock_apps is not string
+      - macos_defaults_dock_apps | length > 0
+      - macos_defaults_dock_apps | unique | length == macos_defaults_dock_apps | length
+    fail_msg: "macos_defaults_dock_apps must be a nonempty list of unique app bundle paths"
+  when: macos_defaults_dock_manage_apps | bool
 
 - name: Manage Dock application tiles
-  when: macos_dock_manage_apps | bool
+  when: macos_defaults_dock_manage_apps | bool
   block:
     - name: Check dockutil is installed
       ansible.builtin.stat:
         path: "{{ homebrew_prefix }}/bin/dockutil"
-      register: macos_dockutil_binary
+      register: macos_defaults_dockutil_binary
 
     - name: Require dockutil from the CLI tools role
       ansible.builtin.assert:
         that:
-          - macos_dockutil_binary.stat.exists
+          - macos_defaults_dockutil_binary.stat.exists
         fail_msg: "dockutil is missing; the cli_tools role must run before manage_dock.yml"
 
     - name: Check desired Dock applications exist
       ansible.builtin.stat:
         path: "{{ item }}"
-      loop: "{{ macos_dock_apps }}"
+      loop: "{{ macos_defaults_dock_apps }}"
       loop_control:
         label: "{{ item }}"
-      register: macos_dock_app_stats
+      register: macos_defaults_dock_app_stats
 
     - name: Fail before changing Dock if an application is missing
       ansible.builtin.assert:
@@ -46,7 +46,7 @@
           - item.stat.isdir
         fail_msg: "Dock app not installed: {{ item.item }}. Complete desktop app setup first."
         quiet: true
-      loop: "{{ macos_dock_app_stats.results }}"
+      loop: "{{ macos_defaults_dock_app_stats.results }}"
       loop_control:
         label: "{{ item.item }}"
 
@@ -55,18 +55,18 @@
         argv:
           - "{{ homebrew_prefix }}/bin/dockutil"
           - --list
-      register: macos_dock_current
+      register: macos_defaults_dock_current
       changed_when: false
       check_mode: false
 
     - name: Determine whether Dock needs updating
       ansible.builtin.set_fact:
-        macos_dock_update_needed: >-
-          {{ (macos_dock_current.stdout | dockutil_app_paths) != macos_dock_apps }}
+        macos_defaults_dock_update_needed: >-
+          {{ (macos_defaults_dock_current.stdout | dockutil_app_paths) != macos_defaults_dock_apps }}
 
     - name: Rebuild pinned Dock applications only when different
       when:
-        - macos_dock_update_needed | bool
+        - macos_defaults_dock_update_needed | bool
         - not ansible_check_mode
       block:
         - name: Remove existing pinned Dock items
@@ -85,7 +85,7 @@
               - --add
               - "{{ item }}"
               - --no-restart
-          loop: "{{ macos_dock_apps }}"
+          loop: "{{ macos_defaults_dock_apps }}"
           loop_control:
             label: "{{ item }}"
           changed_when: true
@@ -96,13 +96,13 @@
             argv:
               - "{{ homebrew_prefix }}/bin/dockutil"
               - --list
-          register: macos_dock_after
+          register: macos_defaults_dock_after
           changed_when: false
 
         - name: Assert Dock applications match profile configuration
           ansible.builtin.assert:
             that:
-              - (macos_dock_after.stdout | dockutil_app_paths) == macos_dock_apps
+              - (macos_defaults_dock_after.stdout | dockutil_app_paths) == macos_defaults_dock_apps
             fail_msg: "Dock pins do not match the selected profile after configuration"
 
         # Apply the validated Dock changes before leaving this role, rather than
@@ -113,5 +113,5 @@
 
     - name: Report Dock plan in check mode
       ansible.builtin.debug:
-        msg: "Dock layout {{ 'would be rebuilt' if macos_dock_update_needed else 'already matches' }} for the selected profile"
+        msg: "Dock layout {{ 'would be rebuilt' if macos_defaults_dock_update_needed else 'already matches' }} for the selected profile"
       when: ansible_check_mode

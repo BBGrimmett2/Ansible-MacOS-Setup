@@ -21,7 +21,7 @@
 - name: Read system keychain certificate identifiers
   ansible.builtin.command:
     argv: [security, find-certificate, -a, -Z, /Library/Keychains/System.keychain]
-  register: profile_installed_ca_inventory
+  register: network_tools_profile_installed_ca_inventory
   changed_when: false
 
 - name: Deploy and validate required profile CA certificates

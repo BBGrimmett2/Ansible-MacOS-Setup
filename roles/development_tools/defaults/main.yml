@@ -52,18 +52,22 @@ development_tools_gitconfig_path: "{{ ansible_facts['env']['HOME'] }}/.gitconfig
 development_tools_gitconfig_backup: true
 
 # Git user name (profile-specific)
-development_tools_git_user_name: "{{ git_user_name_personal if workstation_profile == 'personal' else git_user_name_work }}"
+development_tools_git_user_name: >-
+  {{ development_tools_git_user_name_personal if workstation_profile == 'personal'
+     else development_tools_git_user_name_work }}
 
 # Git user email (profile-specific)
-development_tools_git_user_email: "{{ git_user_email_personal if workstation_profile == 'personal' else git_user_email_work }}"
+development_tools_git_user_email: >-
+  {{ development_tools_git_user_email_personal if workstation_profile == 'personal'
+     else development_tools_git_user_email_work }}
 
 # Personal git config
-git_user_name_personal: "{{ ansible_facts['env']['USER'] | title }}"
-git_user_email_personal: ""  # Set in group_vars or override
+development_tools_git_user_name_personal: "{{ git_user_name_personal | default(ansible_facts['env']['USER'] | title) }}"
+development_tools_git_user_email_personal: "{{ git_user_email_personal | default('') }}"
 
 # Work git config
-git_user_name_work: "{{ ansible_facts['env']['USER'] | title }}"
-git_user_email_work: ""  # Set in group_vars or override
+development_tools_git_user_name_work: "{{ git_user_name_work | default(ansible_facts['env']['USER'] | title) }}"
+development_tools_git_user_email_work: "{{ git_user_email_work | default('') }}"
 
 # Git default branch
 development_tools_git_default_branch: main

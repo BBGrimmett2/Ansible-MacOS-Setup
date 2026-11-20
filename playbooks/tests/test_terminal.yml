@@ -33,6 +33,8 @@
       tags: terminal
 
     - name: Verify terminal installation
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check iTerm2 application exists
           ansible.builtin.stat:
@@ -61,5 +63,3 @@
               - "✓ Terminal emulator installed successfully"
               - "Emulator: {{ terminal_emulator }}"
               - "{% if terminal_install_nerdfonts %}Nerd Fonts: installed{% endif %}"
-      tags: verify
-      when: not ansible_check_mode

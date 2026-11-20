@@ -31,6 +31,8 @@
       tags: database_tools
 
     - name: Verify database tools installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check pgAdmin is installed
           ansible.builtin.stat:
@@ -57,5 +59,3 @@
               - "pgAdmin: /Applications/pgAdmin 4.app"
               - "Podman Desktop: /Applications/Podman Desktop.app"
               - "podman CLI: {{ podman_check.stdout }}"
-      tags: verify
-      when: not ansible_check_mode

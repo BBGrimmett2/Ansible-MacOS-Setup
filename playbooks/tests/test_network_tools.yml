@@ -33,6 +33,8 @@
       tags: network_tools
 
     - name: Verify network tools installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check Bruno is installed
           ansible.builtin.stat:
@@ -52,5 +54,3 @@
               - "✓ Network tools installed successfully"
               - "Bruno: /Applications/Bruno.app"
               - "dig: {{ dig_check.stdout }}"
-      tags: verify
-      when: not ansible_check_mode

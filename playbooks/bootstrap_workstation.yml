@@ -39,7 +39,9 @@
           - "=========================================="
           - "Workstation Profile: {{ workstation_profile }}"
           - "=========================================="
-          - "{% if workstation_profile == 'work' %}Work profile includes Red Hat-specific tools and configurations{% else %}Personal profile with standard development tools{% endif %}"
+          - >-
+            {{ 'Work profile includes Red Hat-specific tools and configurations' if workstation_profile == 'work'
+               else 'Personal profile with standard development tools' }}
 
     - name: Initialize structured workstation reporting
       ansible.builtin.import_role:
@@ -470,8 +472,8 @@
 
     - name: Display deferred configuration warnings
       ansible.builtin.debug:
-        msg: "{{ workstation_setup_warnings | default([]) }}"
-      when: (workstation_setup_warnings | default([]) | length) > 0
+        msg: "{{ setup_reporting_document.warnings }}"
+      when: setup_reporting_document.warnings | default([]) | length > 0
 
     - name: Display installation summary
       ansible.builtin.debug:

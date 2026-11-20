@@ -14,8 +14,10 @@
       profile: "{{ workstation_profile }}"
       source: git_ansible_inventory
       certificates: "{{ certificates | default([]) | selectattr('enabled', 'equalto', true) | map(attribute='name') | list }}"
-      ssh_keys: "{{ ssh_keys | default([]) | selectattr('enabled', 'equalto', true) | map(attribute='name') | list }}"
-      dock_apps: "{{ macos_dock_apps | default([]) }}"
+      ssh_keys: >-
+        {{ ssh_config_keys | default(ssh_keys | default([]))
+           | selectattr('enabled', 'equalto', true) | map(attribute='name') | list }}
+      dock_apps: "{{ macos_defaults_dock_apps | default(macos_dock_apps | default([])) }}"
     setup_reporting_observed:
       schema_version: "{{ setup_reporting_schema_version | int }}"
       profile: "{{ workstation_profile }}"
@@ -30,10 +32,17 @@
       run_id: "{{ setup_reporting_run_id }}"
       profile: "{{ workstation_profile }}"
       started_at: "{{ setup_reporting_started }}"
-      status: "{{ 'failed' if setup_reporting_failed | bool else ('success_with_warnings' if workstation_setup_warnings | default([]) | length > 0 else 'success') }}"
+      status: >-
+        {{ 'failed' if setup_reporting_failed | bool
+           else ('success_with_warnings' if setup_reporting_warnings | length > 0 else 'success') }}
       results: "{{ setup_reporting_results | default([]) }}"
-      warnings: "{{ workstation_setup_warnings | default([]) }}"
+      warnings: "{{ setup_reporting_warnings }}"
       error: "{{ setup_reporting_failure_message | default('') }}"
+  vars:
+    setup_reporting_warnings: >-
+      {{ (workstation_setup_warnings | default([]))
+         + (desktop_apps_setup_warnings | default([]))
+         + (development_tools_setup_warnings | default([])) }}
   changed_when: false
 
 - name: Save desired-state manifest
@@ -79,7 +88,7 @@
       - "Status: {{ setup_reporting_document.status | upper }}"
       - "-------------------------------------------------------"
       - "Successful stages: {{ setup_reporting_results | selectattr('status', 'equalto', 'success') | list | length }}"
-      - "Warnings: {{ workstation_setup_warnings | default([]) | length }}"
+      - "Warnings: {{ setup_reporting_document.warnings | length }}"
       - "Failed stages: {{ setup_reporting_results | selectattr('status', 'equalto', 'failed') | list | length }}"
       - "Skipped stages: {{ setup_reporting_results | selectattr('status', 'equalto', 'skipped') | list | length }}"
       - "Report: {{ setup_reporting_state_dir }}/latest.json"

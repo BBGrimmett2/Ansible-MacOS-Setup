@@ -14,19 +14,19 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      pam_touchid_enabled:
+      pam_security_touchid_enabled:
         type: bool
         required: false
         default: true
         description: Enable Touch ID for sudo authentication
 
-      pam_yubikey_enabled:
+      pam_security_yubikey_enabled:
         type: bool
         required: false
         default: false
         description: Enable YubiKey (U2F) hardware authentication
 
-      pam_yubikey_mode:
+      pam_security_yubikey_mode:
         type: str
         required: false
         default: sufficient
@@ -40,13 +40,13 @@ argument_specs:
           - sufficient: YubiKey OR password
           - optional: YubiKey checked but not required
 
-      pam_backup_original:
+      pam_security_backup_original:
         type: bool
         required: false
         default: true
         description: Backup original PAM configuration before changes
 
-      pam_validate_config:
+      pam_security_validate_config:
         type: bool
         required: false
         default: true
@@ -60,12 +60,12 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      pam_touchid_enabled:
+      pam_security_touchid_enabled:
         type: bool
         required: false
         default: true
 
-      pam_backup_original:
+      pam_security_backup_original:
         type: bool
         required: false
         default: true
@@ -78,12 +78,12 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      pam_yubikey_enabled:
+      pam_security_yubikey_enabled:
         type: bool
         required: false
         default: true
 
-      pam_yubikey_mode:
+      pam_security_yubikey_mode:
         type: str
         required: false
         default: sufficient
@@ -92,7 +92,7 @@ argument_specs:
           - sufficient
           - optional
 
-      pam_backup_original:
+      pam_security_backup_original:
         type: bool
         required: false
         default: true

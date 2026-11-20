@@ -4,18 +4,18 @@
 
 - name: Check if duti is installed
   ansible.builtin.command: brew list --formula duti
-  register: macos_duti_check
+  register: macos_defaults_duti_check
   changed_when: false
   failed_when: false
-  when: macos_file_associations_enabled | bool
+  when: macos_defaults_file_associations_enabled | bool
 
 - name: Install duti for file associations
   community.general.homebrew:
     name: duti
     state: present
   when:
-    - macos_file_associations_enabled | bool
-    - macos_duti_check.rc != 0
+    - macos_defaults_file_associations_enabled | bool
+    - macos_defaults_duti_check.rc != 0
 
 - name: Read current default application for each file extension
   ansible.builtin.command:
@@ -23,13 +23,13 @@
       - duti
       - -x
       - "{{ item.key }}"
-  loop: "{{ macos_file_associations | dict2items }}"
-  register: macos_file_association_current
+  loop: "{{ macos_defaults_file_associations | dict2items }}"
+  register: macos_defaults_file_association_current
   changed_when: false
   failed_when: false
   when:
-    - macos_file_associations_enabled | bool
-    - macos_file_associations | length > 0
+    - macos_defaults_file_associations_enabled | bool
+    - macos_defaults_file_associations | length > 0
   loop_control:
     label: ".{{ item.key }}"
 
@@ -41,7 +41,7 @@
       - "{{ item.item.value }}"
       - ".{{ item.item.key }}"
       - all
-  loop: "{{ macos_file_association_current.results | default([]) }}"
+  loop: "{{ macos_defaults_file_association_current.results | default([]) }}"
   when:
     - not (item.skipped | default(false))
     - item.rc != 0 or (item.stdout_lines | default([]) | last | default('') | trim) != item.item.value
@@ -50,7 +50,7 @@
 
 - name: Display file association status
   ansible.builtin.debug:
-    msg: "Verified {{ macos_file_associations | length }} file associations; changed only mismatched handlers"
+    msg: "Verified {{ macos_defaults_file_associations | length }} file associations; changed only mismatched handlers"
   when:
-    - macos_file_associations_enabled | bool
-    - macos_file_associations | length > 0
+    - macos_defaults_file_associations_enabled | bool
+    - macos_defaults_file_associations | length > 0

@@ -31,6 +31,8 @@
       tags: kubernetes_tools
 
     - name: Verify Kubernetes tools installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check kubectl is installed
           ansible.builtin.command: which kubectl
@@ -78,5 +80,3 @@
               - "k9s: {{ k9s_check.stdout }}"
               - "kubectx: {{ kubectx_check.stdout }}"
               - "stern: {{ stern_check.stdout }}"
-      tags: verify
-      when: not ansible_check_mode

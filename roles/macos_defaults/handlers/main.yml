@@ -8,17 +8,17 @@
 - name: Restart Dock
   ansible.builtin.command: killall Dock
   changed_when: true
-  when: macos_restart_affected_apps
+  when: macos_defaults_restart_affected_apps
   listen: Restart Dock
 
 - name: Restart Finder
   ansible.builtin.command: killall Finder
   changed_when: true
-  when: macos_restart_affected_apps
+  when: macos_defaults_restart_affected_apps
   listen: Restart Finder
 
 - name: Restart SystemUIServer
   ansible.builtin.command: killall SystemUIServer
   changed_when: true
-  when: macos_restart_affected_apps
+  when: macos_defaults_restart_affected_apps
   listen: Restart SystemUIServer

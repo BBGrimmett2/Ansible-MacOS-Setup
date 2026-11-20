@@ -87,7 +87,7 @@ cloud_cli_azure_default_output: json
 cloud_cli_demo_mode: false
 
 # Demo environment profile name (auto-generated if not set)
-cloud_cli_demo_profile_name: "demo-{{ ansible_date_time.date }}"
+cloud_cli_demo_profile_name: "demo-{{ now(fmt='%Y-%m-%d') }}"
 ```
 
 ## Dependencies

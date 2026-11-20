@@ -263,7 +263,7 @@ Sources/
         dest: "{{ ansible_env.HOME }}/.config/workstation-manager/state.json"
       vars:
         state_data:
-          last_run: "{{ ansible_date_time.iso8601 }}"
+          last_run: "{{ ansible_facts['date_time']['iso8601'] }}"
           components: "{{ component_status }}"
 ```
 

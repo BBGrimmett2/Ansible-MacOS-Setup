@@ -36,7 +36,7 @@
 - name: Back up .gitconfig when replacing an existing identity or Dashlane configuration
   ansible.builtin.copy:
     src: "{{ development_tools_gitconfig_path }}"
-    dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch }}"
+    dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_facts['date_time']['epoch'] }}"
     remote_src: true
     mode: "0600"
   when:
@@ -52,21 +52,23 @@
   block:
     - name: Set Dashlane secret name for .gitconfig
       ansible.builtin.set_fact:
-        gitconfig_secret_name: "{{ development_tools_gitconfig_dashlane_secret_personal if workstation_profile == 'personal' else development_tools_gitconfig_dashlane_secret_work }}"
+        development_tools_gitconfig_secret_name: >-
+          {{ development_tools_gitconfig_dashlane_secret_personal if workstation_profile == 'personal'
+             else development_tools_gitconfig_dashlane_secret_work }}
 
     - name: Fetch .gitconfig from Dashlane
       ansible.builtin.include_role:
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "{{ gitconfig_secret_name }}"
-        dashlane_secret_output_path: "{{ development_tools_gitconfig_path }}"
-        dashlane_secret_permissions: "0644"
+        dashlane_secrets_secret_name: "{{ development_tools_gitconfig_secret_name }}"
+        dashlane_secrets_secret_output_path: "{{ development_tools_gitconfig_path }}"
+        dashlane_secrets_secret_permissions: "0644"
 
     - name: Display .gitconfig deployment status
       ansible.builtin.debug:
         msg:
-          - "Git configured from Dashlane ({{ gitconfig_secret_name }})"
+          - "Git configured from Dashlane ({{ development_tools_gitconfig_secret_name }})"
           - "Profile: {{ workstation_profile | default('personal') }}"
 
 - name: Configure git with individual settings

@@ -31,7 +31,7 @@
     - name: aws_demo_profile_name
       prompt: "Profile name"
       private: false
-      default: "demo-{{ ansible_date_time.date }}"
+      default: "demo-{{ now(fmt='%Y-%m-%d') }}"
 
   tasks:
     - name: Display demo setup information

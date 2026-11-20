@@ -24,7 +24,7 @@
 
 - name: Validate Command Line Tools are installed
   ansible.builtin.command: xcode-select -p
-  register: xcode_check
+  register: homebrew_xcode_check
   failed_when: false
   changed_when: false
   when: homebrew_state == 'present'
@@ -32,7 +32,7 @@
 - name: Assert Command Line Tools are installed
   ansible.builtin.assert:
     that:
-      - xcode_check.rc == 0
+      - homebrew_xcode_check.rc == 0
     fail_msg: |
       Apple Command Line Tools not installed. Please install them first:
         xcode-select --install
@@ -43,7 +43,7 @@
 - name: Validate shell profiles exist (if configuring shell)
   ansible.builtin.stat:
     path: "{{ item }}"
-  register: shell_profile_check
+  register: homebrew_shell_profile_check
   loop: "{{ homebrew_shell_profiles }}"
   when:
     - homebrew_configure_shell
@@ -54,7 +54,7 @@
     path: "{{ item.item }}"
     state: touch
     mode: '0644'
-  loop: "{{ shell_profile_check.results | default([]) }}"
+  loop: "{{ homebrew_shell_profile_check.results | default([]) }}"
   when:
     - homebrew_configure_shell
     - homebrew_state == 'present'

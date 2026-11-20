@@ -15,13 +15,13 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      dashlane_cli:
+      dashlane_secrets_cli:
         type: str
         required: false
         default: dcli
         description: Dashlane CLI command
 
-      dashlane_validate_auth:
+      dashlane_secrets_validate_auth:
         type: bool
         required: false
         default: true
@@ -39,28 +39,44 @@ argument_specs:
     author: Brian Grimmett
 
     options:
+      dashlane_secrets_secret_name:
+        type: str
+        required: false
+        description: Name of the secret in Dashlane (e.g., 'ssh_key_personal_github')
+
       dashlane_secret_name:
         type: str
-        required: true
-        description: Name of the secret in Dashlane (e.g., 'ssh_key_personal_github')
+        required: false
+        description: Legacy input. Name of the secret in Dashlane (e.g., 'ssh_key_personal_github')
+
+      dashlane_secrets_secret_output_path:
+        type: str
+        required: false
+        description: Where to save the SSH key (e.g., '{{ ansible_facts['env']['HOME'] }}/.ssh/id_github')
 
       dashlane_secret_output_path:
         type: str
-        required: true
-        description: Where to save the SSH key (e.g., '{{ ansible_facts['env']['HOME'] }}/.ssh/id_github')
+        required: false
+        description: Legacy input. Where to save the SSH key (e.g., '{{ ansible_facts['env']['HOME'] }}/.ssh/id_github')
 
-      dashlane_secret_permissions:
+      dashlane_secrets_secret_permissions:
         type: str
         required: false
         default: "0600"
         description: File permissions for the SSH key
 
-      dashlane_cli:
+      dashlane_secret_permissions:
+        type: str
+        required: false
+        default: "0600"
+        description: Legacy input. File permissions for the SSH key
+
+      dashlane_secrets_cli:
         type: str
         required: false
         default: dcli
 
-      dashlane_fail_on_missing:
+      dashlane_secrets_fail_on_missing:
         type: bool
         required: false
         default: true
@@ -78,17 +94,22 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      dashlane_secret_name:
+      dashlane_secrets_secret_name:
         type: str
-        required: true
+        required: false
         description: Name of the credential in Dashlane
 
-      dashlane_cli:
+      dashlane_secret_name:
+        type: str
+        required: false
+        description: Legacy input. Name of the credential in Dashlane
+
+      dashlane_secrets_cli:
         type: str
         required: false
         default: dcli
 
-      dashlane_fail_on_missing:
+      dashlane_secrets_fail_on_missing:
         type: bool
         required: false
         default: true
@@ -105,28 +126,44 @@ argument_specs:
     author: Brian Grimmett
 
     options:
+      dashlane_secrets_secret_name:
+        type: str
+        required: false
+        description: Name of the file/note in Dashlane
+
       dashlane_secret_name:
         type: str
-        required: true
-        description: Name of the file/note in Dashlane
+        required: false
+        description: Legacy input. Name of the file/note in Dashlane
+
+      dashlane_secrets_secret_output_path:
+        type: str
+        required: false
+        description: Where to save the file
 
       dashlane_secret_output_path:
         type: str
-        required: true
-        description: Where to save the file
+        required: false
+        description: Legacy input. Where to save the file
 
-      dashlane_secret_permissions:
+      dashlane_secrets_secret_permissions:
         type: str
         required: false
         default: "0600"
         description: File permissions
 
-      dashlane_cli:
+      dashlane_secret_permissions:
+        type: str
+        required: false
+        default: "0600"
+        description: Legacy input. File permissions
+
+      dashlane_secrets_cli:
         type: str
         required: false
         default: dcli
 
-      dashlane_fail_on_missing:
+      dashlane_secrets_fail_on_missing:
         type: bool
         required: false
         default: true
@@ -135,16 +172,21 @@ argument_specs:
     short_description: Retrieve a secure note value from Dashlane
     description: Retrieve an individual secret without writing it to disk
     options:
+      dashlane_secrets_secret_name:
+        type: str
+        required: false
+        description: Name of the Dashlane secure note
+
       dashlane_secret_name:
         type: str
-        required: true
-        description: Name of the Dashlane secure note
-      dashlane_cli:
+        required: false
+        description: Legacy input. Name of the Dashlane secure note
+      dashlane_secrets_cli:
         type: str
         required: false
         default: dcli
         description: Dashlane CLI executable
-      dashlane_fail_on_missing:
+      dashlane_secrets_fail_on_missing:
         type: bool
         required: false
         default: true

@@ -6,21 +6,21 @@
 # Can be called via: tasks_from: fetch_ssh_key
 #
 # Required variables:
-#   - dashlane_secret_name: Name of the secret in Dashlane
-#   - dashlane_secret_output_path: Where to save the SSH key
+#   - dashlane_secrets_secret_name: Name of the secret in Dashlane
+#   - dashlane_secrets_secret_output_path: Where to save the SSH key
 #
 # Optional variables:
-#   - dashlane_secret_permissions: File permissions (default: 0600)
+#   - dashlane_secrets_secret_permissions: File permissions (default: 0600)
 # =============================================================================
 
 - name: Validate required variables for SSH key fetch
   ansible.builtin.assert:
     that:
-      - dashlane_secret_name is defined
-      - dashlane_secret_name | length > 0
-      - dashlane_secret_output_path is defined
-      - dashlane_secret_output_path | length > 0
-    fail_msg: "Required variables: dashlane_secret_name and dashlane_secret_output_path"
+      - dashlane_secrets_secret_name is defined
+      - dashlane_secrets_secret_name | length > 0
+      - dashlane_secrets_secret_output_path is defined
+      - dashlane_secrets_secret_output_path | length > 0
+    fail_msg: "Required variables: dashlane_secrets_secret_name and dashlane_secrets_secret_output_path"
     quiet: true
 
 - name: Validate Dashlane CLI
@@ -28,93 +28,93 @@
 
 - name: Log SSH key retrieval attempt
   ansible.builtin.debug:
-    msg: "Fetching SSH key '{{ dashlane_secret_name }}' from Dashlane"
-  when: dashlane_log_retrievals
+    msg: "Fetching SSH key '{{ dashlane_secrets_secret_name }}' from Dashlane"
+  when: dashlane_secrets_log_retrievals
 
 - name: Ensure SSH directory exists
   ansible.builtin.file:
-    path: "{{ dashlane_secret_output_path | dirname }}"
+    path: "{{ dashlane_secrets_secret_output_path | dirname }}"
     state: directory
     mode: '0700'
 
 - name: Fetch SSH key from Dashlane
   ansible.builtin.command:
     argv:
-      - "{{ dashlane_cli }}"
+      - "{{ dashlane_secrets_cli }}"
       - note
-      - "{{ dashlane_secret_name }}"
+      - "{{ dashlane_secrets_secret_name }}"
       - --output
       - text
-  register: dashlane_ssh_key
+  register: dashlane_secrets_ssh_key
   failed_when: false
   changed_when: false
   no_log: true
-  timeout: "{{ dashlane_timeout }}"
+  timeout: "{{ dashlane_secrets_timeout }}"
 
 - name: Check whether Dashlane returned an SSH private key
   ansible.builtin.set_fact:
-    dashlane_key_retrieved: >-
-      {{ dashlane_ssh_key.rc == 0 and
-         (dashlane_ssh_key.stdout | default('')) is search('-----BEGIN (OPENSSH|RSA|EC|DSA) PRIVATE KEY-----') }}
+    dashlane_secrets_key_retrieved: >-
+      {{ dashlane_secrets_ssh_key.rc == 0 and
+         (dashlane_secrets_ssh_key.stdout | default('')) is search('-----BEGIN (OPENSSH|RSA|EC|DSA) PRIVATE KEY-----') }}
   no_log: true
 
 - name: Fail clearly when a required SSH key is missing or invalid
   ansible.builtin.assert:
     that:
-      - dashlane_key_retrieved | bool
+      - dashlane_secrets_key_retrieved | bool
     fail_msg: >-
-      Required SSH private key '{{ dashlane_secret_name }}' could not be
+      Required SSH private key '{{ dashlane_secrets_secret_name }}' could not be
       retrieved as a supported SSH private key from Dashlane (dcli exit
-      status {{ dashlane_ssh_key.rc }}). Create/import this secure note in
-      Dashlane and rerun setup. Target path: {{ dashlane_secret_output_path }}.
+      status {{ dashlane_secrets_ssh_key.rc }}). Create/import this secure note in
+      Dashlane and rerun setup. Target path: {{ dashlane_secrets_secret_output_path }}.
       The installer will not silently generate or replace your SSH identity.
     quiet: true
-  when: dashlane_fail_on_missing | bool
+  when: dashlane_secrets_fail_on_missing | bool
 
 - name: Check for an existing SSH private key
   ansible.builtin.stat:
-    path: "{{ dashlane_secret_output_path }}"
-  register: existing_profile_ssh_key
-  when: dashlane_key_retrieved
+    path: "{{ dashlane_secrets_secret_output_path }}"
+  register: dashlane_secrets_existing_profile_ssh_key
+  when: dashlane_secrets_key_retrieved
 
 - name: Read existing private key without exposing it
   ansible.builtin.slurp:
-    src: "{{ dashlane_secret_output_path }}"
-  register: existing_profile_ssh_content
+    src: "{{ dashlane_secrets_secret_output_path }}"
+  register: dashlane_secrets_existing_profile_ssh_content
   when:
-    - dashlane_key_retrieved
-    - existing_profile_ssh_key.stat.exists
+    - dashlane_secrets_key_retrieved
+    - dashlane_secrets_existing_profile_ssh_key.stat.exists
   no_log: true
 
 - name: Refuse to overwrite a different SSH identity
   ansible.builtin.assert:
     that:
-      - (existing_profile_ssh_content.content | b64decode | trim) == (dashlane_ssh_key.stdout | trim)
-    fail_msg: "Existing SSH private key conflicts with Dashlane: {{ dashlane_secret_output_path }}. Resolve manually; no key was overwritten."
+      - (dashlane_secrets_existing_profile_ssh_content.content | b64decode | trim) == (dashlane_secrets_ssh_key.stdout | trim)
+    fail_msg: "Existing SSH private key conflicts with Dashlane: {{ dashlane_secrets_secret_output_path }}. Resolve manually; no key was overwritten."
   when:
-    - dashlane_key_retrieved
-    - existing_profile_ssh_key.stat.exists
+    - dashlane_secrets_key_retrieved
+    - dashlane_secrets_existing_profile_ssh_key.stat.exists
   no_log: true
 
 - name: Deploy SSH key to filesystem
   ansible.builtin.copy:
-    content: "{{ dashlane_ssh_key.stdout }}\n"
-    dest: "{{ dashlane_secret_output_path }}"
-    mode: "{{ dashlane_secret_permissions | default(dashlane_default_permissions) }}"
+    content: "{{ dashlane_secrets_ssh_key.stdout }}\n"
+    dest: "{{ dashlane_secrets_secret_output_path }}"
+    mode: "{{ dashlane_secrets_secret_permissions | default(dashlane_secrets_default_permissions) }}"
     owner: "{{ ansible_facts['env']['USER'] }}"
-  when: dashlane_key_retrieved
-  no_log: "{{ dashlane_no_log }}"
+  when: dashlane_secrets_key_retrieved
+  no_log: "{{ dashlane_secrets_no_log }}"
 
 - name: Display SSH key deployment status
   ansible.builtin.debug:
-    msg: "SSH key deployed to {{ dashlane_secret_output_path }}"
+    msg: "SSH key deployed to {{ dashlane_secrets_secret_output_path }}"
   when:
-    - dashlane_key_retrieved
-    - dashlane_log_retrievals
+    - dashlane_secrets_key_retrieved
+    - dashlane_secrets_log_retrievals
 
 - name: Warn if SSH key not found
   ansible.builtin.debug:
-    msg: "SSH key '{{ dashlane_secret_name }}' not found in Dashlane"
+    msg: "SSH key '{{ dashlane_secrets_secret_name }}' not found in Dashlane"
   when:
-    - not dashlane_key_retrieved
-    - not dashlane_fail_on_missing
+    - not dashlane_secrets_key_retrieved
+    - not dashlane_secrets_fail_on_missing

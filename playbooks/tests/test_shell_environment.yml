@@ -35,6 +35,8 @@
       tags: shell_environment
 
     - name: Verify shell environment configuration
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check .zshrc exists
           ansible.builtin.stat:
@@ -70,5 +72,3 @@
               - "Modern aliases: configured"
               - "{% if shell_environment_enable_tool_integrations %}Tool integrations: configured{% endif %}"
               - "{% if shell_environment_enable_custom_prompt %}Custom prompt: configured{% endif %}"
-      tags: verify
-      when: not ansible_check_mode

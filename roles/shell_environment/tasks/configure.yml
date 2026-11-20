@@ -8,7 +8,7 @@
 - name: Backup existing .zshrc
   ansible.builtin.copy:
     src: "{{ shell_environment_zshrc_path }}"
-    dest: "{{ shell_environment_zshrc_path }}.backup.{{ ansible_date_time.epoch }}"
+    dest: "{{ shell_environment_zshrc_path }}.backup.{{ ansible_facts['date_time']['epoch'] }}"
     remote_src: true
     mode: "0644"
   when:
@@ -21,21 +21,23 @@
   block:
     - name: Set Dashlane secret name for .zshrc
       ansible.builtin.set_fact:
-        zshrc_secret_name: "{{ shell_environment_zshrc_dashlane_secret_personal if workstation_profile == 'personal' else shell_environment_zshrc_dashlane_secret_work }}"
+        shell_environment_zshrc_secret_name: >-
+          {{ shell_environment_zshrc_dashlane_secret_personal if workstation_profile == 'personal'
+             else shell_environment_zshrc_dashlane_secret_work }}
 
     - name: Fetch .zshrc from Dashlane
       ansible.builtin.include_role:
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "{{ zshrc_secret_name }}"
-        dashlane_secret_output_path: "{{ shell_environment_zshrc_path }}"
-        dashlane_secret_permissions: "0644"
+        dashlane_secrets_secret_name: "{{ shell_environment_zshrc_secret_name }}"
+        dashlane_secrets_secret_output_path: "{{ shell_environment_zshrc_path }}"
+        dashlane_secrets_secret_permissions: "0644"
 
     - name: Display .zshrc deployment status (Dashlane)
       ansible.builtin.debug:
         msg:
-          - "ZSH configuration deployed from Dashlane ({{ zshrc_secret_name }})"
+          - "ZSH configuration deployed from Dashlane ({{ shell_environment_zshrc_secret_name }})"
           - "Profile: {{ workstation_profile | default('personal') }}"
 
 - name: Deploy .zshrc from template

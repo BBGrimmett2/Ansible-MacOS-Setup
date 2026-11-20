@@ -19,15 +19,15 @@
     excludes:
       - "README.md"
       - "*.md"
-  register: custom_scripts_found
+  register: development_tools_custom_scripts_found
 
 - name: Install custom scripts
   ansible.builtin.copy:
     src: "{{ item.path }}"
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/{{ item.path | basename }}"
     mode: "0755"
-  loop: "{{ custom_scripts_found.files }}"
-  when: custom_scripts_found.files | length > 0
+  loop: "{{ development_tools_custom_scripts_found.files }}"
+  when: development_tools_custom_scripts_found.files | length > 0
 
 - name: Verify ~/.local/bin is in PATH
   ansible.builtin.shell: |
@@ -36,7 +36,7 @@
     else
       echo "missing"
     fi
-  register: path_check
+  register: development_tools_path_check
   changed_when: false
 
 - name: Display custom scripts installation info
@@ -45,7 +45,7 @@
       - "Custom scripts installed successfully"
       - "Location: {{ ansible_facts['env']['HOME'] }}/.local/bin/"
       - "Installed scripts:"
-      - "{{ custom_scripts_found.files | map(attribute='path') | map('basename') | list }}"
+      - "{{ development_tools_custom_scripts_found.files | map(attribute='path') | map('basename') | list }}"
       - ""
-      - "{{ '⚠ WARNING: ~/.local/bin is not in PATH' if path_check.stdout == 'missing' else '✓ ~/.local/bin is in PATH' }}"
-      - "{{ 'Add to your shell profile: export PATH=\"$HOME/.local/bin:$PATH\"' if path_check.stdout == 'missing' else '' }}"
+      - "{{ '⚠ WARNING: ~/.local/bin is not in PATH' if development_tools_path_check.stdout == 'missing' else '✓ ~/.local/bin is in PATH' }}"
+      - "{{ 'Add to your shell profile: export PATH=\"$HOME/.local/bin:$PATH\"' if development_tools_path_check.stdout == 'missing' else '' }}"

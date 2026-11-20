@@ -2,7 +2,7 @@
 # Personal Claude Code: subscription-based browser authentication, never an API key.
 - name: Check Claude Code CLI
   ansible.builtin.command: which claude
-  register: personal_claude_check
+  register: development_tools_personal_claude_check
   changed_when: false
   failed_when: false
 
@@ -12,7 +12,7 @@
     curl -fsSL https://claude.ai/install.sh | bash
   args:
     executable: /bin/bash
-  when: personal_claude_check.rc != 0
+  when: development_tools_personal_claude_check.rc != 0
   changed_when: true
 
 - name: Explain personal Claude subscription login

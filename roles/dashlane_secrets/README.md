@@ -17,33 +17,33 @@ This role provides public functions to retrieve SSH keys, credentials, and file 
 
 ```yaml
 # Dashlane CLI command
-dashlane_cli: dcli
+dashlane_secrets_cli: dcli
 
 # Timeout for Dashlane CLI commands (seconds)
-dashlane_timeout: 30
+dashlane_secrets_timeout: 30
 ```
 
 ### Secret Retrieval Settings
 
 ```yaml
 # Default permissions for fetched secrets
-dashlane_default_permissions: "0600"
+dashlane_secrets_default_permissions: "0600"
 
 # Validate Dashlane authentication before fetching
-dashlane_validate_auth: true
+dashlane_secrets_validate_auth: true
 
 # Fail if secret not found (vs. warn and continue)
-dashlane_fail_on_missing: true
+dashlane_secrets_fail_on_missing: true
 ```
 
 ### Logging and Security
 
 ```yaml
 # Log secret retrieval attempts (names only, not values)
-dashlane_log_retrievals: false
+dashlane_secrets_log_retrievals: false
 
 # Use no_log for sensitive tasks
-dashlane_no_log: true
+dashlane_secrets_no_log: true
 ```
 
 ## Dependencies
@@ -59,11 +59,11 @@ This role exposes three public functions via `tasks_from`:
 Fetch an SSH private key from Dashlane and save securely.
 
 **Required Variables:**
-- `dashlane_secret_name` - Name of the secret in Dashlane
-- `dashlane_secret_output_path` - Where to save the SSH key
+- `dashlane_secrets_secret_name` - Name of the secret in Dashlane
+- `dashlane_secrets_secret_output_path` - Where to save the SSH key
 
 **Optional Variables:**
-- `dashlane_secret_permissions` - File permissions (default: `0600`)
+- `dashlane_secrets_secret_permissions` - File permissions (default: `0600`)
 
 **Example:**
 
@@ -73,9 +73,9 @@ Fetch an SSH private key from Dashlane and save securely.
     name: dashlane_secrets
     tasks_from: fetch_ssh_key
   vars:
-    dashlane_secret_name: "ssh_key_personal_github"
-    dashlane_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_github"
-    dashlane_secret_permissions: "0600"
+    dashlane_secrets_secret_name: "ssh_key_personal_github"
+    dashlane_secrets_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_github"
+    dashlane_secrets_secret_permissions: "0600"
 ```
 
 ### 2. fetch_credential
@@ -83,10 +83,10 @@ Fetch an SSH private key from Dashlane and save securely.
 Fetch username/password credential from Dashlane.
 
 **Required Variables:**
-- `dashlane_secret_name` - Name of the credential in Dashlane
+- `dashlane_secrets_secret_name` - Name of the credential in Dashlane
 
 **Returns:**
-- `dashlane_credential` - Object with `.username` and `.password` properties
+- `dashlane_secrets_credential` - Object with `.username` and `.password` properties
 
 **Example:**
 
@@ -96,12 +96,12 @@ Fetch username/password credential from Dashlane.
     name: dashlane_secrets
     tasks_from: fetch_credential
   vars:
-    dashlane_secret_name: "my_service_login"
+    dashlane_secrets_secret_name: "my_service_login"
 
 - name: Use the credentials
   ansible.builtin.debug:
-    msg: "Username: {{ dashlane_credential.username }}"
-  # Password available as: {{ dashlane_credential.password }}
+    msg: "Username: {{ dashlane_secrets_credential.username }}"
+  # Password available as: {{ dashlane_secrets_credential.password }}
 ```
 
 ### 3. fetch_file
@@ -109,11 +109,11 @@ Fetch username/password credential from Dashlane.
 Fetch arbitrary file content from Dashlane (certificates, configs, VPN profiles, etc.).
 
 **Required Variables:**
-- `dashlane_secret_name` - Name of the file/note in Dashlane
-- `dashlane_secret_output_path` - Where to save the file
+- `dashlane_secrets_secret_name` - Name of the file/note in Dashlane
+- `dashlane_secrets_secret_output_path` - Where to save the file
 
 **Optional Variables:**
-- `dashlane_secret_permissions` - File permissions (default: `0600`)
+- `dashlane_secrets_secret_permissions` - File permissions (default: `0600`)
 
 **Example:**
 
@@ -123,9 +123,9 @@ Fetch arbitrary file content from Dashlane (certificates, configs, VPN profiles,
     name: dashlane_secrets
     tasks_from: fetch_file
   vars:
-    dashlane_secret_name: "vpn_shadowman_profile"
-    dashlane_secret_output_path: "{{ ansible_env.HOME }}/.config/vpn/shadowman.ovpn"
-    dashlane_secret_permissions: "0600"
+    dashlane_secrets_secret_name: "vpn_shadowman_profile"
+    dashlane_secrets_secret_output_path: "{{ ansible_env.HOME }}/.config/vpn/shadowman.ovpn"
+    dashlane_secrets_secret_permissions: "0600"
 ```
 
 ## Example Playbooks
@@ -152,24 +152,24 @@ Fetch arbitrary file content from Dashlane (certificates, configs, VPN profiles,
         name: dashlane_secrets
         tasks_from: fetch_ssh_key
       vars:
-        dashlane_secret_name: "ssh_key_personal_github"
-        dashlane_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_github"
+        dashlane_secrets_secret_name: "ssh_key_personal_github"
+        dashlane_secrets_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_github"
 
     - name: Deploy Work GitLab SSH key
       ansible.builtin.import_role:
         name: dashlane_secrets
         tasks_from: fetch_ssh_key
       vars:
-        dashlane_secret_name: "ssh_key_work_gitlab"
-        dashlane_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_work_gitlab"
+        dashlane_secrets_secret_name: "ssh_key_work_gitlab"
+        dashlane_secrets_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_work_gitlab"
 
     - name: Deploy Shadowman Git SSH key
       ansible.builtin.import_role:
         name: dashlane_secrets
         tasks_from: fetch_ssh_key
       vars:
-        dashlane_secret_name: "ssh_key_shadowman_git"
-        dashlane_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_shadowman"
+        dashlane_secrets_secret_name: "ssh_key_shadowman_git"
+        dashlane_secrets_secret_output_path: "{{ ansible_env.HOME }}/.ssh/id_shadowman"
 ```
 
 ### Fetch and Use Credentials
@@ -184,13 +184,13 @@ Fetch arbitrary file content from Dashlane (certificates, configs, VPN profiles,
         name: dashlane_secrets
         tasks_from: fetch_credential
       vars:
-        dashlane_secret_name: "api_service_credentials"
+        dashlane_secrets_secret_name: "api_service_credentials"
 
     - name: Use credentials for API call
       ansible.builtin.uri:
         url: https://api.example.com/endpoint
-        user: "{{ dashlane_credential.username }}"
-        password: "{{ dashlane_credential.password }}"
+        user: "{{ dashlane_secrets_credential.username }}"
+        password: "{{ dashlane_secrets_credential.password }}"
         force_basic_auth: true
       no_log: true
 ```
@@ -207,27 +207,27 @@ Fetch arbitrary file content from Dashlane (certificates, configs, VPN profiles,
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "vpn_shadowman_profile"
-        dashlane_secret_output_path: "/etc/openvpn/shadowman.ovpn"
-        dashlane_secret_permissions: "0600"
+        dashlane_secrets_secret_name: "vpn_shadowman_profile"
+        dashlane_secrets_secret_output_path: "/etc/openvpn/shadowman.ovpn"
+        dashlane_secrets_secret_permissions: "0600"
 
     - name: Deploy Shadowman root CA
       ansible.builtin.import_role:
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "vpn_shadowman_root_ca"
-        dashlane_secret_output_path: "/etc/ssl/certs/shadowman-ca.crt"
-        dashlane_secret_permissions: "0644"
+        dashlane_secrets_secret_name: "vpn_shadowman_root_ca"
+        dashlane_secrets_secret_output_path: "/etc/ssl/certs/shadowman-ca.crt"
+        dashlane_secrets_secret_permissions: "0644"
 
     - name: Deploy OpenShift root CA
       ansible.builtin.import_role:
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "openshift_root_ca"
-        dashlane_secret_output_path: "/etc/ssl/certs/openshift-ca.crt"
-        dashlane_secret_permissions: "0644"
+        dashlane_secrets_secret_name: "openshift_root_ca"
+        dashlane_secrets_secret_output_path: "/etc/ssl/certs/openshift-ca.crt"
+        dashlane_secrets_secret_permissions: "0644"
 ```
 
 ## Dashlane Secret Organization
@@ -303,7 +303,7 @@ Error: `Secret 'ssh_key_github' not found in Dashlane`
 1. Verify secret name spelling in Dashlane
 2. Check that you're logged into correct Dashlane account
 3. Ensure secret exists in Dashlane vault
-4. Set `dashlane_fail_on_missing: false` to warn instead of fail
+4. Set `dashlane_secrets_fail_on_missing: false` to warn instead of fail
 
 ### Permission Issues
 
@@ -311,9 +311,9 @@ If fetched files have wrong permissions:
 
 ```yaml
 # Override default permissions
-dashlane_secret_permissions: "0644"  # For public files like CAs
+dashlane_secrets_secret_permissions: "0644"  # For public files like CAs
 # or
-dashlane_secret_permissions: "0600"  # For private keys/credentials
+dashlane_secrets_secret_permissions: "0600"  # For private keys/credentials
 ```
 
 ## Tags

@@ -4,8 +4,8 @@
 
 - name: Initialize run-specific report
   ansible.builtin.set_fact:
-    setup_reporting_started: "{{ ansible_date_time.iso8601 }}"
-    setup_reporting_run_id: "{{ ansible_date_time.iso8601_basic_short }}"
+    setup_reporting_started: "{{ ansible_facts['date_time']['iso8601'] }}"
+    setup_reporting_run_id: "{{ ansible_facts['date_time']['iso8601_basic_short'] }}"
     setup_reporting_results: []
     setup_reporting_failed: false
     setup_reporting_failure_message: ''

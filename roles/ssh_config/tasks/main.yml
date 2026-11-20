@@ -3,7 +3,7 @@
 # SSH Config Role - Main Tasks
 # =============================================================================
 # Orchestrates SSH configuration and key deployment.
-# Configuration: Defined in inventories/host_vars/localhost.yml (ssh_keys list)
+# Configuration: Defined in inventories/host_vars/localhost.yml (ssh_config_keys list)
 # =============================================================================
 
 - name: Validate SSH configuration
@@ -20,14 +20,14 @@
 
 - name: Deploy SSH config file
   ansible.builtin.import_tasks: deploy_config.yml
-  when: ssh_deploy_config
+  when: ssh_config_deploy_config
   tags:
     - ssh_config
     - ssh_config:config
 
 - name: Manage SSH known_hosts
   ansible.builtin.import_tasks: manage_known_hosts.yml
-  when: ssh_manage_known_hosts
+  when: ssh_config_manage_known_hosts
   tags:
     - ssh_config
     - ssh_config:known_hosts
@@ -36,9 +36,9 @@
   ansible.builtin.debug:
     msg: |
       SSH Configuration Summary:
-      - Keys enabled: {{ ssh_keys | selectattr('enabled', 'equalto', true) | list | length }}
-      - Config file: {{ 'deployed' if ssh_deploy_config else 'skipped' }}
-      - Known hosts: {{ 'managed' if ssh_manage_known_hosts else 'skipped' }}
+      - Keys enabled: {{ ssh_config_keys | selectattr('enabled', 'equalto', true) | list | length }}
+      - Config file: {{ 'deployed' if ssh_config_deploy_config else 'skipped' }}
+      - Known hosts: {{ 'managed' if ssh_config_manage_known_hosts else 'skipped' }}
   tags:
     - ssh_config
     - ssh_config:summary

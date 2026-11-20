@@ -31,6 +31,8 @@
       tags: desktop_apps
 
     - name: Verify desktop apps installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check Google Chrome is installed
           ansible.builtin.stat:
@@ -71,5 +73,3 @@
               - "Cursor: /Applications/Cursor.app"
               - "Rectangle: /Applications/Rectangle.app"
               - "Obsidian: /Applications/Obsidian.app"
-      tags: verify
-      when: not ansible_check_mode

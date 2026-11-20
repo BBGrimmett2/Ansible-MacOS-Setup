@@ -15,48 +15,48 @@ See [defaults/main.yml](defaults/main.yml) for complete list. Key settings:
 ### Dock Settings
 
 ```yaml
-macos_dock_autohide: true
-macos_dock_position: bottom  # bottom, left, right
-macos_dock_tilesize: 48      # 16-128
-macos_dock_show_recents: false
+macos_defaults_dock_autohide: true
+macos_defaults_dock_position: bottom  # bottom, left, right
+macos_defaults_dock_tilesize: 48      # 16-128
+macos_defaults_dock_show_recents: false
 ```
 
 ### Finder Settings
 
 ```yaml
-macos_finder_show_hidden_files: true
-macos_finder_show_extensions: true
-macos_finder_show_path_bar: true
-macos_finder_default_view: clmv  # icnv=icon, Nlsv=list, clmv=column, Flwv=gallery
+macos_defaults_finder_show_hidden_files: true
+macos_defaults_finder_show_extensions: true
+macos_defaults_finder_show_path_bar: true
+macos_defaults_finder_default_view: clmv  # icnv=icon, Nlsv=list, clmv=column, Flwv=gallery
 ```
 
 ### Keyboard Settings
 
 ```yaml
-macos_keyboard_key_repeat: 2          # 1=slow, 2=fast
-macos_keyboard_initial_key_repeat: 15  # 15=long, 1=short
+macos_defaults_keyboard_key_repeat: 2          # 1=slow, 2=fast
+macos_defaults_keyboard_initial_key_repeat: 15  # 15=long, 1=short
 ```
 
 ### Trackpad Settings
 
 ```yaml
-macos_trackpad_tap_to_click: true
-macos_trackpad_tracking_speed: 1.5  # 0.0-3.0
-macos_trackpad_natural_scrolling: true
+macos_defaults_trackpad_tap_to_click: true
+macos_defaults_trackpad_tracking_speed: 1.5  # 0.0-3.0
+macos_defaults_trackpad_natural_scrolling: true
 ```
 
 ### Screenshot Settings
 
 ```yaml
-macos_screenshots_location: "{{ ansible_env.HOME }}/Desktop"
-macos_screenshots_format: png  # png, jpg, gif, pdf, tiff
+macos_defaults_screenshots_location: "{{ ansible_env.HOME }}/Desktop"
+macos_defaults_screenshots_format: png  # png, jpg, gif, pdf, tiff
 ```
 
 ### Application Restart
 
 ```yaml
-macos_restart_affected_apps: true
-macos_apps_to_restart:
+macos_defaults_restart_affected_apps: true
+macos_defaults_apps_to_restart:
   - Finder
   - Dock
   - SystemUIServer
@@ -87,12 +87,12 @@ macos_apps_to_restart:
   roles:
     - role: macos_defaults
       vars:
-        macos_dock_autohide: false
-        macos_dock_position: left
-        macos_dock_tilesize: 64
-        macos_finder_show_hidden_files: true
-        macos_trackpad_tap_to_click: true
-        macos_screenshots_location: "{{ ansible_env.HOME }}/Pictures/Screenshots"
+        macos_defaults_dock_autohide: false
+        macos_defaults_dock_position: left
+        macos_defaults_dock_tilesize: 64
+        macos_defaults_finder_show_hidden_files: true
+        macos_defaults_trackpad_tap_to_click: true
+        macos_defaults_screenshots_location: "{{ ansible_env.HOME }}/Pictures/Screenshots"
 ```
 
 ### Configure Specific Components
@@ -144,7 +144,7 @@ ansible-playbook playbook.yml --tags "macos_defaults" --skip-tags "macos_default
 
 - Changes take effect immediately for most settings
 - Some settings may require logout/restart to fully apply
-- Applications are automatically restarted if `macos_restart_affected_apps: true`
+- Applications are automatically restarted if `macos_defaults_restart_affected_apps: true`
 - Role is fully idempotent - safe to run multiple times
 
 ## License

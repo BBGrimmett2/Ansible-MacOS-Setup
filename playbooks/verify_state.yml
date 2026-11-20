@@ -152,7 +152,7 @@
     - name: Build full state data
       ansible.builtin.set_fact:
         full_state:
-          last_verified: "{{ ansible_date_time.iso8601 }}"
+          last_verified: "{{ ansible_facts['date_time']['iso8601'] }}"
           hostname: "{{ ansible_facts['hostname'] }}"
           username: "{{ ansible_facts['env']['USER'] }}"
           profile: "{{ workstation_profile | default('unknown') }}"

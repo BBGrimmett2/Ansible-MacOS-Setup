@@ -23,4 +23,4 @@ galaxy_info:
 
 dependencies:
   - role: homebrew
-    when: pam_yubikey_enabled and pam_yubikey_install_module
+    when: pam_security_yubikey_enabled and pam_security_yubikey_install_module

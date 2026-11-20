@@ -37,6 +37,8 @@
       tags: cloud_cli
 
     - name: Verify cloud CLI installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check AWS CLI is installed
           ansible.builtin.command: which aws
@@ -74,5 +76,3 @@
               - "{% if cloud_cli_gcp_enabled %}GCP CLI: {{ gcloud_check.stdout }}{% endif %}"
               - "{% if cloud_cli_azure_enabled %}Azure CLI: {{ az_check.stdout }}{% endif %}"
               - "{% if cloud_cli_github_enabled %}GitHub CLI: {{ gh_check.stdout }}{% endif %}"
-      tags: verify
-      when: not ansible_check_mode

@@ -31,7 +31,7 @@ workstation_profile: personal  # or work
 ### Personal Profile Keys
 
 ```yaml
-ssh_personal_keys:
+ssh_config_personal_keys:
   - name: github
     dashlane_secret: ssh_key_personal_github
     file: "{{ ssh_config_dir }}/id_personal_github"
@@ -41,7 +41,7 @@ ssh_personal_keys:
 ### Work Profile Keys
 
 ```yaml
-ssh_work_keys:
+ssh_config_work_keys:
   - name: work_gitlab
     dashlane_secret: ssh_key_work_gitlab
     file: "{{ ssh_config_dir }}/id_work_gitlab"
@@ -57,17 +57,17 @@ ssh_work_keys:
 
 ```yaml
 # Deploy SSH config file
-ssh_deploy_config: true
+ssh_config_deploy_config: true
 
 # Backup existing config
-ssh_backup_existing: true
+ssh_config_backup_existing: true
 
 # Manage known_hosts
-ssh_manage_known_hosts: true
-ssh_prepopulate_known_hosts: true
+ssh_config_manage_known_hosts: true
+ssh_config_prepopulate_known_hosts: true
 
 # Known hosts to pre-populate
-ssh_known_hosts:
+ssh_config_known_hosts:
   - github.com
   - gitlab.com
 ```
@@ -75,7 +75,7 @@ ssh_known_hosts:
 ### SSH Client Options
 
 ```yaml
-ssh_global_options:
+ssh_config_global_options:
   AddKeysToAgent: "yes"
   UseKeychain: "yes"  # macOS Keychain integration
   IdentitiesOnly: "yes"
@@ -127,7 +127,7 @@ ssh_global_options:
     - role: ssh_config
       vars:
         workstation_profile: personal
-        ssh_personal_keys:
+        ssh_config_personal_keys:
           - name: github
             dashlane_secret: ssh_key_github
             file: "{{ ansible_env.HOME }}/.ssh/id_github"

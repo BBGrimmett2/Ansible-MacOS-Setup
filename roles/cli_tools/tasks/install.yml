@@ -63,8 +63,8 @@
 
 - name: Add pipx user scripts to PATH
   ansible.builtin.command: pipx ensurepath
-  register: pipx_ensurepath
-  changed_when: "'Success!' in pipx_ensurepath.stdout"
+  register: cli_tools_pipx_ensurepath
+  changed_when: "'Success!' in cli_tools_pipx_ensurepath.stdout"
   when:
     - not ansible_check_mode
     - "'pipx' in cli_tools_selected_formulae"

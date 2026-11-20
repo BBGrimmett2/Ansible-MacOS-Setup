@@ -8,7 +8,7 @@
 
 - name: Ensure screenshot location exists
   ansible.builtin.file:
-    path: "{{ macos_screenshots_location }}"
+    path: "{{ macos_defaults_screenshots_location }}"
     state: directory
     mode: '0755'
 
@@ -17,7 +17,7 @@
     domain: com.apple.screencapture
     key: location
     type: string
-    value: "{{ macos_screenshots_location }}"
+    value: "{{ macos_defaults_screenshots_location }}"
   notify: Restart SystemUIServer
 
 - name: Set screenshot file format
@@ -25,7 +25,7 @@
     domain: com.apple.screencapture
     key: type
     type: string
-    value: "{{ macos_screenshots_format }}"
+    value: "{{ macos_defaults_screenshots_format }}"
   notify: Restart SystemUIServer
 
 - name: Set screenshot include date in filename
@@ -33,7 +33,7 @@
     domain: com.apple.screencapture
     key: include-date
     type: bool
-    value: "{{ macos_screenshots_include_date }}"
+    value: "{{ macos_defaults_screenshots_include_date }}"
   notify: Restart SystemUIServer
 
 - name: Disable screenshot shadow
@@ -41,9 +41,9 @@
     domain: com.apple.screencapture
     key: disable-shadow
     type: bool
-    value: "{{ macos_screenshots_disable_shadow }}"
+    value: "{{ macos_defaults_screenshots_disable_shadow }}"
   notify: Restart SystemUIServer
 
 - name: Display screenshot configuration status
   ansible.builtin.debug:
-    msg: "Screenshot configuration completed (location: {{ macos_screenshots_location }})"
+    msg: "Screenshot configuration completed (location: {{ macos_defaults_screenshots_location }})"

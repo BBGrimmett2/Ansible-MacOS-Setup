@@ -67,5 +67,8 @@
   when:
     - database_tools_podman_machine_enabled | bool
     - not ansible_check_mode
-    - not ((database_tools_podman_machine_after.stdout | from_json) | selectattr('Name', 'equalto', database_tools_podman_machine_name) | selectattr('Running', 'equalto', true) | list | length > 0)
+    - >-
+      ((database_tools_podman_machine_after.stdout | from_json)
+       | selectattr('Name', 'equalto', database_tools_podman_machine_name)
+       | selectattr('Running', 'equalto', true) | first) is undefined
   changed_when: true

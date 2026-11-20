@@ -10,48 +10,49 @@
 # -----------------------------------------------------------------------------
 
 # Enable Touch ID for sudo
-pam_touchid_enabled: true
+pam_security_touchid_enabled: "{{ pam_touchid_enabled | default(true) }}"
 
 # PAM configuration file for sudo
-pam_sudo_config: /etc/pam.d/sudo
+pam_security_sudo_config: "{{ pam_sudo_config | default('/etc/pam.d/sudo') }}"
 
 # PAM module for Touch ID
-pam_touchid_module: pam_tid.so
+pam_security_touchid_module: "{{ pam_touchid_module | default('pam_tid.so') }}"
 
 # Backup original PAM configuration
-pam_backup_original: true
+pam_security_backup_original: "{{ pam_backup_original | default(true) }}"
 
 # Location for PAM configuration backup
-pam_backup_dir: /etc/pam.d/backups
+pam_security_backup_dir: "{{ pam_backup_dir | default('/etc/pam.d/backups') }}"
 
 # -----------------------------------------------------------------------------
 # YubiKey Configuration
 # -----------------------------------------------------------------------------
 
 # Enable YubiKey (U2F) authentication
-pam_yubikey_enabled: false
+pam_security_yubikey_enabled: "{{ pam_yubikey_enabled | default(false) }}"
 
 # Install pam-u2f via Homebrew
-pam_yubikey_install_module: true
+pam_security_yubikey_install_module: "{{ pam_yubikey_install_module | default(true) }}"
 
 # YubiKey authentication mode (required, sufficient, optional)
 # - required: YubiKey must be present and valid
 # - sufficient: YubiKey can authenticate alone, or fall through to password
 # - optional: YubiKey is checked but not required
-pam_yubikey_mode: sufficient
+pam_security_yubikey_mode: "{{ pam_yubikey_mode | default('sufficient') }}"
 
 # Location for U2F keys mapping file
-pam_u2f_authfile: "{{ ansible_facts['env']['HOME'] }}/.config/Yubico/u2f_keys"
+pam_security_u2f_authfile: "{{ pam_u2f_authfile | default(pam_security_u2f_authfile_default) }}"
+pam_security_u2f_authfile_default: "{{ ansible_facts['env']['HOME'] }}/.config/Yubico/u2f_keys"
 
 # Whether to prompt for Touch ID first, then YubiKey
-pam_touchid_priority: true
+pam_security_touchid_priority: "{{ pam_touchid_priority | default(true) }}"
 
 # -----------------------------------------------------------------------------
 # Security Settings
 # -----------------------------------------------------------------------------
 
 # Validate PAM configuration before applying
-pam_validate_config: true
+pam_security_validate_config: "{{ pam_validate_config | default(true) }}"
 
 # Require user confirmation before modifying PAM files
-pam_require_confirmation: false
+pam_security_require_confirmation: "{{ pam_require_confirmation | default(false) }}"

@@ -34,6 +34,8 @@
       tags: cli_tools
 
     - name: Verify CLI tools installation
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check jq is installed
           ansible.builtin.command: which jq
@@ -109,5 +111,3 @@
               - "fzf: {{ fzf_check.stdout }}"
               - "delta: {{ delta_check.stdout }}"
               - "direnvrc: {{ direnvrc_stat.stat.path }}"
-      tags: verify
-      when: not ansible_check_mode

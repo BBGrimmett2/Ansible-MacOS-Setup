@@ -22,29 +22,29 @@ argument_specs:
           - work
         description: Workstation profile (determines which SSH keys to deploy)
 
-      ssh_deploy_config:
+      ssh_config_deploy_config:
         type: bool
         required: false
         default: true
         description: Whether to deploy SSH config file
 
-      ssh_backup_existing:
+      ssh_config_backup_existing:
         type: bool
         required: false
         default: true
         description: Backup existing SSH config before overwriting
 
-      ssh_personal_keys:
+      ssh_config_personal_keys:
         type: list
         required: false
         description: List of personal SSH keys to deploy
 
-      ssh_work_keys:
+      ssh_config_work_keys:
         type: list
         required: false
         description: List of work SSH keys to deploy
 
-      ssh_manage_known_hosts:
+      ssh_config_manage_known_hosts:
         type: bool
         required: false
         default: true
@@ -58,7 +58,7 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      ssh_personal_keys:
+      ssh_config_personal_keys:
         type: list
         required: false
         description: List of personal SSH keys
@@ -71,7 +71,7 @@ argument_specs:
     author: Brian Grimmett
 
     options:
-      ssh_work_keys:
+      ssh_config_work_keys:
         type: list
         required: false
         description: List of work SSH keys
@@ -90,12 +90,12 @@ argument_specs:
     short_description: Install authenticated or pinned SSH host keys
     description: Never learn host keys from unauthenticated ssh-keyscan
     options:
-      ssh_known_hosts:
+      ssh_config_known_hosts:
         type: list
         elements: str
         required: false
         description: Hosts with an authenticated automatic source
-      ssh_known_hosts_pinned:
+      ssh_config_known_hosts_pinned:
         type: list
         elements: str
         required: false

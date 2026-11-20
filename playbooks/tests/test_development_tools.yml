@@ -35,6 +35,8 @@
       tags: development_tools
 
     - name: Verify development tools installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check pre-commit is installed
           ansible.builtin.command: which pre-commit
@@ -71,5 +73,3 @@
               - ".gitconfig: {{ gitconfig_stat.stat.path }}"
               - "{% if development_tools_install_custom_scripts %}Custom scripts: {{ scripts_dir_stat.stat.path }}{% endif %}"
               - "{% if development_tools_install_custom_scripts %}rhdps: {{ rhdps_stat.stat.path }}{% endif %}"
-      tags: verify
-      when: not ansible_check_mode

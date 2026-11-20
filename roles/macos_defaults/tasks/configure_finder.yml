@@ -11,7 +11,7 @@
     domain: com.apple.finder
     key: AppleShowAllFiles
     type: bool
-    value: "{{ macos_finder_show_hidden_files }}"
+    value: "{{ macos_defaults_finder_show_hidden_files }}"
   notify: Restart Finder
 
 - name: Show all filename extensions
@@ -19,7 +19,7 @@
     domain: NSGlobalDomain
     key: AppleShowAllExtensions
     type: bool
-    value: "{{ macos_finder_show_extensions }}"
+    value: "{{ macos_defaults_finder_show_extensions }}"
   notify: Restart Finder
 
 - name: Show path bar in Finder
@@ -27,7 +27,7 @@
     domain: com.apple.finder
     key: ShowPathbar
     type: bool
-    value: "{{ macos_finder_show_path_bar }}"
+    value: "{{ macos_defaults_finder_show_path_bar }}"
   notify: Restart Finder
 
 - name: Show status bar in Finder
@@ -35,7 +35,7 @@
     domain: com.apple.finder
     key: ShowStatusBar
     type: bool
-    value: "{{ macos_finder_show_status_bar }}"
+    value: "{{ macos_defaults_finder_show_status_bar }}"
   notify: Restart Finder
 
 - name: Set default Finder view style
@@ -43,7 +43,7 @@
     domain: com.apple.finder
     key: FXPreferredViewStyle
     type: string
-    value: "{{ macos_finder_default_view }}"
+    value: "{{ macos_defaults_finder_default_view }}"
   notify: Restart Finder
 
 - name: Set Finder search scope
@@ -51,7 +51,7 @@
     domain: com.apple.finder
     key: FXDefaultSearchScope
     type: string
-    value: "{{ macos_finder_search_scope }}"
+    value: "{{ macos_defaults_finder_search_scope }}"
   notify: Restart Finder
 
 - name: Set warning before changing extension
@@ -59,7 +59,7 @@
     domain: com.apple.finder
     key: FXEnableExtensionChangeWarning
     type: bool
-    value: "{{ macos_finder_warn_on_extension_change }}"
+    value: "{{ macos_defaults_finder_warn_on_extension_change }}"
   notify: Restart Finder
 
 - name: Set warning before emptying Trash
@@ -67,7 +67,7 @@
     domain: com.apple.finder
     key: WarnOnEmptyTrash
     type: bool
-    value: "{{ macos_finder_warn_on_empty_trash }}"
+    value: "{{ macos_defaults_finder_warn_on_empty_trash }}"
   notify: Restart Finder
 
 - name: Display Finder configuration status
