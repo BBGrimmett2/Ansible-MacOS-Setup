@@ -70,7 +70,7 @@ class ExpectedStateManifestTests(unittest.TestCase):
         profile = yaml.safe_load(
             (ROOT / "inventories/group_vars/profiles/personal.yml").read_text()
         )
-        selected = module.watchdog_role_packages(defaults, profile)
+        selected = module.watchdog_role_packages(ROOT, profile)
         self.assertIn("awscli", selected["brew_formula"])
         self.assertIn("gh", selected["brew_formula"])
         self.assertIn("helm", selected["brew_formula"])
@@ -99,11 +99,11 @@ class ExpectedStateManifestTests(unittest.TestCase):
         }
         profile = {"network_tools_openvpn_enabled": False,
                    "desktop_apps_discord_enabled": False}
-        selected = module.watchdog_role_packages(defaults, profile)
+        selected = module.watchdog_role_packages(ROOT, profile)
         self.assertNotIn("openvpn", selected["brew_formula"])
         self.assertNotIn("discord", selected["brew_cask"])
-        defaults["cloud_cli"]["cloud_cli_state"] = "absent"
-        selected = module.watchdog_role_packages(defaults, profile)
+        profile["cloud_cli_state"] = "absent"
+        selected = module.watchdog_role_packages(ROOT, profile)
         self.assertNotIn("awscli", selected["brew_formula"])
 
     def test_role_contract_and_profile_isolation(self):
