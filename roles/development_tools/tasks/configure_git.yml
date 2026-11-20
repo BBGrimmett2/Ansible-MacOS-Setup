@@ -1,30 +1,25 @@
 ---
-# =============================================================================
-# Development Tools Role - Configure Git (Public Function)
-# =============================================================================
-# Configures git globally with profile-specific settings
-# =============================================================================
+# Configure Git using only the explicitly selected workstation identity.
 
-- name: Require explicit profile-specific Git identity
+- name: Require an explicit profile and Git identity
   ansible.builtin.assert:
     that:
+      - workstation_profile is defined
       - workstation_profile in ['personal', 'work']
       - development_tools_git_user_name | trim | length > 0
       - development_tools_git_user_email | trim | length > 0
       - "'@' in development_tools_git_user_email"
     fail_msg: >-
-      Git identity for the selected profile is incomplete.
-      Set git_user_email_personal or git_user_email_work in a private
-      override or through the corresponding WORKSTATION_GIT_EMAIL environment
-      variable before running this playbook. Do not inherit a previous email.
-  when: not development_tools_gitconfig_from_dashlane
+      A valid profile-specific Git name and email are required.
+      Supply WORKSTATION_GIT_EMAIL_PERSONAL or WORKSTATION_GIT_EMAIL_WORK.
+  when: not development_tools_gitconfig_from_dashlane | bool
 
-- name: Check if .gitconfig exists
+- name: Check whether .gitconfig exists
   ansible.builtin.stat:
     path: "{{ development_tools_gitconfig_path }}"
-  register: gitconfig_stat
+  register: development_tools_gitconfig_stat
 
-- name: Read currently configured Git identity
+- name: Inspect existing Git identity
   ansible.builtin.command:
     argv:
       - git
@@ -32,98 +27,25 @@
       - --file
       - "{{ development_tools_gitconfig_path }}"
       - --get-regexp
-      - '^(user\\.name|user\\.email)  ansible.builtin.copy:
-    src: "{{ development_tools_gitconfig_path }}"
-    dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch }}"
-    remote_src: true
-    mode: "0644"
-  when:
-    - development_tools_gitconfig_backup
-    - gitconfig_stat.stat.exists
-    - >-
-      development_tools_gitconfig_from_dashlane or
-      (('user.name ' ~ development_tools_git_user_name) not in (development_tools_existing_git_identity.stdout_lines | default([]))) or
-      (('user.email ' ~ development_tools_git_user_email) not in (development_tools_existing_git_identity.stdout_lines | default([])))
-
-- name: Deploy .gitconfig from Dashlane
-  when: development_tools_gitconfig_from_dashlane
-  block:
-    - name: Set Dashlane secret name for .gitconfig
-      ansible.builtin.set_fact:
-        gitconfig_secret_name: "{{ development_tools_gitconfig_dashlane_secret_personal if workstation_profile == 'personal' else development_tools_gitconfig_dashlane_secret_work }}"
-
-    - name: Fetch .gitconfig from Dashlane
-      ansible.builtin.include_role:
-        name: dashlane_secrets
-        tasks_from: fetch_file
-      vars:
-        dashlane_secret_name: "{{ gitconfig_secret_name }}"
-        dashlane_secret_output_path: "{{ development_tools_gitconfig_path }}"
-        dashlane_secret_permissions: "0644"
-
-    - name: Display .gitconfig deployment status
-      ansible.builtin.debug:
-        msg:
-          - "Git configured from Dashlane ({{ gitconfig_secret_name }})"
-          - "Profile: {{ workstation_profile | default('personal') }}"
-
-- name: Configure git with individual settings
-  when: not development_tools_gitconfig_from_dashlane
-  block:
-    - name: Configure git user name
-      community.general.git_config:
-        name: user.name
-        value: "{{ development_tools_git_user_name }}"
-        scope: global
-
-    - name: Configure git user email
-      community.general.git_config:
-        name: user.email
-        value: "{{ development_tools_git_user_email }}"
-        scope: global
-
-    - name: Configure git default branch
-      community.general.git_config:
-        name: init.defaultBranch
-        value: "{{ development_tools_git_default_branch }}"
-        scope: global
-
-    - name: Configure git editor
-      community.general.git_config:
-        name: core.editor
-        value: "{{ development_tools_git_editor }}"
-        scope: global
-
-    - name: Configure git to use delta as pager (if installed)
-      community.general.git_config:
-        name: core.pager
-        value: delta
-        scope: global
-      when: "'git-delta' in ansible_facts.packages | default({})"
-      failed_when: false
-
-    - name: Display git configuration
-      ansible.builtin.debug:
-        msg:
-          - "Git configured successfully"
-          - "User: {{ development_tools_git_user_name }} <{{ development_tools_git_user_email }}>"
-          - "Default branch: {{ development_tools_git_default_branch }}"
-          - "Editor: {{ development_tools_git_editor }}"
-
+      - '^(user\.name|user\.email)$'
   register: development_tools_existing_git_identity
   changed_when: false
   failed_when: false
-  when: gitconfig_stat.stat.exists
+  when: development_tools_gitconfig_stat.stat.exists
 
-- name: Backup existing .gitconfig only when identity will change
+- name: Back up .gitconfig when replacing an existing identity or Dashlane configuration
   ansible.builtin.copy:
     src: "{{ development_tools_gitconfig_path }}"
     dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch }}"
     remote_src: true
-    mode: "0644"
+    mode: "0600"
   when:
-    - development_tools_gitconfig_backup
-    - gitconfig_stat.stat.exists
+    - development_tools_gitconfig_backup | bool
+    - development_tools_gitconfig_stat.stat.exists
+    - >-
+      development_tools_gitconfig_from_dashlane | bool or
+      ('user.name ' ~ development_tools_git_user_name) not in (development_tools_existing_git_identity.stdout_lines | default([])) or
+      ('user.email ' ~ development_tools_git_user_email) not in (development_tools_existing_git_identity.stdout_lines | default([]))
 
 - name: Deploy .gitconfig from Dashlane
   when: development_tools_gitconfig_from_dashlane
