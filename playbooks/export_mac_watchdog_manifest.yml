@@ -5,42 +5,21 @@
   vars:
     workstation_profile: personal
   pre_tasks:
-    - name: Load shared package definitions without overriding inventory
+    - name: Load shared package definitions
       ansible.builtin.include_vars:
         file: "{{ playbook_dir }}/../inventories/group_vars/all.yml"
         name: watchdog_shared_config
 
-    - name: Load non-secret personal profile without affecting other roles
+    - name: Load non-secret personal profile
       ansible.builtin.include_vars:
         file: "{{ playbook_dir }}/../inventories/group_vars/profiles/personal.yml"
         name: watchdog_personal_config
-
-    - name: Load authoritative package-role defaults in separate namespaces
-      ansible.builtin.include_vars:
-        file: "{{ playbook_dir }}/../roles/{{ item }}/defaults/main.yml"
-        name: "watchdog_defaults_{{ item }}"
-      loop:
-        - cloud_cli
-        - kubernetes_tools
-        - network_tools
-        - development_tools
-        - desktop_apps
-        - database_tools
-        - terminal
   tasks:
     - name: Export expected-state manifest
       ansible.builtin.import_role:
         name: mac_watchdog_manifest
       vars:
+        mac_watchdog_manifest_repo_root: "{{ playbook_dir }}/.."
         mac_watchdog_manifest_formulae_common: "{{ watchdog_shared_config.cli_tools_packages_common }}"
         mac_watchdog_manifest_formulae_extra: "{{ watchdog_personal_config.cli_tools_packages_extra }}"
         mac_watchdog_manifest_resources: "{{ watchdog_personal_config.mac_watchdog_expected_resources }}"
-        mac_watchdog_manifest_profile: "{{ watchdog_personal_config }}"
-        mac_watchdog_manifest_role_defaults:
-          cloud_cli: "{{ watchdog_defaults_cloud_cli }}"
-          kubernetes_tools: "{{ watchdog_defaults_kubernetes_tools }}"
-          network_tools: "{{ watchdog_defaults_network_tools }}"
-          development_tools: "{{ watchdog_defaults_development_tools }}"
-          desktop_apps: "{{ watchdog_defaults_desktop_apps }}"
-          database_tools: "{{ watchdog_defaults_database_tools }}"
-          terminal: "{{ watchdog_defaults_terminal }}"
