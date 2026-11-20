@@ -32,6 +32,13 @@ jobs:
       # - name: Lint YAML
       #   run: yamllint .
 
+      - name: Syntax check AWS and GCP demo playbooks
+        run: |
+          ansible-playbook --syntax-check playbooks/setup_aws_demo.yml
+          ansible-playbook --syntax-check playbooks/setup_gcp_demo.yml
+        env:
+          ANSIBLE_NOCOLOR: "1"
+
       - name: Test custom Dock filter
         run: python -m unittest discover -s tests/unit -p 'test_*.py'
 
