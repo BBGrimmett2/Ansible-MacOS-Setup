@@ -5,8 +5,22 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
+  runner-smoke:
+    name: Runner Startup Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm runner execution
+        run: |
+          echo "GitHub Actions runner started successfully"
+          echo "Event: $GITHUB_EVENT_NAME"
+          echo "Ref: $GITHUB_REF"
+
   ansible-validate:
     name: Validate Ansible
     runs-on: ubuntu-latest
