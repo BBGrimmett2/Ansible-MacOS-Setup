@@ -37,7 +37,7 @@ cloud_cli_github_enabled: true
 
 cloud_cli_packages:
   aws: awscli
-  gcp: google-cloud-sdk
+  gcp: gcloud-cli
   azure: azure-cli
   github: gh
 

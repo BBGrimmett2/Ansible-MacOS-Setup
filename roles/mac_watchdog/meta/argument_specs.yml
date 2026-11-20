@@ -1,0 +1,21 @@
+---
+argument_specs:
+  main:
+    short_description: Deploy read-only personal macOS watchdog
+    options:
+      mac_watchdog_enabled:
+        type: bool
+        default: true
+      mac_watchdog_repo:
+        type: str
+        required: false
+      mac_watchdog_revision:
+        type: str
+        required: true
+        description: Immutable, reviewed watchdog Git commit SHA
+      mac_watchdog_python_executable:
+        type: path
+        required: false
+      mac_watchdog_launchagent_label:
+        type: str
+        required: false

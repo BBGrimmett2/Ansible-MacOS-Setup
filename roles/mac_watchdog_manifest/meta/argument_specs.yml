@@ -1,0 +1,51 @@
+---
+argument_specs:
+  main:
+    short_description: Export personal Ansible expected state for the read-only macOS watchdog
+    options:
+      mac_watchdog_manifest_enabled:
+        type: bool
+        default: true
+      mac_watchdog_manifest_path:
+        type: path
+        required: false
+        description: Private local JSON output path
+      mac_watchdog_manifest_formulae_common:
+        type: list
+        elements: str
+        required: false
+      mac_watchdog_manifest_formulae_extra:
+        type: list
+        elements: str
+        required: false
+      mac_watchdog_manifest_resources:
+        type: list
+        elements: dict
+        required: false
+      mac_watchdog_manifest_repo_root:
+        type: path
+        required: false
+  generate:
+    short_description: Generate personal expected-state manifest
+    options:
+      mac_watchdog_manifest_path:
+        type: path
+        required: false
+      mac_watchdog_manifest_formulae_common:
+        type: list
+        elements: str
+        required: false
+      mac_watchdog_manifest_formulae_extra:
+        type: list
+        elements: str
+        required: false
+      mac_watchdog_manifest_resources:
+        type: list
+        elements: dict
+        required: false
+      mac_watchdog_manifest_role_defaults:
+        type: dict
+        required: false
+      mac_watchdog_manifest_profile:
+        type: dict
+        required: false
