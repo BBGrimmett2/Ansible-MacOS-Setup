@@ -61,7 +61,7 @@ def watchdog_manifest(common, extra, resources, selected=None):
 _ROLE_PACKAGES = {
     "cloud_cli": {
         "brew_formula": {"aws": "awscli", "azure": "azure-cli", "github": "gh"},
-        "brew_cask": {"gcp": "google-cloud-sdk"},
+        "brew_cask": {"gcp": "gcloud-cli"},
     },
     "kubernetes_tools": {
         "brew_formula": {"oc": "openshift-cli", "kubectl": "kubernetes-cli",
@@ -70,7 +70,7 @@ _ROLE_PACKAGES = {
     },
     "network_tools": {
         "brew_formula": {"openvpn": "openvpn", "bind": "bind", "mtr": "mtr", "nmap": "nmap"},
-        "brew_cask": {"bruno": "bruno", "wireshark": "wireshark"},
+        "brew_cask": {"bruno": "bruno", "wireshark": "wireshark-app"},
     },
     "development_tools": {
         "brew_formula": {"nodejs": "node", "precommit": "pre-commit"},
