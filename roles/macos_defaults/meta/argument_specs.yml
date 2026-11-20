@@ -144,3 +144,38 @@ argument_specs:
         elements: str
         required: false
         description: List of applications to restart
+
+  configure_dock:
+    short_description: configure dock operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_file_associations:
+    short_description: configure file associations operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_finder:
+    short_description: configure finder operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_keyboard:
+    short_description: configure keyboard operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_screenshots:
+    short_description: configure screenshots operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_system:
+    short_description: configure system operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_trackpad:
+    short_description: configure trackpad operation for macos defaults
+    description: Documented task entry point callable with tasks_from
+    options: {}

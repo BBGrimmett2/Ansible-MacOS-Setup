@@ -1,24 +1,51 @@
 ---
-# =============================================================================
-# Development Tools Role - Configure Git (Public Function)
-# =============================================================================
-# Configures git globally with profile-specific settings
-# =============================================================================
+# Configure Git using only the explicitly selected workstation identity.
 
-- name: Check if .gitconfig exists
+- name: Require an explicit profile and Git identity
+  ansible.builtin.assert:
+    that:
+      - workstation_profile is defined
+      - workstation_profile in ['personal', 'work']
+      - development_tools_git_user_name | trim | length > 0
+      - development_tools_git_user_email | trim | length > 0
+      - "'@' in development_tools_git_user_email"
+    fail_msg: >-
+      A valid profile-specific Git name and email are required.
+      Supply WORKSTATION_GIT_EMAIL_PERSONAL or WORKSTATION_GIT_EMAIL_WORK.
+  when: not development_tools_gitconfig_from_dashlane | bool
+
+- name: Check whether .gitconfig exists
   ansible.builtin.stat:
     path: "{{ development_tools_gitconfig_path }}"
-  register: gitconfig_stat
+  register: development_tools_gitconfig_stat
 
-- name: Backup existing .gitconfig
+- name: Inspect existing Git identity
+  ansible.builtin.command:
+    argv:
+      - git
+      - config
+      - --file
+      - "{{ development_tools_gitconfig_path }}"
+      - --get-regexp
+      - '^(user\.name|user\.email)$'
+  register: development_tools_existing_git_identity
+  changed_when: false
+  failed_when: false
+  when: development_tools_gitconfig_stat.stat.exists
+
+- name: Back up .gitconfig when replacing an existing identity or Dashlane configuration
   ansible.builtin.copy:
     src: "{{ development_tools_gitconfig_path }}"
     dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch }}"
     remote_src: true
-    mode: "0644"
+    mode: "0600"
   when:
-    - development_tools_gitconfig_backup
-    - gitconfig_stat.stat.exists
+    - development_tools_gitconfig_backup | bool
+    - development_tools_gitconfig_stat.stat.exists
+    - >-
+      development_tools_gitconfig_from_dashlane | bool or
+      ('user.name ' ~ development_tools_git_user_name) not in (development_tools_existing_git_identity.stdout_lines | default([])) or
+      ('user.email ' ~ development_tools_git_user_email) not in (development_tools_existing_git_identity.stdout_lines | default([]))
 
 - name: Deploy .gitconfig from Dashlane
   when: development_tools_gitconfig_from_dashlane
@@ -56,7 +83,6 @@
         name: user.email
         value: "{{ development_tools_git_user_email }}"
         scope: global
-      when: development_tools_git_user_email != ""
 
     - name: Configure git default branch
       community.general.git_config:

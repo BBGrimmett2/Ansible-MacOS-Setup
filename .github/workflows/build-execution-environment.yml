@@ -1,26 +1,15 @@
 ---
 name: Build Execution Environment
 
+# Intentionally disabled. Keep this workflow for future EE builds.
+# Re-enable only after reviewing registry credentials and build requirements.
 on:
-  # Run weekly on Sundays at 2 AM UTC
-  schedule:
-    - cron: '0 2 * * 0'
-
-  # Run on pull requests to main branch
-  pull_request:
-    branches:
-      - main
-
-  # Allow manual triggering
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Additional tag for the image (optional)'
-        required: false
-        type: string
+
 
 jobs:
   build:
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     permissions:

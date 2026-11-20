@@ -10,6 +10,16 @@
   hosts: localhost
   gather_facts: true
 
+  vars_prompt:
+    - name: workstation_profile
+      prompt: "Select workstation profile (personal/work)"
+      private: false
+
+  pre_tasks:
+    - name: Load and validate selected profile
+      ansible.builtin.import_tasks: tasks/load_profile.yml
+      tags: [always]
+
   roles:
     - role: database_tools
       tags: [database_tools]

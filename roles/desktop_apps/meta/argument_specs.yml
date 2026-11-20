@@ -153,3 +153,118 @@ argument_specs:
         type: str
         required: false
         default: present
+
+  configure_rectangle:
+    short_description: configure rectangle operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_rectangle_shortcut:
+    short_description: configure rectangle shortcut operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_appcleaner:
+    short_description: install appcleaner operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_canon_ij_scan:
+    short_description: install canon ij scan operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_chatgpt:
+    short_description: install chatgpt operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_chrome:
+    short_description: install chrome operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_claude:
+    short_description: install claude operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_cursor:
+    short_description: install cursor operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_discord:
+    short_description: install discord operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_displaylink:
+    short_description: install displaylink operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_elgato_camera_hub:
+    short_description: install elgato camera hub operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_elgato_control_center:
+    short_description: install elgato control center operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_hidden_bar:
+    short_description: install hidden bar operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_microsoft_365:
+    short_description: install microsoft 365 operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_nextcloud:
+    short_description: install nextcloud operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_obsidian:
+    short_description: install obsidian operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_raycast:
+    short_description: install raycast operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_rectangle:
+    short_description: install rectangle operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_stats:
+    short_description: install stats operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_unsloth:
+    short_description: install unsloth operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_vscode:
+    short_description: install vscode operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_webex:
+    short_description: install webex operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  remove_cursor_personal:
+    short_description: remove cursor personal operation for desktop apps
+    description: Documented task entry point callable with tasks_from
+    options: {}

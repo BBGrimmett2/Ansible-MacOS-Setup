@@ -86,3 +86,6 @@ development_tools_gpg_secret: gpg_key_personal_github
 # Keep non-secret only. Supported categories: brew_cask, app, pkg_receipt,
 # launchd, macos_build, brew_formula. Do not list work-profile resources.
 mac_watchdog_expected_resources: []
+
+# Supply the private email through environment or inventory; never reuse a prior identity.
+git_user_email_personal: "{{ lookup('ansible.builtin.env', 'WORKSTATION_GIT_EMAIL_PERSONAL') }}"

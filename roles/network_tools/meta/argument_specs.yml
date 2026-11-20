@@ -164,3 +164,23 @@ argument_specs:
         type: str
         required: false
         default: present
+
+  deploy_certificate_item:
+    short_description: deploy certificate item operation for network tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  deploy_vpn:
+    short_description: Install workstation VPN profiles from Dashlane
+    description: Deploy VPN definitions only for the selected profile
+    options:
+      workstation_profile:
+        type: str
+        required: true
+        choices: [personal, work]
+        description: Workstation profile
+      vpn_profiles:
+        type: list
+        elements: dict
+        required: true
+        description: Profile-scoped VPN definitions

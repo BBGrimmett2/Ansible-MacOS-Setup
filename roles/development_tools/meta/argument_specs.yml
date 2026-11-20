@@ -56,3 +56,68 @@ argument_specs:
         type: str
         required: true
         description: Git user email
+
+  configure_claude_skills:
+    short_description: configure claude skills operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_gpg:
+    short_description: configure gpg operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  configure_mcp:
+    short_description: configure mcp operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install:
+    short_description: install operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_aap_demo:
+    short_description: install aap demo operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_claude_code:
+    short_description: install claude code operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_claude_code_personal:
+    short_description: install claude code personal operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_claude_code_work:
+    short_description: install claude code work operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_codex:
+    short_description: install codex operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_custom_scripts:
+    short_description: install custom scripts operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_nodejs:
+    short_description: install nodejs operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_precommit:
+    short_description: install precommit operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_rhdps:
+    short_description: install rhdps operation for development tools
+    description: Documented task entry point callable with tasks_from
+    options: {}

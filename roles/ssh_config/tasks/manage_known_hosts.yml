@@ -1,41 +1,75 @@
 ---
-# =============================================================================
-# SSH Config Role - Manage Known Hosts
-# =============================================================================
-# Public function: Populate SSH known_hosts file.
-# Can be called via: tasks_from: manage_known_hosts
-# =============================================================================
-
-- name: Ensure known_hosts file exists
+# Never import unauthenticated ssh-keyscan output into known_hosts.
+- name: Ensure known_hosts file exists with restrictive permissions
   ansible.builtin.file:
     path: "{{ ssh_config_dir }}/known_hosts"
     state: touch
-    mode: '0644'
+    mode: "0600"
     modification_time: preserve
     access_time: preserve
 
-- name: Pre-populate known_hosts for common services
-  ansible.builtin.command: ssh-keyscan -H {{ item }}
-  register: ssh_keyscan_result
-  loop: "{{ ssh_known_hosts }}"
+- name: Reject hosts without an authenticated key source
+  ansible.builtin.assert:
+    that:
+      - ssh_known_hosts | difference(['github.com']) | length == 0
+    fail_msg: >-
+      Only github.com supports authenticated automatic discovery.
+      For other hosts, provide trusted ssh_known_hosts_pinned entries.
+  when: ssh_prepopulate_known_hosts | bool
+
+- name: Fetch GitHub published SSH host keys over validated HTTPS
+  ansible.builtin.uri:
+    url: https://api.github.com/meta
+    method: GET
+    return_content: true
+    validate_certs: true
+    status_code: 200
+  register: ssh_config_github_metadata
   changed_when: false
-  when: ssh_prepopulate_known_hosts
-
-- name: Add hosts to known_hosts file
-  ansible.builtin.lineinfile:
-    path: "{{ ssh_config_dir }}/known_hosts"
-    line: "{{ item.stdout }}"
-    create: true
-    mode: '0644'
-  loop: "{{ ssh_keyscan_result.results }}"
-  loop_control:
-    label: "{{ item.item }}"
   when:
-    - ssh_prepopulate_known_hosts
-    - item.stdout is defined
-    - item.stdout | length > 0
+    - ssh_prepopulate_known_hosts | bool
+    - "'github.com' in ssh_known_hosts"
 
-- name: Display known_hosts management status
-  ansible.builtin.debug:
-    msg: "Known hosts populated for {{ ssh_known_hosts | join(', ') }}"
-  when: ssh_prepopulate_known_hosts
+- name: Validate GitHub host key metadata
+  ansible.builtin.assert:
+    that:
+      - ssh_config_github_metadata.json.ssh_keys is defined
+      - ssh_config_github_metadata.json.ssh_keys | length > 0
+    fail_msg: "Authenticated GitHub SSH host keys unavailable."
+  when:
+    - ssh_prepopulate_known_hosts | bool
+    - "'github.com' in ssh_known_hosts"
+
+- name: Install GitHub-published SSH host keys
+  ansible.builtin.known_hosts:
+    path: "{{ ssh_config_dir }}/known_hosts"
+    name: github.com
+    key: "github.com {{ item }}"
+    hash_host: true
+    state: present
+  loop: "{{ ssh_config_github_metadata.json.ssh_keys | default([]) }}"
+  loop_control:
+    label: github.com
+  when:
+    - ssh_prepopulate_known_hosts | bool
+    - "'github.com' in ssh_known_hosts"
+
+- name: Validate pinned known_hosts entries
+  ansible.builtin.assert:
+    that:
+      - item is match('^[^ ]+ (ssh-ed25519|ssh-rsa|ecdsa-sha2-[^ ]+) [A-Za-z0-9+/=]+$')
+    fail_msg: "Pinned known_hosts entry requires hostname, key type and base64 key."
+  loop: "{{ ssh_known_hosts_pinned }}"
+  loop_control:
+    label: pinned host
+
+- name: Install explicitly pinned SSH host keys
+  ansible.builtin.known_hosts:
+    path: "{{ ssh_config_dir }}/known_hosts"
+    name: "{{ item.split(' ')[0] }}"
+    key: "{{ item }}"
+    hash_host: true
+    state: present
+  loop: "{{ ssh_known_hosts_pinned }}"
+  loop_control:
+    label: "{{ item.split(' ')[0] }}"
