@@ -76,6 +76,7 @@ class ExpectedStateManifestTests(unittest.TestCase):
         self.assertIn("helm", selected["brew_formula"])
         self.assertIn("kubernetes-cli", selected["brew_formula"])
         self.assertIn("node", selected["brew_formula"])
+        self.assertIn("podman", selected["brew_formula"])
         self.assertIn("openvpn", selected["brew_formula"])
         self.assertIn("wireshark-app", selected["brew_cask"])
         self.assertIn("google-chrome", selected["brew_cask"])
