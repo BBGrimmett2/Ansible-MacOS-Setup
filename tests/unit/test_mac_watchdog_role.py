@@ -58,6 +58,28 @@ class WatchdogRoleTests(unittest.TestCase):
         self.assertTrue(any("workstation_profile" in x and "personal" in x for x in checks))
         self.assertTrue(any("mac_watchdog_revision" in x and "40" in x for x in checks))
 
+    def test_package_install_is_idempotent(self) -> None:
+        tasks = yaml.safe_load((ROLE / "tasks/install.yml").read_text())
+        entrypoint = next(
+            task for task in tasks if task["name"] == "Check watchdog virtual environment entrypoint"
+        )
+        install = next(
+            task for task in tasks if task["name"] == "Install watchdog in isolated virtual environment"
+        )
+        self.assertEqual(
+            entrypoint["ansible.builtin.stat"]["path"],
+            "{{ mac_watchdog_venv_dir }}/bin/mac-watchdog",
+        )
+        self.assertEqual(
+            install["when"],
+            "mac_watchdog_checkout is changed or not mac_watchdog_entrypoint.stat.exists",
+        )
+        self.assertEqual(install["register"], "mac_watchdog_install")
+        restart = next(task for task in tasks if task["name"] == "Restart running watchdog after package update")
+        self.assertTrue(
+            any("mac_watchdog_install is changed" in condition for condition in restart["when"])
+        )
+
     def test_no_configuration_writes_through_model(self) -> None:
         text = (ROLE / "tasks/install.yml").read_text()
         # It may install the agent, but must never run the AI or apply a playbook.
