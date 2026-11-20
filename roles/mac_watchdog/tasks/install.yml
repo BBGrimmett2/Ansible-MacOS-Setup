@@ -14,15 +14,22 @@
     force: false
   register: mac_watchdog_checkout
 
+- name: Check watchdog virtual environment entrypoint
+  ansible.builtin.stat:
+    path: "{{ mac_watchdog_venv_dir }}/bin/mac-watchdog"
+  register: mac_watchdog_entrypoint
+
 - name: Install watchdog in isolated virtual environment
   ansible.builtin.pip:
     name: "{{ mac_watchdog_source_dir }}"
-    # Reinstall even when Python package version is unchanged but pinned SHA moved.
+    # A local source path is reported changed by pip even if already installed.
+    # Only reinstall when the reviewed source revision changes or the venv is missing.
     state: "{{ 'forcereinstall' if mac_watchdog_checkout is changed else 'present' }}"
     editable: false
     virtualenv: "{{ mac_watchdog_venv_dir }}"
     virtualenv_command: "{{ mac_watchdog_python_executable }} -m venv"
   register: mac_watchdog_install
+  when: mac_watchdog_checkout is changed or not mac_watchdog_entrypoint.stat.exists
 
 - name: Ensure LaunchAgents directory exists
   ansible.builtin.file:
