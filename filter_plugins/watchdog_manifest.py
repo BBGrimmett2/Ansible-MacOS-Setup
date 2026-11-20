@@ -9,7 +9,10 @@ def watchdog_manifest(common, extra, resources, selected=None):
     if not all(isinstance(values, list) for values in (common, extra, resources)):
         raise ValueError("Expected-state package and resource inputs must be lists")
     selected = selected if selected is not None else {"brew_formula": [], "brew_cask": []}
-    if not isinstance(selected, dict) or set(selected) not in (\n        frozenset({"brew_formula", "brew_cask"}),\n        frozenset({"brew_formula", "brew_cask", "ollama_model"}),\n    ):
+    if not isinstance(selected, dict) or set(selected) not in (
+        frozenset({"brew_formula", "brew_cask"}),
+        frozenset({"brew_formula", "brew_cask", "ollama_model"}),
+    ):
         raise ValueError("Invalid selected package groups")
     if not all(isinstance(selected[group], list) for group in selected):
         raise ValueError("Selected packages must be lists")
