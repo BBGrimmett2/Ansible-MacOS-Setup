@@ -55,16 +55,20 @@
 - name: Assert requested CLI Homebrew formulae were installed
   ansible.builtin.assert:
     that:
-      - cli_tools_missing_formulae | difference(cli_tools_installed_after.stdout_lines) | length == 0
-    fail_msg: "Some CLI formulae were not installed: {{ cli_tools_missing_formulae | difference(cli_tools_installed_after.stdout_lines) }}"
+      - >-
+        cli_tools_missing_formulae |
+        difference(cli_tools_installed_after.stdout_lines) | length == 0
+    fail_msg: >-
+      Some CLI formulae were not installed: {{ cli_tools_missing_formulae |
+      difference(cli_tools_installed_after.stdout_lines) }}
   when:
     - not ansible_check_mode
     - cli_tools_missing_formulae | length > 0
 
 - name: Add pipx user scripts to PATH
   ansible.builtin.command: pipx ensurepath
-  register: pipx_ensurepath
-  changed_when: "'Success!' in pipx_ensurepath.stdout"
+  register: cli_tools_pipx_ensurepath
+  changed_when: "'Success!' in cli_tools_pipx_ensurepath.stdout"
   when:
     - not ansible_check_mode
     - "'pipx' in cli_tools_selected_formulae"

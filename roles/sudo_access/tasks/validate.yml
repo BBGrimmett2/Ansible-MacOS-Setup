@@ -7,7 +7,9 @@
       - sudo_access_username is match('^[a-z_][a-z0-9_-]*$')
       - sudo_access_username == ansible_facts['env']['USER']
       - sudo_access_dropin_path == '/private/etc/sudoers.d/90-starbase-personal'
-    fail_msg: "Passwordless sudo may only be configured for the current personal macOS account."
+    fail_msg: >-
+      Passwordless sudo may only be configured for the current personal macOS
+      account.
     quiet: true
   when: sudo_access_passwordless_enabled | bool
 

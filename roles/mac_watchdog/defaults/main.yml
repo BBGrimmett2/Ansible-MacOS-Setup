@@ -9,4 +9,6 @@ mac_watchdog_install_root: "{{ mac_watchdog_home }}/.local/share/mac-watchdog"
 mac_watchdog_source_dir: "{{ mac_watchdog_install_root }}/source"
 mac_watchdog_venv_dir: "{{ mac_watchdog_install_root }}/venv"
 mac_watchdog_launchagent_label: icu.starbase.mac-watchdog
-mac_watchdog_launchagent_path: "{{ mac_watchdog_home }}/Library/LaunchAgents/{{ mac_watchdog_launchagent_label }}.plist"
+mac_watchdog_launchagent_path: >-
+  {{ mac_watchdog_home }}/Library/LaunchAgents/{{ mac_watchdog_launchagent_label
+  }}.plist

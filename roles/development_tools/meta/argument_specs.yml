@@ -88,7 +88,8 @@ argument_specs:
     options: {}
 
   install_claude_code_personal:
-    short_description: install claude code personal operation for development tools
+    short_description: >-
+      install claude code personal operation for development tools
     description: Documented task entry point callable with tasks_from
     options: {}
 

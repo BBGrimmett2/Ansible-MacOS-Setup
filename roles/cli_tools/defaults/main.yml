@@ -18,7 +18,9 @@ cli_tools_packages_common: []
 cli_tools_packages_extra: []
 
 # The direnv configuration tasks only run when direnv is selected.
-cli_tools_direnv_enabled: "{{ 'direnv' in ((cli_tools_packages_common | default([])) + (cli_tools_packages_extra | default([]))) }}"
+cli_tools_direnv_enabled: >-
+  {{ 'direnv' in ((cli_tools_packages_common | default([])) +
+  (cli_tools_packages_extra | default([]))) }}
 
 # -----------------------------------------------------------------------------
 # direnv Configuration (Special - Safety Checks)
@@ -31,7 +33,8 @@ cli_tools_direnv_configure: true
 cli_tools_direnv_safety_enabled: true
 
 # Projects directory path for safety checks
-cli_tools_direnv_projects_path: "{{ ansible_facts['env']['HOME'] }}/Documents/Projects"
+cli_tools_direnv_projects_path: >-
+  {{ ansible_facts['env']['HOME'] }}/Documents/Projects
 
 # direnv configuration directory
 cli_tools_direnv_config_dir: "{{ ansible_facts['env']['HOME'] }}/.config/direnv"

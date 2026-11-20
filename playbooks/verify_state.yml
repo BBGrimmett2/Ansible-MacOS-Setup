@@ -30,7 +30,9 @@
         path: "{{ homebrew_prefix }}/bin/brew"
       register: homebrew_binary
       vars:
-        homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+        homebrew_prefix: >-
+          {{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else
+          '/usr/local' }}
 
     - name: Get Homebrew version
       ansible.builtin.command: brew --version
@@ -117,34 +119,73 @@
         component_state:
           homebrew:
             installed: "{{ homebrew_binary.stat.exists }}"
-            version: "{{ homebrew_version.stdout_lines[0] if homebrew_binary.stat.exists else 'not installed' }}"
+            version: >-
+              {{ homebrew_version.stdout_lines[0] if homebrew_binary.stat.exists
+              else 'not installed' }}
             status: "{{ 'pass' if homebrew_binary.stat.exists else 'fail' }}"
           cli_tools:
-            installed: "{{ cli_tools_check.results | selectattr('rc', 'equalto', 0) | list | length == 8 }}"
+            installed: >-
+              {{ cli_tools_check.results | selectattr('rc', 'equalto', 0) | list
+              | length == 8 }}
             packages:
-              jq: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'jq') | first).rc == 0 }}"
-              yq: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'yq') | first).rc == 0 }}"
-              direnv: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'direnv') | first).rc == 0 }}"
-              eza: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'eza') | first).rc == 0 }}"
-              bat: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'bat') | first).rc == 0 }}"
-              fd: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'fd') | first).rc == 0 }}"
-              fzf: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'fzf') | first).rc == 0 }}"
-              git_delta: "{{ (cli_tools_check.results | selectattr('item', 'equalto', 'delta') | first).rc == 0 }}"
+              jq: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'jq') | first).rc == 0 }}
+              yq: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'yq') | first).rc == 0 }}
+              direnv: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'direnv') | first).rc == 0 }}
+              eza: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'eza') | first).rc == 0 }}
+              bat: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'bat') | first).rc == 0 }}
+              fd: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'fd') | first).rc == 0 }}
+              fzf: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'fzf') | first).rc == 0 }}
+              git_delta: >-
+                {{ (cli_tools_check.results | selectattr('item', 'equalto',
+                'delta') | first).rc == 0 }}
             direnv_configured: "{{ direnvrc_stat.stat.exists }}"
-            status: "{{ 'pass' if (cli_tools_check.results | selectattr('rc', 'equalto', 0) | list | length == 8) else 'partial' }}"
+            status: >-
+              {{ 'pass' if (cli_tools_check.results | selectattr('rc',
+              'equalto', 0) | list | length == 8) else 'partial' }}
           terminal:
-            installed: "{{ iterm2_stat.stat.exists or ghostty_stat.stat.exists }}"
-            emulator: "{{ 'iterm2' if iterm2_stat.stat.exists else ('ghostty' if ghostty_stat.stat.exists else 'none') }}"
+            installed: >-
+              {{ iterm2_stat.stat.exists or ghostty_stat.stat.exists }}
+            emulator: >-
+              {{ 'iterm2' if iterm2_stat.stat.exists else ('ghostty' if
+              ghostty_stat.stat.exists else 'none') }}
             nerdfonts_installed: "{{ nerdfonts_check.rc == 0 }}"
-            status: "{{ 'pass' if (iterm2_stat.stat.exists or ghostty_stat.stat.exists) else 'fail' }}"
+            status: >-
+              {{ 'pass' if (iterm2_stat.stat.exists or ghostty_stat.stat.exists)
+              else 'fail' }}
           cloud_cli:
-            installed: "{{ cloud_cli_check.results | selectattr('rc', 'equalto', 0) | list | length > 0 }}"
+            installed: >-
+              {{ cloud_cli_check.results | selectattr('rc', 'equalto', 0) | list
+              | length > 0 }}
             clis:
-              aws: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'aws') | first).rc == 0 }}"
-              gcp: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'gcloud') | first).rc == 0 }}"
-              azure: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'az') | first).rc == 0 }}"
-              github: "{{ (cloud_cli_check.results | selectattr('item', 'equalto', 'gh') | first).rc == 0 }}"
-            status: "{{ 'pass' if (cloud_cli_check.results | selectattr('rc', 'equalto', 0) | list | length > 0) else 'fail' }}"
+              aws: >-
+                {{ (cloud_cli_check.results | selectattr('item', 'equalto',
+                'aws') | first).rc == 0 }}
+              gcp: >-
+                {{ (cloud_cli_check.results | selectattr('item', 'equalto',
+                'gcloud') | first).rc == 0 }}
+              azure: >-
+                {{ (cloud_cli_check.results | selectattr('item', 'equalto',
+                'az') | first).rc == 0 }}
+              github: >-
+                {{ (cloud_cli_check.results | selectattr('item', 'equalto',
+                'gh') | first).rc == 0 }}
+            status: >-
+              {{ 'pass' if (cloud_cli_check.results | selectattr('rc',
+              'equalto', 0) | list | length > 0) else 'fail' }}
           custom_scripts:
             rhdps_installed: "{{ rhdps_check.rc == 0 }}"
             status: "{{ 'pass' if rhdps_check.rc == 0 else 'partial' }}"

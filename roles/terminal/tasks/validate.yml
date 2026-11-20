@@ -8,10 +8,12 @@
 - name: Validate Homebrew is installed
   ansible.builtin.stat:
     path: "{{ homebrew_prefix }}/bin/brew"
-  register: brew_binary
-  failed_when: not brew_binary.stat.exists
+  register: terminal_brew_binary
+  failed_when: not terminal_brew_binary.stat.exists
   vars:
-    homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+    homebrew_prefix: >-
+      {{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else
+      '/usr/local' }}
 
 - name: Validate macOS platform
   ansible.builtin.assert:
@@ -32,6 +34,8 @@
     that:
       - terminal_nerdfonts is defined
       - terminal_nerdfonts | length > 0
-    fail_msg: "terminal_nerdfonts must be defined and non-empty when terminal_install_nerdfonts is true"
+    fail_msg: >-
+      terminal_nerdfonts must be defined and non-empty when
+      terminal_install_nerdfonts is true
     quiet: true
   when: terminal_install_nerdfonts

@@ -39,11 +39,13 @@ shell_environment_zshrc_dashlane_secret_work: "zshrc_work"
 # Custom PATH entries (prepended to PATH)
 shell_environment_path_entries:
   - "{{ ansible_facts['env']['HOME'] }}/.local/bin"
-  - "{{ homebrew_prefix }}/bin"
-  - "{{ homebrew_prefix }}/sbin"
+  - "{{ shell_environment_homebrew_prefix }}/bin"
+  - "{{ shell_environment_homebrew_prefix }}/sbin"
 
 # Homebrew prefix (auto-detected)
-homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+shell_environment_homebrew_prefix: >-
+  {{ homebrew_prefix | default(('/opt/homebrew' if ansible_facts['architecture']
+  == 'arm64' else '/usr/local')) }}
 
 # -----------------------------------------------------------------------------
 # Environment Variables
@@ -89,8 +91,8 @@ shell_environment_aliases:
   gl: git log --oneline --graph --decorate
   # Directory navigation
   ..: cd ..
-  ...: cd ../..
-  ....: cd ../../..
+  "...": cd ../..
+  "....": cd ../../..
   # Safety aliases
   rm: rm -i
   cp: cp -i

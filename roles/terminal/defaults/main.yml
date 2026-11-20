@@ -71,4 +71,5 @@ terminal_iterm2_prefs_dir: "{{ ansible_facts['env']['HOME'] }}/.config/iterm2"
 terminal_ghostty_configure: false
 
 # Ghostty configuration file
-terminal_ghostty_config_file: "{{ ansible_facts['env']['HOME'] }}/.config/ghostty/config"
+terminal_ghostty_config_file: >-
+  {{ ansible_facts['env']['HOME'] }}/.config/ghostty/config

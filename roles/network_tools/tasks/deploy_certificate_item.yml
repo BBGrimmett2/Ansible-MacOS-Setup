@@ -2,17 +2,25 @@
 # Required CA content is stored as PEM text in Dashlane, never as a local path.
 - name: Read {{ cert_item.name }} certificate PEM from Dashlane
   ansible.builtin.command:
-    argv: ["{{ dashlane_cli | default('dcli') }}", "note", "{{ cert_item.dashlane_secret }}", "--output", "text"]
-  register: profile_ca_pem
+    argv: [
+      "{{ dashlane_cli | default('dcli') }}",
+      "note",
+      "{{ cert_item.dashlane_secret }}",
+      "--output",
+      "text",
+    ]
+  register: network_tools_profile_ca_pem
   changed_when: false
-  failed_when: profile_ca_pem.rc != 0 or 'BEGIN CERTIFICATE' not in profile_ca_pem.stdout
+  failed_when: >-
+    network_tools_profile_ca_pem.rc != 0 or 'BEGIN CERTIFICATE' not in
+    network_tools_profile_ca_pem.stdout
   no_log: true
 
 - name: Write {{ cert_item.name }} CA PEM
   ansible.builtin.copy:
-    content: "{{ profile_ca_pem.stdout | trim }}\n"
+    content: "{{ network_tools_profile_ca_pem.stdout | trim }}\n"
     dest: "{{ cert_item.file }}"
-    mode: '0644'
+    mode: "0644"
   no_log: true
 
 - name: Validate {{ cert_item.name }} certificate PEM and validity
@@ -22,26 +30,48 @@
 
 - name: Verify certificate chain and current validity for {{ cert_item.name }}
   ansible.builtin.command:
-    argv: [openssl, verify, -CAfile, "{{ cert_item.file }}", "{{ cert_item.file }}"]
+    argv: [
+      openssl,
+      verify,
+      -CAfile,
+      "{{ cert_item.file }}",
+      "{{ cert_item.file }}",
+    ]
   changed_when: false
 
 - name: Read CA basic constraints for {{ cert_item.name }}
   ansible.builtin.command:
-    argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -ext, basicConstraints]
-  register: profile_ca_constraints
+    argv: [
+      openssl,
+      x509,
+      -in,
+      "{{ cert_item.file }}",
+      -noout,
+      -ext,
+      basicConstraints,
+    ]
+  register: network_tools_profile_ca_constraints
   changed_when: false
 
 - name: Require CA certificate properties for {{ cert_item.name }}
   ansible.builtin.assert:
-    that: "'CA:TRUE' in profile_ca_constraints.stdout"
+    that: "'CA:TRUE' in network_tools_profile_ca_constraints.stdout"
     fail_msg: "Dashlane certificate {{ cert_item.name }} is not a CA"
 
 # Compare the retrieved certificate against installed bytes, without a pinned
 # fingerprint: SHA-1 is used only as the keychain's inventory identifier.
 - name: Read local certificate identifier for {{ cert_item.name }}
   ansible.builtin.command:
-    argv: [openssl, x509, -in, "{{ cert_item.file }}", -noout, -fingerprint, -sha1]
-  register: profile_ca_identifier
+    argv: [
+      openssl,
+      x509,
+      -in,
+      "{{ cert_item.file }}",
+      -noout,
+      -fingerprint,
+      -sha1,
+    ]
+  register: network_tools_profile_ca_identifier
   changed_when: false
 
 - name: Install {{ cert_item.name }} in system trust if not already installed
@@ -56,16 +86,25 @@
       - /Library/Keychains/System.keychain
       - "{{ cert_item.file }}"
   become: true
-  register: profile_ca_installed
-  changed_when: profile_ca_installed.rc == 0
-  when: 
-    - (profile_ca_identifier.stdout | regex_replace('^.*=', '') | replace(':', '') | upper) not in profile_installed_ca_inventory.stdout
+  register: network_tools_profile_ca_installed
+  changed_when: network_tools_profile_ca_installed.rc == 0
+  when:
+    - >-
+      (network_tools_profile_ca_identifier.stdout | regex_replace('^.*=', '') |
+      replace(':', '') | upper) not in
+      network_tools_profile_installed_ca_inventory.stdout
     - not ansible_check_mode
 
 - name: Verify {{ cert_item.name }} appears in the system keychain
   ansible.builtin.command:
-    argv: [security, find-certificate, -a, -Z, /Library/Keychains/System.keychain]
-  register: profile_ca_verified_inventory
+    argv: [
+      security,
+      find-certificate,
+      -a,
+      -Z,
+      /Library/Keychains/System.keychain,
+    ]
+  register: network_tools_profile_ca_verified_inventory
   changed_when: false
   check_mode: false
   when: not ansible_check_mode
@@ -73,6 +112,11 @@
 - name: Assert system keychain contains {{ cert_item.name }}
   ansible.builtin.assert:
     that:
-      - (profile_ca_identifier.stdout | regex_replace('^.*=', '') | replace(':', '') | upper) in profile_ca_verified_inventory.stdout
-    fail_msg: "Certificate {{ cert_item.name }} did not appear in System.keychain after import"
+      - >-
+        (network_tools_profile_ca_identifier.stdout | regex_replace('^.*=', '')
+        | replace(':', '') | upper) in
+        network_tools_profile_ca_verified_inventory.stdout
+    fail_msg: >-
+      Certificate {{ cert_item.name }} did not appear in System.keychain after
+      import
   when: not ansible_check_mode

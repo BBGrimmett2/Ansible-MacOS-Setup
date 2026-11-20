@@ -8,10 +8,12 @@
 - name: Validate Homebrew is installed
   ansible.builtin.stat:
     path: "{{ homebrew_prefix }}/bin/brew"
-  register: brew_binary
-  failed_when: not brew_binary.stat.exists
+  register: cli_tools_brew_binary
+  failed_when: not cli_tools_brew_binary.stat.exists
   vars:
-    homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+    homebrew_prefix: >-
+      {{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else
+      '/usr/local' }}
 
 - name: Validate macOS platform
   ansible.builtin.assert:
@@ -34,7 +36,8 @@
     that:
       - cli_tools_direnv_projects_path is defined
       - cli_tools_direnv_projects_path | length > 0
-    fail_msg: "cli_tools_direnv_projects_path must be defined when safety is enabled"
+    fail_msg: >-
+      cli_tools_direnv_projects_path must be defined when safety is enabled
     quiet: true
   when:
     - cli_tools_direnv_enabled
@@ -47,7 +50,8 @@
       - cli_tools_packages_common is not string
       - cli_tools_packages_extra is sequence
       - cli_tools_packages_extra is not string
-    fail_msg: "CLI packages must be lists in all.yml and profiles/{personal,work}.yml"
+    fail_msg: >-
+      CLI packages must be lists in all.yml and profiles/{personal,work}.yml
 
 - name: Validate names in enabled CLI package lists
   ansible.builtin.assert:

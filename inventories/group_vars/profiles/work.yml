@@ -1,5 +1,6 @@
 ---
-# Non-secret work workstation controls. Secret values live in the secret manager.
+# Non-secret work workstation controls. Secret values live in the secret
+# manager.
 ssh_keys:
   - name: github_work
     profile: work
@@ -65,7 +66,6 @@ certificates:
 development_tools_aap_demo_enabled: true
 development_tools_mcp_servers: []
 
-
 # Additional CLI packages for the work profile; appended to common list.
 cli_tools_packages_extra: []
 
@@ -99,5 +99,7 @@ macos_dock_apps:
 # Existing work GPG key; reference it without generating replacements.
 development_tools_gpg_secret: gpg_key_work_github
 
-# Supply the private email through environment or inventory; never reuse a prior identity.
-git_user_email_work: "{{ lookup('ansible.builtin.env', 'WORKSTATION_GIT_EMAIL_WORK') }}"
+# Supply the private email through environment or inventory; never reuse a prior
+# identity.
+git_user_email_work: >-
+  {{ lookup('ansible.builtin.env', 'WORKSTATION_GIT_EMAIL_WORK') }}

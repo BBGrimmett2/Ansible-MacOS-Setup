@@ -24,7 +24,9 @@
     update_homebrew: false
   when:
     - network_tools_state == 'present'
-    - network_tools_openvpn_installed.rc != 0 or (network_tools_openvpn_installed.stdout | trim | length == 0)
+    - >-
+      network_tools_openvpn_installed.rc != 0 or
+      (network_tools_openvpn_installed.stdout | trim | length == 0)
 
 - name: Verify installed OpenVPN formula
   ansible.builtin.command:

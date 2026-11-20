@@ -82,7 +82,8 @@ argument_specs:
 
   install_podman:
     short_description: Install Podman CLI and manage its machine
-    description: Install Podman via Homebrew and initialize/start a named local VM
+    description: >-
+      Install Podman via Homebrew and initialize/start a named local VM
     author: Brian Grimmett
     options: {}
 

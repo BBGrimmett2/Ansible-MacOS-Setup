@@ -25,7 +25,9 @@
 
     - name: Fail if pre-commit is not installed
       ansible.builtin.fail:
-        msg: "pre-commit is not installed. Run: ansible-playbook playbooks/install_development_tools.yml"
+        msg: >-
+          pre-commit is not installed. Run: ansible-playbook
+          playbooks/install_development_tools.yml
       when: precommit_check.rc != 0
 
     - name: Find repos with .pre-commit-config.yaml under projects directory
@@ -40,8 +42,12 @@
     - name: Display repos found
       ansible.builtin.debug:
         msg:
-          - "Found {{ precommit_configs.files | length }} repo(s) with .pre-commit-config.yaml"
-          - "{{ precommit_configs.files | map(attribute='path') | map('dirname') | list }}"
+          - >-
+            Found {{ precommit_configs.files | length }} repo(s) with
+            .pre-commit-config.yaml
+          - >-
+            {{ precommit_configs.files | map(attribute='path') | map('dirname')
+            | list }}
 
     - name: Install pre-commit hooks in each repo
       ansible.builtin.command: pre-commit install

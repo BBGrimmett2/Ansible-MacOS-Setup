@@ -14,9 +14,12 @@
       - -o
       - ConnectTimeout=15
       - git@github.com
-  register: github_ssh_auth
+  register: ssh_config_github_ssh_auth
   changed_when: false
   failed_when: >-
-    github_ssh_auth.rc != 1 or
-    'successfully authenticated' not in (github_ssh_auth.stderr | lower)
-  when: ssh_host_configs | selectattr('host_pattern', 'equalto', 'github.com') | list | length > 0
+    ssh_config_github_ssh_auth.rc != 1 or
+    'successfully authenticated' not in (ssh_config_github_ssh_auth.stderr |
+    lower)
+  when: >-
+    ssh_config_host_configs | selectattr('host_pattern', 'equalto',
+    'github.com') | list | length > 0

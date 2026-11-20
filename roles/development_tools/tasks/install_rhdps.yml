@@ -19,15 +19,16 @@
     mode: "0755"
 
 - name: Verify rhdps installation
-  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.local/bin/rhdps version"
-  register: rhdps_version
+  ansible.builtin.command: >-
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/rhdps version
+  register: development_tools_rhdps_version
   changed_when: false
 
 - name: Display rhdps installation info
   ansible.builtin.debug:
     msg:
       - "rhdps installed successfully"
-      - "Version: {{ rhdps_version.stdout }}"
+      - "Version: {{ development_tools_rhdps_version.stdout }}"
       - "Location: {{ ansible_facts['env']['HOME'] }}/.local/bin/rhdps"
       - ""
       - "Usage:"

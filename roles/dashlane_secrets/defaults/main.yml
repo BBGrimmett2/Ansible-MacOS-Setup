@@ -11,30 +11,41 @@
 # -----------------------------------------------------------------------------
 
 # Dashlane CLI command
-dashlane_cli: dcli
+dashlane_secrets_cli: "{{ dashlane_cli | default('dcli') }}"
 
 # Timeout for Dashlane CLI commands (seconds)
-dashlane_timeout: 30
+dashlane_secrets_timeout: "{{ dashlane_timeout | default(30) }}"
 
 # -----------------------------------------------------------------------------
 # Secret Retrieval Settings
 # -----------------------------------------------------------------------------
 
 # Default permissions for fetched secrets
-dashlane_default_permissions: "0600"
+dashlane_secrets_default_permissions: >-
+  {{ dashlane_default_permissions | default('0600') }}
 
 # Whether to validate Dashlane authentication before fetching
-dashlane_validate_auth: true
+dashlane_secrets_validate_auth: "{{ dashlane_validate_auth | default(true) }}"
 
 # Whether to fail if secret not found
-dashlane_fail_on_missing: true
+dashlane_secrets_fail_on_missing: >-
+  {{ dashlane_fail_on_missing | default(true) }}
 
 # -----------------------------------------------------------------------------
 # Logging and Security
 # -----------------------------------------------------------------------------
 
 # Whether to log secret retrieval (names only, not values)
-dashlane_log_retrievals: false
+dashlane_secrets_log_retrievals: >-
+  {{ dashlane_log_retrievals | default(false) }}
 
 # Whether to use no_log for sensitive tasks
-dashlane_no_log: true
+dashlane_secrets_no_log: "{{ dashlane_no_log | default(true) }}"
+
+# Accept existing inventory and tasks_from inputs.
+dashlane_secrets_secret_name: "{{ dashlane_secret_name | default('') }}"
+dashlane_secrets_secret_output_path: >-
+  {{ dashlane_secret_output_path | default('') }}
+dashlane_secrets_secret_permissions: >-
+  {{ dashlane_secret_permissions | default(dashlane_secrets_default_permissions)
+  }}

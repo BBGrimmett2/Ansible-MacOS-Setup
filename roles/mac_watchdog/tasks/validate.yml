@@ -6,9 +6,13 @@
       - workstation_profile | default('personal') == 'personal'
       - not (ansible_facts['user_id'] | default('') == 'root')
       - mac_watchdog_revision is match('^[a-fA-F0-9]{40}$')
-      - mac_watchdog_repo == 'https://github.com/BBGrimmett2/MacOS-Config-Watchdog.git'
+      - >-
+        mac_watchdog_repo ==
+        'https://github.com/BBGrimmett2/MacOS-Config-Watchdog.git'
       - mac_watchdog_launchagent_label is match('^[A-Za-z0-9.-]+$')
-    fail_msg: "Watchdog installation requires a personal macOS login user and approved pinned repository/revision"
+    fail_msg: >-
+      Watchdog installation requires a personal macOS login user and approved
+      pinned repository/revision
 
 - name: Check selected Python executable
   ansible.builtin.stat:
@@ -20,7 +24,8 @@
     that:
       - mac_watchdog_python_stat.stat.exists
       - mac_watchdog_python_stat.stat.executable
-    fail_msg: "Install Homebrew Python >=3.11 or override mac_watchdog_python_executable"
+    fail_msg: >-
+      Install Homebrew Python >=3.11 or override mac_watchdog_python_executable
 
 - name: Verify selected Python is version 3.11 or newer
   ansible.builtin.command:

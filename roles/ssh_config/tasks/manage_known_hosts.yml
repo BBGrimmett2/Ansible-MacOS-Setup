@@ -11,11 +11,11 @@
 - name: Reject hosts without an authenticated key source
   ansible.builtin.assert:
     that:
-      - ssh_known_hosts | difference(['github.com']) | length == 0
+      - ssh_config_known_hosts | difference(['github.com']) | length == 0
     fail_msg: >-
       Only github.com supports authenticated automatic discovery.
-      For other hosts, provide trusted ssh_known_hosts_pinned entries.
-  when: ssh_prepopulate_known_hosts | bool
+      For other hosts, provide trusted ssh_config_known_hosts_pinned entries.
+  when: ssh_config_prepopulate_known_hosts | bool
 
 - name: Fetch GitHub published SSH host keys over validated HTTPS
   ansible.builtin.uri:
@@ -27,18 +27,18 @@
   register: ssh_config_github_metadata
   changed_when: false
   when:
-    - ssh_prepopulate_known_hosts | bool
-    - "'github.com' in ssh_known_hosts"
+    - ssh_config_prepopulate_known_hosts | bool
+    - "'github.com' in ssh_config_known_hosts"
 
 - name: Validate GitHub host key metadata
   ansible.builtin.assert:
     that:
-      - ssh_config_github_metadata.json.ssh_keys is defined
-      - ssh_config_github_metadata.json.ssh_keys | length > 0
+      - ssh_config_github_metadata.json.ssh_config_keys is defined
+      - ssh_config_github_metadata.json.ssh_config_keys | length > 0
     fail_msg: "Authenticated GitHub SSH host keys unavailable."
   when:
-    - ssh_prepopulate_known_hosts | bool
-    - "'github.com' in ssh_known_hosts"
+    - ssh_config_prepopulate_known_hosts | bool
+    - "'github.com' in ssh_config_known_hosts"
 
 - name: Install GitHub-published SSH host keys
   ansible.builtin.known_hosts:
@@ -47,19 +47,22 @@
     key: "github.com {{ item }}"
     hash_host: true
     state: present
-  loop: "{{ ssh_config_github_metadata.json.ssh_keys | default([]) }}"
+  loop: "{{ ssh_config_github_metadata.json.ssh_config_keys | default([]) }}"
   loop_control:
     label: github.com
   when:
-    - ssh_prepopulate_known_hosts | bool
-    - "'github.com' in ssh_known_hosts"
+    - ssh_config_prepopulate_known_hosts | bool
+    - "'github.com' in ssh_config_known_hosts"
 
 - name: Validate pinned known_hosts entries
   ansible.builtin.assert:
     that:
-      - item is match('^[^ ]+ (ssh-ed25519|ssh-rsa|ecdsa-sha2-[^ ]+) [A-Za-z0-9+/=]+$')
-    fail_msg: "Pinned known_hosts entry requires hostname, key type and base64 key."
-  loop: "{{ ssh_known_hosts_pinned }}"
+      - >-
+        item is match('^[^ ]+ (ssh-ed25519|ssh-rsa|ecdsa-sha2-[^ ]+)
+        [A-Za-z0-9+/=]+$')
+    fail_msg: >-
+      Pinned known_hosts entry requires hostname, key type and base64 key.
+  loop: "{{ ssh_config_known_hosts_pinned }}"
   loop_control:
     label: pinned host
 
@@ -70,6 +73,6 @@
     key: "{{ item }}"
     hash_host: true
     state: present
-  loop: "{{ ssh_known_hosts_pinned }}"
+  loop: "{{ ssh_config_known_hosts_pinned }}"
   loop_control:
     label: "{{ item.split(' ')[0] }}"

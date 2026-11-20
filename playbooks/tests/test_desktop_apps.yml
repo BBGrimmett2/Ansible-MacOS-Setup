@@ -6,7 +6,8 @@
 # Usage:
 #   Dry run: ansible-playbook playbooks/tests/test_desktop_apps.yml --check
 #   Execute: ansible-playbook playbooks/tests/test_desktop_apps.yml
-#   Verify:  ansible-playbook playbooks/tests/test_desktop_apps.yml (should show no changes)
+#   Verify:  ansible-playbook playbooks/tests/test_desktop_apps.yml (should show
+# no changes)
 # =============================================================================
 
 - name: Test Desktop Apps Role
@@ -22,7 +23,9 @@
       ansible.builtin.debug:
         msg:
           - "=== Desktop Apps Role Test ==="
-          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - >-
+            Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else
+            'EXECUTION MODE' }}
           - "Install all apps: {{ desktop_apps_install_all }}"
 
     - name: Execute desktop_apps role
@@ -31,6 +34,8 @@
       tags: desktop_apps
 
     - name: Verify desktop apps installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check Google Chrome is installed
           ansible.builtin.stat:
@@ -71,5 +76,3 @@
               - "Cursor: /Applications/Cursor.app"
               - "Rectangle: /Applications/Rectangle.app"
               - "Obsidian: /Applications/Obsidian.app"
-      tags: verify
-      when: not ansible_check_mode

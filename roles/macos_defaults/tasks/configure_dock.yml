@@ -11,7 +11,7 @@
     domain: com.apple.dock
     key: autohide
     type: bool
-    value: "{{ macos_dock_autohide }}"
+    value: "{{ macos_defaults_dock_autohide }}"
   notify: Restart Dock
 
 - name: Set Dock position
@@ -19,7 +19,7 @@
     domain: com.apple.dock
     key: orientation
     type: string
-    value: "{{ macos_dock_position }}"
+    value: "{{ macos_defaults_dock_position }}"
   notify: Restart Dock
 
 - name: Set Dock tile size
@@ -27,7 +27,7 @@
     domain: com.apple.dock
     key: tilesize
     type: float
-    value: "{{ macos_dock_tilesize }}"
+    value: "{{ macos_defaults_dock_tilesize }}"
   notify: Restart Dock
 
 - name: Set Dock magnification
@@ -35,7 +35,7 @@
     domain: com.apple.dock
     key: magnification
     type: bool
-    value: "{{ macos_dock_magnification }}"
+    value: "{{ macos_defaults_dock_magnification }}"
   notify: Restart Dock
 
 - name: Set Dock magnification size
@@ -43,8 +43,8 @@
     domain: com.apple.dock
     key: largesize
     type: float
-    value: "{{ macos_dock_largesize }}"
-  when: macos_dock_magnification
+    value: "{{ macos_defaults_dock_largesize }}"
+  when: macos_defaults_dock_magnification
   notify: Restart Dock
 
 - name: Set Dock minimize effect
@@ -52,7 +52,7 @@
     domain: com.apple.dock
     key: mineffect
     type: string
-    value: "{{ macos_dock_mineffect }}"
+    value: "{{ macos_defaults_dock_mineffect }}"
   notify: Restart Dock
 
 - name: Set show recent applications in Dock
@@ -60,7 +60,7 @@
     domain: com.apple.dock
     key: show-recents
     type: bool
-    value: "{{ macos_dock_show_recents }}"
+    value: "{{ macos_defaults_dock_show_recents }}"
   notify: Restart Dock
 
 - name: Set show indicators for open applications
@@ -68,7 +68,7 @@
     domain: com.apple.dock
     key: show-process-indicators
     type: bool
-    value: "{{ macos_dock_show_indicators }}"
+    value: "{{ macos_defaults_dock_show_indicators }}"
   notify: Restart Dock
 
 - name: Set auto-rearrange Spaces based on recent use
@@ -76,7 +76,7 @@
     domain: com.apple.dock
     key: mru-spaces
     type: bool
-    value: "{{ macos_dock_mru_spaces }}"
+    value: "{{ macos_defaults_dock_mru_spaces }}"
   notify: Restart Dock
 
 - name: Display Dock configuration status

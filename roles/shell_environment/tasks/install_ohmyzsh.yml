@@ -12,11 +12,14 @@
 
 - name: Install Oh-My-Zsh
   ansible.builtin.shell: |
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    installer_url=https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
+    sh -c "$(curl -fsSL "$installer_url/tools/install.sh")" "" --unattended
   args:
     creates: "{{ ansible_facts['env']['HOME'] }}/.oh-my-zsh"
   when: not shell_environment_ohmyzsh_check.stat.exists
 
 - name: Display Oh-My-Zsh installation status
   ansible.builtin.debug:
-    msg: "Oh-My-Zsh {{ 'already installed' if shell_environment_ohmyzsh_check.stat.exists else 'has been installed' }}"
+    msg: >-
+      Oh-My-Zsh {{ 'already installed' if
+      shell_environment_ohmyzsh_check.stat.exists else 'has been installed' }}

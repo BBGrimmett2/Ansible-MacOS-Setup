@@ -3,7 +3,7 @@
   ansible.builtin.file:
     path: "{{ mac_watchdog_install_root }}"
     state: directory
-    mode: '0700'
+    mode: "0700"
 
 - name: Checkout pinned watchdog version
   ansible.builtin.git:
@@ -23,25 +23,28 @@
   ansible.builtin.pip:
     name: "{{ mac_watchdog_source_dir }}"
     # A local source path is reported changed by pip even if already installed.
-    # Only reinstall when the reviewed source revision changes or the venv is missing.
-    state: "{{ 'forcereinstall' if mac_watchdog_checkout is changed else 'present' }}"
+    # Only reinstall when the reviewed source revision changes or the venv is
+    # missing.
+    state: >-
+      {{ 'forcereinstall' if mac_watchdog_checkout is changed else 'present' }}
     editable: false
     virtualenv: "{{ mac_watchdog_venv_dir }}"
     virtualenv_command: "{{ mac_watchdog_python_executable }} -m venv"
   register: mac_watchdog_install
-  when: mac_watchdog_checkout is changed or not mac_watchdog_entrypoint.stat.exists
+  when: >-
+    mac_watchdog_checkout is changed or not mac_watchdog_entrypoint.stat.exists
 
 - name: Ensure LaunchAgents directory exists
   ansible.builtin.file:
     path: "{{ mac_watchdog_home }}/Library/LaunchAgents"
     state: directory
-    mode: '0700'
+    mode: "0700"
 
 - name: Render watchdog user LaunchAgent
   ansible.builtin.template:
     src: mac-watchdog.plist.j2
     dest: "{{ mac_watchdog_launchagent_path }}"
-    mode: '0600'
+    mode: "0600"
   register: mac_watchdog_plist
 
 - name: Query current launchd registration
@@ -49,7 +52,8 @@
     argv:
       - /bin/launchctl
       - print
-      - "gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}"
+      - >-
+        gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}
   register: mac_watchdog_launchd_status
   changed_when: false
   failed_when: false
@@ -60,7 +64,8 @@
     argv:
       - /bin/launchctl
       - bootout
-      - "gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}"
+      - >-
+        gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}
   when:
     - mac_watchdog_plist is changed
     - mac_watchdog_launchd_status.rc == 0
@@ -85,7 +90,8 @@
       - /bin/launchctl
       - kickstart
       - -k
-      - "gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}"
+      - >-
+        gui/{{ ansible_facts['user_uid'] }}/{{ mac_watchdog_launchagent_label }}
   when:
     - (mac_watchdog_checkout is changed or mac_watchdog_install is changed)
     - mac_watchdog_plist is not changed

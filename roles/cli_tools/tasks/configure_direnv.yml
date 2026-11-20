@@ -32,5 +32,9 @@
     msg:
       - "direnv configured successfully"
       - "Config file: {{ cli_tools_direnv_config_file }}"
-      - "Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else 'disabled' }}"
-      - "{{ 'Projects path: ' + cli_tools_direnv_projects_path if cli_tools_direnv_safety_enabled else '' }}"
+      - >-
+        Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else
+        'disabled' }}
+      - >-
+        {{ 'Projects path: ' + cli_tools_direnv_projects_path if
+        cli_tools_direnv_safety_enabled else '' }}

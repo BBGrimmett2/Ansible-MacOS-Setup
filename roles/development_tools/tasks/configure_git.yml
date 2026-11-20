@@ -27,16 +27,20 @@
       - --file
       - "{{ development_tools_gitconfig_path }}"
       - --get-regexp
-      - '^(user\.name|user\.email)$'
+      - "^(user\\.name|user\\.email)$"
   register: development_tools_existing_git_identity
   changed_when: false
   failed_when: false
   when: development_tools_gitconfig_stat.stat.exists
 
-- name: Back up .gitconfig when replacing an existing identity or Dashlane configuration
+- name: >-
+    Back up .gitconfig when replacing an existing identity or Dashlane
+    configuration
   ansible.builtin.copy:
     src: "{{ development_tools_gitconfig_path }}"
-    dest: "{{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch }}"
+    dest: >-
+      {{ development_tools_gitconfig_path }}.backup.{{ ansible_date_time.epoch
+      }}
     remote_src: true
     mode: "0600"
   when:
@@ -44,29 +48,39 @@
     - development_tools_gitconfig_stat.stat.exists
     - >-
       development_tools_gitconfig_from_dashlane | bool or
-      ('user.name ' ~ development_tools_git_user_name) not in (development_tools_existing_git_identity.stdout_lines | default([])) or
-      ('user.email ' ~ development_tools_git_user_email) not in (development_tools_existing_git_identity.stdout_lines | default([]))
+      ('user.name ' ~ development_tools_git_user_name) not in
+      (development_tools_existing_git_identity.stdout_lines | default([])) or
+      ('user.email ' ~ development_tools_git_user_email) not in
+      (development_tools_existing_git_identity.stdout_lines | default([]))
 
 - name: Deploy .gitconfig from Dashlane
   when: development_tools_gitconfig_from_dashlane
   block:
     - name: Set Dashlane secret name for .gitconfig
       ansible.builtin.set_fact:
-        gitconfig_secret_name: "{{ development_tools_gitconfig_dashlane_secret_personal if workstation_profile == 'personal' else development_tools_gitconfig_dashlane_secret_work }}"
+        development_tools_gitconfig_secret_name: "{{
+        development_tools_gitconfig_dashlane_secret_personal if
+        workstation_profile == 'personal' else
+        development_tools_gitconfig_dashlane_secret_work
+          }}"
 
     - name: Fetch .gitconfig from Dashlane
       ansible.builtin.include_role:
         name: dashlane_secrets
         tasks_from: fetch_file
       vars:
-        dashlane_secret_name: "{{ gitconfig_secret_name }}"
-        dashlane_secret_output_path: "{{ development_tools_gitconfig_path }}"
-        dashlane_secret_permissions: "0644"
+        dashlane_secrets_secret_name: >-
+          {{ development_tools_gitconfig_secret_name }}
+        dashlane_secrets_secret_output_path: >-
+          {{ development_tools_gitconfig_path }}
+        dashlane_secrets_secret_permissions: "0644"
 
     - name: Display .gitconfig deployment status
       ansible.builtin.debug:
         msg:
-          - "Git configured from Dashlane ({{ gitconfig_secret_name }})"
+          - >-
+            Git configured from Dashlane ({{
+            development_tools_gitconfig_secret_name }})
           - "Profile: {{ workstation_profile | default('personal') }}"
 
 - name: Configure git with individual settings
@@ -108,6 +122,8 @@
       ansible.builtin.debug:
         msg:
           - "Git configured successfully"
-          - "User: {{ development_tools_git_user_name }} <{{ development_tools_git_user_email }}>"
+          - >-
+            User: {{ development_tools_git_user_name }} <{{
+            development_tools_git_user_email }}>
           - "Default branch: {{ development_tools_git_default_branch }}"
           - "Editor: {{ development_tools_git_editor }}"

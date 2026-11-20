@@ -6,7 +6,8 @@
 # Usage:
 #   Dry run: ansible-playbook playbooks/tests/test_cli_tools.yml --check
 #   Execute: ansible-playbook playbooks/tests/test_cli_tools.yml
-#   Verify:  ansible-playbook playbooks/tests/test_cli_tools.yml (should show no changes)
+#   Verify:  ansible-playbook playbooks/tests/test_cli_tools.yml (should show no
+# changes)
 # =============================================================================
 
 - name: Test CLI Tools Role
@@ -23,10 +24,14 @@
       ansible.builtin.debug:
         msg:
           - "=== CLI Tools Role Test ==="
-          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - >-
+            Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else
+            'EXECUTION MODE' }}
           - "User: {{ ansible_facts['env']['USER'] }}"
           - "Architecture: {{ ansible_facts['architecture'] }}"
-          - "Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else 'disabled' }}"
+          - >-
+            Safety checks: {{ 'enabled' if cli_tools_direnv_safety_enabled else
+            'disabled' }}
 
     - name: Execute cli_tools role
       ansible.builtin.import_role:
@@ -34,6 +39,8 @@
       tags: cli_tools
 
     - name: Verify CLI tools installation
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check jq is installed
           ansible.builtin.command: which jq
@@ -109,5 +116,3 @@
               - "fzf: {{ fzf_check.stdout }}"
               - "delta: {{ delta_check.stdout }}"
               - "direnvrc: {{ direnvrc_stat.stat.path }}"
-      tags: verify
-      when: not ansible_check_mode
