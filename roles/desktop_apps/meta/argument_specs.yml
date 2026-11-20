@@ -58,6 +58,18 @@ argument_specs:
         default: true
         description: Enable Cursor installation
 
+      desktop_apps_ollama_enabled:
+        type: bool
+        required: false
+        default: false
+        description: Install Ollama only on personal Macs
+
+      desktop_apps_ollama_open:
+        type: bool
+        required: false
+        default: true
+        description: Open Ollama when its localhost backend is unavailable
+
       desktop_apps_unsloth_enabled:
         type: bool
         required: false
@@ -247,6 +259,11 @@ argument_specs:
   install_stats:
     short_description: install stats operation for desktop apps
     description: Documented task entry point callable with tasks_from
+    options: {}
+
+  install_ollama:
+    short_description: Install and start personal Ollama
+    description: Install Ollama cask and open the app when the local API is unavailable
     options: {}
 
   install_unsloth:
