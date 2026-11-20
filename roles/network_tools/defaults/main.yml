@@ -45,7 +45,7 @@ network_tools_packages:
   bruno: bruno
   openvpn: openvpn
   bind: bind
-  wireshark: wireshark
+  wireshark: wireshark-app
   mtr: mtr
   nmap: nmap
 
