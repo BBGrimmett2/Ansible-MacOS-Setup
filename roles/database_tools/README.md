@@ -7,6 +7,7 @@ Install and configure database and container management tools for macOS.
 This role manages installation of:
 
 - **pgAdmin** - PostgreSQL management tool
+- **Podman CLI** - Homebrew-managed container CLI and an idempotently initialized/started named machine
 - **Podman Desktop** - Container management GUI
 
 ## Requirements
@@ -25,6 +26,9 @@ database_tools_install_all: true
 
 # Individual tool control
 database_tools_pgadmin_enabled: true
+database_tools_podman_enabled: true
+database_tools_podman_machine_enabled: true
+database_tools_podman_machine_name: podman-machine-default
 database_tools_podman_desktop_enabled: true
 ```
 
@@ -49,6 +53,11 @@ database_tools_podman_desktop_enabled: true
 - ansible.builtin.import_role:
     name: database_tools
     tasks_from: install_pgadmin
+
+# Install Podman CLI and machine only
+- ansible.builtin.import_role:
+    name: database_tools
+    tasks_from: install_podman
 
 # Install Podman Desktop only
 - ansible.builtin.import_role:
