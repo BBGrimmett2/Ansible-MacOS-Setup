@@ -1,0 +1,12 @@
+---
+- name: Enforce personal-only expected-state export
+  ansible.builtin.assert:
+    that:
+      - workstation_profile | default('') == 'personal'
+      - mac_watchdog_manifest_enabled is boolean
+      - mac_watchdog_manifest_path is string
+      - mac_watchdog_manifest_path | length > 0
+      - mac_watchdog_manifest_formulae_common is sequence
+      - mac_watchdog_manifest_formulae_extra is sequence
+      - mac_watchdog_manifest_resources is sequence
+    fail_msg: "Expected-state export requires personal profile and valid manifest inputs"

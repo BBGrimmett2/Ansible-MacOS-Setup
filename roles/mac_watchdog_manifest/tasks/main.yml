@@ -1,0 +1,7 @@
+---
+- name: Validate personal expected-state manifest
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Generate personal expected-state manifest
+  ansible.builtin.import_tasks: generate.yml
+  when: mac_watchdog_manifest_enabled | bool

@@ -81,3 +81,8 @@ macos_dock_apps:
 
 # GitHub GPG signing: referenced only; Ansible never generates key material.
 development_tools_gpg_secret: gpg_key_personal_github
+
+# Explicit expected resources beyond shared/personal CLI formula lists.
+# Keep non-secret only. Supported categories: brew_cask, app, pkg_receipt,
+# launchd, macos_build, brew_formula. Do not list work-profile resources.
+mac_watchdog_expected_resources: []
