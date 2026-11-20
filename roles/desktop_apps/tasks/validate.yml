@@ -25,6 +25,17 @@
     that:
       - desktop_apps_ollama_enabled is boolean
       - desktop_apps_ollama_open is boolean
+      - desktop_apps_ollama_models is sequence
+      - desktop_apps_ollama_models is not string
+      - desktop_apps_ollama_models | length <= 20
+      - (desktop_apps_ollama_models | reject('match', '^[A-Za-z0-9][A-Za-z0-9._/-]*:[A-Za-z0-9._-]+
+      - desktop_apps_packages is mapping
+      - desktop_apps_packages.ollama is string
+      - desktop_apps_packages.ollama == 'ollama-app'
+      - not (desktop_apps_ollama_enabled | bool) or workstation_profile == 'personal'
+    fail_msg: Ollama must use the official ollama-app cask on the personal profile only
+    quiet: true
+) | list | length) == 0
       - desktop_apps_packages is mapping
       - desktop_apps_packages.ollama is string
       - desktop_apps_packages.ollama == 'ollama-app'
