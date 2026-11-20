@@ -1,0 +1,18 @@
+---
+- name: Export personal expected state for the macOS watchdog
+  hosts: localhost
+  gather_facts: true
+  vars:
+    workstation_profile: personal
+  pre_tasks:
+    - name: Load shared package definitions
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../inventories/group_vars/all.yml"
+
+    - name: Load non-secret personal profile
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../inventories/group_vars/profiles/personal.yml"
+  tasks:
+    - name: Export expected-state manifest
+      ansible.builtin.import_role:
+        name: mac_watchdog_manifest
