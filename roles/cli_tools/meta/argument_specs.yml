@@ -42,7 +42,8 @@ argument_specs:
 
   install:
     short_description: Install enabled CLI tools
-    description: Install missing packages from shared and profile-specific Homebrew lists
+    description: >-
+      Install missing packages from shared and profile-specific Homebrew lists
     author: Brian Grimmett
 
     options:

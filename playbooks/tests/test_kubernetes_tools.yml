@@ -2,11 +2,13 @@
 # =============================================================================
 # Test Playbook: Kubernetes Tools Role
 # =============================================================================
-# Purpose: Test kubernetes_tools role installation and configuration in isolation
+# Purpose: Test kubernetes_tools role installation and configuration in
+# isolation
 # Usage:
 #   Dry run: ansible-playbook playbooks/tests/test_kubernetes_tools.yml --check
 #   Execute: ansible-playbook playbooks/tests/test_kubernetes_tools.yml
-#   Verify:  ansible-playbook playbooks/tests/test_kubernetes_tools.yml (should show no changes)
+#   Verify:  ansible-playbook playbooks/tests/test_kubernetes_tools.yml (should
+# show no changes)
 # =============================================================================
 
 - name: Test Kubernetes Tools Role
@@ -22,7 +24,9 @@
       ansible.builtin.debug:
         msg:
           - "=== Kubernetes Tools Role Test ==="
-          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - >-
+            Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else
+            'EXECUTION MODE' }}
           - "Install all tools: {{ kubernetes_tools_install_all }}"
 
     - name: Execute kubernetes_tools role
@@ -31,6 +35,8 @@
       tags: kubernetes_tools
 
     - name: Verify Kubernetes tools installations
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check kubectl is installed
           ansible.builtin.command: which kubectl
@@ -78,5 +84,3 @@
               - "k9s: {{ k9s_check.stdout }}"
               - "kubectx: {{ kubectx_check.stdout }}"
               - "stern: {{ stern_check.stdout }}"
-      tags: verify
-      when: not ansible_check_mode

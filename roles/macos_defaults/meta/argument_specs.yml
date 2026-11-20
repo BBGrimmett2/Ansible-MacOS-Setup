@@ -6,7 +6,9 @@
 argument_specs:
   manage_dock:
     short_description: Manage the ordered macOS Dock app pins
-    description: Replace Dock application tiles with profile-specific entries after desktop app installation
+    description: >-
+      Replace Dock application tiles with profile-specific entries after desktop
+      app installation
     author: Brian Grimmett
     options:
       macos_dock_manage_apps:
@@ -19,7 +21,9 @@ argument_specs:
         type: list
         elements: str
         required: true
-        description: Ordered list of installed .app bundle paths; Finder is managed by macOS
+        description: >-
+          Ordered list of installed .app bundle paths; Finder is managed by
+          macOS
 
   main:
     short_description: Configure macOS system preferences
@@ -35,7 +39,9 @@ argument_specs:
         type: list
         elements: str
         required: false
-        description: Ordered application bundle paths for the fully managed Dock; Finder is handled by macOS
+        description: >-
+          Ordered application bundle paths for the fully managed Dock; Finder is
+          handled by macOS
 
       macos_dock_manage_apps:
         type: bool

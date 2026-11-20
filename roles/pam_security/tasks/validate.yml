@@ -13,31 +13,35 @@
 
 - name: Check if PAM sudo config exists
   ansible.builtin.stat:
-    path: "{{ pam_sudo_config }}"
-  register: pam_config_check
+    path: "{{ pam_security_sudo_config }}"
+  register: pam_security_config_check
 
 - name: Assert PAM sudo config exists
   ansible.builtin.assert:
     that:
-      - pam_config_check.stat.exists
-    fail_msg: "PAM sudo config not found at {{ pam_sudo_config }}"
+      - pam_security_config_check.stat.exists
+    fail_msg: "PAM sudo config not found at {{ pam_security_sudo_config }}"
     success_msg: "PAM sudo config found"
     quiet: true
 
 - name: Check if Touch ID module exists
   ansible.builtin.stat:
-    path: "/usr/lib/pam/{{ pam_touchid_module }}"
-  register: touchid_module_check
-  when: pam_touchid_enabled
+    path: "/usr/lib/pam/{{ pam_security_touchid_module }}"
+  register: pam_security_touchid_module_check
+  when: pam_security_touchid_enabled
 
 - name: Display Touch ID module status
   ansible.builtin.debug:
-    msg: "Touch ID module {{ 'found' if touchid_module_check.stat.exists else 'NOT found' }}"
-  when: pam_touchid_enabled
+    msg: >-
+      Touch ID module {{ 'found' if
+      pam_security_touchid_module_check.stat.exists else 'NOT found' }}
+  when: pam_security_touchid_enabled
 
 - name: Warn if Touch ID module not found
   ansible.builtin.debug:
-    msg: "WARNING: Touch ID module not found. This is normal on older macOS versions."
+    msg: >-
+      WARNING: Touch ID module not found. This is normal on older macOS
+      versions.
   when:
-    - pam_touchid_enabled
-    - not touchid_module_check.stat.exists
+    - pam_security_touchid_enabled
+    - not pam_security_touchid_module_check.stat.exists

@@ -13,7 +13,9 @@
 
 - name: Display Homebrew installation status
   ansible.builtin.debug:
-    msg: "Homebrew is {{ 'already installed' if homebrew_installed.stat.exists else 'not installed' }}"
+    msg: >-
+      Homebrew is {{ 'already installed' if homebrew_installed.stat.exists else
+      'not installed' }}
 
 # ---------------------------------------------------------------------------
 # Install Homebrew
@@ -28,7 +30,7 @@
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
         dest: /tmp/homebrew-install.sh
-        mode: '0755'
+        mode: "0755"
       register: homebrew_download
 
     - name: Run Homebrew installation script
@@ -52,7 +54,8 @@
       ansible.builtin.assert:
         that:
           - homebrew_verify.stat.exists
-        fail_msg: "Homebrew installation failed - binary not found at {{ homebrew_bin }}"
+        fail_msg: >-
+          Homebrew installation failed - binary not found at {{ homebrew_bin }}
         success_msg: "Homebrew installed successfully"
 
 # ---------------------------------------------------------------------------
@@ -92,9 +95,10 @@
   block:
     - name: Download Homebrew uninstall script
       ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh
+        url: >-
+          https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh
         dest: /tmp/homebrew-uninstall.sh
-        mode: '0755'
+        mode: "0755"
 
     - name: Run Homebrew uninstall script
       ansible.builtin.command: /bin/bash /tmp/homebrew-uninstall.sh --force

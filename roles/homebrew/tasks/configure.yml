@@ -30,7 +30,7 @@
         path: "{{ item }}"
         line: 'eval "$({{ homebrew_bin }} shellenv)"'
         create: true
-        mode: '0644'
+        mode: "0644"
         state: present
       loop: "{{ homebrew_shell_profiles }}"
       when: homebrew_configure_shell
@@ -53,9 +53,9 @@
     - name: Disable Homebrew analytics
       ansible.builtin.lineinfile:
         path: "{{ item }}"
-        line: 'export HOMEBREW_NO_ANALYTICS=1'
+        line: "export HOMEBREW_NO_ANALYTICS=1"
         create: true
-        mode: '0644'
+        mode: "0644"
         state: present
       loop: "{{ homebrew_shell_profiles }}"
       when:
@@ -65,9 +65,11 @@
     - name: Set Homebrew auto-update behavior
       ansible.builtin.lineinfile:
         path: "{{ item }}"
-        line: "export HOMEBREW_NO_AUTO_UPDATE={{ '0' if homebrew_auto_update else '1' }}"
+        line: >-
+          export HOMEBREW_NO_AUTO_UPDATE={{ '0' if homebrew_auto_update else '1'
+          }}
         create: true
-        mode: '0644'
+        mode: "0644"
         state: present
       loop: "{{ homebrew_shell_profiles }}"
       when: homebrew_configure_shell
@@ -77,7 +79,7 @@
         path: "{{ item }}"
         line: 'export HOMEBREW_CASK_OPTS="--appdir={{ homebrew_cask_appdir }}"'
         create: true
-        mode: '0644'
+        mode: "0644"
         state: present
       loop: "{{ homebrew_shell_profiles }}"
       when: homebrew_configure_shell
@@ -108,9 +110,9 @@
   loop: "{{ homebrew_shell_profiles | product(homebrew_env_vars) }}"
   vars:
     homebrew_env_vars:
-      - 'export HOMEBREW_NO_ANALYTICS=1'
-      - 'export HOMEBREW_NO_AUTO_UPDATE=1'
-      - 'export HOMEBREW_NO_AUTO_UPDATE=0'
+      - "export HOMEBREW_NO_ANALYTICS=1"
+      - "export HOMEBREW_NO_AUTO_UPDATE=1"
+      - "export HOMEBREW_NO_AUTO_UPDATE=0"
       - 'export HOMEBREW_CASK_OPTS="--appdir={{ homebrew_cask_appdir }}"'
   when:
     - homebrew_state == 'absent'

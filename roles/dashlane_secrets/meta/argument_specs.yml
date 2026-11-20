@@ -21,15 +21,23 @@ argument_specs:
         default: dcli
         description: Dashlane CLI command
 
+      dashlane_secrets_cli:
+        type: str
+        description: Prefixed form of dashlane_cli.
+
       dashlane_validate_auth:
         type: bool
         required: false
         default: true
         description: Whether to validate Dashlane authentication
 
-  # ---------------------------------------------------------------------------
-  # Fetch SSH Key
-  # ---------------------------------------------------------------------------
+      # ---------------------------------------------------------------------------
+      # Fetch SSH Key
+      # ---------------------------------------------------------------------------
+      dashlane_secrets_validate_auth:
+        type: bool
+        description: Prefixed form of dashlane_validate_auth.
+
   fetch_ssh_key:
     short_description: Fetch SSH private key from Dashlane
     description:
@@ -41,13 +49,24 @@ argument_specs:
     options:
       dashlane_secret_name:
         type: str
-        required: true
-        description: Name of the secret in Dashlane (e.g., 'ssh_key_personal_github')
+        required: false
+        description: >-
+          Name of the secret in Dashlane (e.g., 'ssh_key_personal_github')
+
+      dashlane_secrets_secret_name:
+        type: str
+        description: Prefixed form of dashlane_secret_name.
 
       dashlane_secret_output_path:
         type: str
-        required: true
-        description: Where to save the SSH key (e.g., '{{ ansible_facts['env']['HOME'] }}/.ssh/id_github')
+        required: false
+        description: >-
+          Where to save the SSH key (e.g., '{{ ansible_facts['env']['HOME']
+          }}/.ssh/id_github')
+
+      dashlane_secrets_secret_output_path:
+        type: str
+        description: Prefixed form of dashlane_secret_output_path.
 
       dashlane_secret_permissions:
         type: str
@@ -55,10 +74,18 @@ argument_specs:
         default: "0600"
         description: File permissions for the SSH key
 
+      dashlane_secrets_secret_permissions:
+        type: str
+        description: Prefixed form of dashlane_secret_permissions.
+
       dashlane_cli:
         type: str
         required: false
         default: dcli
+
+      dashlane_secrets_cli:
+        type: str
+        description: Prefixed form of dashlane_cli.
 
       dashlane_fail_on_missing:
         type: bool
@@ -66,9 +93,13 @@ argument_specs:
         default: true
         description: Fail if secret not found in Dashlane
 
-  # ---------------------------------------------------------------------------
-  # Fetch Credential
-  # ---------------------------------------------------------------------------
+      # ---------------------------------------------------------------------------
+      # Fetch Credential
+      # ---------------------------------------------------------------------------
+      dashlane_secrets_fail_on_missing:
+        type: bool
+        description: Prefixed form of dashlane_fail_on_missing.
+
   fetch_credential:
     short_description: Fetch username/password credential from Dashlane
     description:
@@ -80,22 +111,34 @@ argument_specs:
     options:
       dashlane_secret_name:
         type: str
-        required: true
+        required: false
         description: Name of the credential in Dashlane
+
+      dashlane_secrets_secret_name:
+        type: str
+        description: Prefixed form of dashlane_secret_name.
 
       dashlane_cli:
         type: str
         required: false
         default: dcli
 
+      dashlane_secrets_cli:
+        type: str
+        description: Prefixed form of dashlane_cli.
+
       dashlane_fail_on_missing:
         type: bool
         required: false
         default: true
 
-  # ---------------------------------------------------------------------------
-  # Fetch File
-  # ---------------------------------------------------------------------------
+      # ---------------------------------------------------------------------------
+      # Fetch File
+      # ---------------------------------------------------------------------------
+      dashlane_secrets_fail_on_missing:
+        type: bool
+        description: Prefixed form of dashlane_fail_on_missing.
+
   fetch_file:
     short_description: Fetch arbitrary file content from Dashlane
     description:
@@ -107,13 +150,21 @@ argument_specs:
     options:
       dashlane_secret_name:
         type: str
-        required: true
+        required: false
         description: Name of the file/note in Dashlane
+
+      dashlane_secrets_secret_name:
+        type: str
+        description: Prefixed form of dashlane_secret_name.
 
       dashlane_secret_output_path:
         type: str
-        required: true
+        required: false
         description: Where to save the file
+
+      dashlane_secrets_secret_output_path:
+        type: str
+        description: Prefixed form of dashlane_secret_output_path.
 
       dashlane_secret_permissions:
         type: str
@@ -121,15 +172,27 @@ argument_specs:
         default: "0600"
         description: File permissions
 
+      dashlane_secrets_secret_permissions:
+        type: str
+        description: Prefixed form of dashlane_secret_permissions.
+
       dashlane_cli:
         type: str
         required: false
         default: dcli
 
+      dashlane_secrets_cli:
+        type: str
+        description: Prefixed form of dashlane_cli.
+
       dashlane_fail_on_missing:
         type: bool
         required: false
         default: true
+
+      dashlane_secrets_fail_on_missing:
+        type: bool
+        description: Prefixed form of dashlane_fail_on_missing.
 
   fetch_secret:
     short_description: Retrieve a secure note value from Dashlane
@@ -137,15 +200,27 @@ argument_specs:
     options:
       dashlane_secret_name:
         type: str
-        required: true
+        required: false
         description: Name of the Dashlane secure note
+      dashlane_secrets_secret_name:
+        type: str
+        description: Prefixed form of dashlane_secret_name.
+
       dashlane_cli:
         type: str
         required: false
         default: dcli
         description: Dashlane CLI executable
+      dashlane_secrets_cli:
+        type: str
+        description: Prefixed form of dashlane_cli.
+
       dashlane_fail_on_missing:
         type: bool
         required: false
         default: true
         description: Whether missing notes stop execution
+
+      dashlane_secrets_fail_on_missing:
+        type: bool
+        description: Prefixed form of dashlane_fail_on_missing.

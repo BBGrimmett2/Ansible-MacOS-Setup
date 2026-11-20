@@ -2,14 +2,15 @@
 # =============================================================================
 # Deploy SSH Keys
 # =============================================================================
-# Deploy SSH keys from Dashlane based on configuration in inventories/host_vars/localhost.yml
+# Deploy SSH keys from Dashlane based on configuration in
+# inventories/host_vars/localhost.yml
 # =============================================================================
 
 - name: Create SSH directory
   ansible.builtin.file:
     path: "{{ ssh_config_dir }}"
     state: directory
-    mode: "{{ ssh_dir_permissions }}"
+    mode: "{{ ssh_config_dir_permissions }}"
   tags:
     - ssh_config
     - ssh_config:keys
@@ -19,10 +20,10 @@
     name: dashlane_secrets
     tasks_from: fetch_ssh_key
   vars:
-    dashlane_secret_name: "{{ item.dashlane_secret }}"
-    dashlane_secret_output_path: "{{ item.file }}"
-    dashlane_secret_permissions: "{{ ssh_key_permissions }}"
-  loop: "{{ ssh_keys }}"
+    dashlane_secrets_secret_name: "{{ item.dashlane_secret }}"
+    dashlane_secrets_secret_output_path: "{{ item.file }}"
+    dashlane_secrets_secret_permissions: "{{ ssh_config_key_permissions }}"
+  loop: "{{ ssh_config_keys }}"
   when:
     - item.enabled | default(false)
     - item.profile is defined
@@ -36,7 +37,7 @@
 - name: Display deployed SSH keys
   ansible.builtin.debug:
     msg: "SSH key '{{ item.name }}' deployed to {{ item.file }}"
-  loop: "{{ ssh_keys }}"
+  loop: "{{ ssh_config_keys }}"
   when:
     - item.enabled | default(false)
     - item.profile == workstation_profile

@@ -3,7 +3,7 @@ name: Build Execution Environment
 
 # Intentionally disabled. Keep this workflow for future EE builds.
 # Re-enable only after reviewing registry credentials and build requirements.
-on:
+'on':
   workflow_dispatch:
 
 
@@ -46,20 +46,24 @@ jobs:
 
       - name: Generate image tags
         id: tags
+        env:
+          REPOSITORY: ${{ github.repository }}
+          REGISTRY: ${{ secrets.DEST_REGISTRY }}
+          CUSTOM_TAG: ${{ inputs.tag }}
         run: |
           # Convert repository name to lowercase (Docker requirement)
-          IMAGE_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_NAME=$(echo "${REPOSITORY}" | tr '[:upper:]' '[:lower:]')
 
           # Generate timestamp-based tag
           TIMESTAMP_TAG=$(date -u +%Y%m%d-%H%M%S)
 
           # Build tag list
-          TAGS="${{ secrets.DEST_REGISTRY }}/${IMAGE_NAME}:latest"
-          TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${IMAGE_NAME}:${TIMESTAMP_TAG}"
+          TAGS="${REGISTRY}/${IMAGE_NAME}:latest"
+          TAGS="${TAGS},${REGISTRY}/${IMAGE_NAME}:${TIMESTAMP_TAG}"
 
           # Add custom tag if provided
-          if [ -n "${{ inputs.tag }}" ]; then
-            TAGS="${TAGS},${{ secrets.DEST_REGISTRY }}/${IMAGE_NAME}:${{ inputs.tag }}"
+          if [ -n "${CUSTOM_TAG}" ]; then
+            TAGS="${TAGS},${REGISTRY}/${IMAGE_NAME}:${CUSTOM_TAG}"
           fi
 
           echo "tags=${TAGS}" >> $GITHUB_OUTPUT
@@ -68,45 +72,65 @@ jobs:
 
       - name: Build execution environment
         working-directory: execution-environment
+        env:
+          REGISTRY: ${{ secrets.DEST_REGISTRY }}
+          IMAGE_NAME: ${{ steps.tags.outputs.image_name }}
+          TIMESTAMP_TAG: ${{ steps.tags.outputs.timestamp_tag }}
         run: |
+          image="$REGISTRY/$IMAGE_NAME"
           ansible-builder build \
-            --tag ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest \
-            --tag ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ steps.tags.outputs.timestamp_tag }} \
+            --tag "$image:latest" \
+            --tag "$image:$TIMESTAMP_TAG" \
             --file execution-environment.yml \
             --container-runtime docker \
             --verbosity 3
 
       - name: Tag additional versions
         if: inputs.tag != ''
+        env:
+          REGISTRY: ${{ secrets.DEST_REGISTRY }}
+          IMAGE_NAME: ${{ steps.tags.outputs.image_name }}
+          CUSTOM_TAG: ${{ inputs.tag }}
         run: |
-          docker tag \
-            ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest \
-            ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ inputs.tag }}
+          image="$REGISTRY/$IMAGE_NAME"
+          docker tag "$image:latest" "$image:$CUSTOM_TAG"
 
       - name: Push images to destination registry
+        env:
+          REGISTRY: ${{ secrets.DEST_REGISTRY }}
+          IMAGE_NAME: ${{ steps.tags.outputs.image_name }}
+          TIMESTAMP_TAG: ${{ steps.tags.outputs.timestamp_tag }}
+          CUSTOM_TAG: ${{ inputs.tag }}
         run: |
-          docker push ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest
-          docker push ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ steps.tags.outputs.timestamp_tag }}
+          image="$REGISTRY/$IMAGE_NAME"
+          docker push "$image:latest"
+          docker push "$image:$TIMESTAMP_TAG"
 
-          if [ -n "${{ inputs.tag }}" ]; then
-            docker push ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:${{ inputs.tag }}
+          if [ -n "$CUSTOM_TAG" ]; then
+            docker push "$image:$CUSTOM_TAG"
           fi
 
       - name: Image summary
+        env:
+          REGISTRY: ${{ secrets.DEST_REGISTRY }}
+          IMAGE_NAME: ${{ steps.tags.outputs.image_name }}
+          TIMESTAMP_TAG: ${{ steps.tags.outputs.timestamp_tag }}
+          CUSTOM_TAG: ${{ inputs.tag }}
         run: |
-          echo "## Execution Environment Build Summary :rocket:" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Destination Registry:** ${{ secrets.DEST_REGISTRY }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ steps.tags.outputs.image_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Tags pushed:" >> $GITHUB_STEP_SUMMARY
-          echo "- \`latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`${{ steps.tags.outputs.timestamp_tag }}\`" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ inputs.tag }}" ]; then
-            echo "- \`${{ inputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Pull command:**" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "podman pull ${{ secrets.DEST_REGISTRY }}/${{ steps.tags.outputs.image_name }}:latest" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Execution Environment Build Summary :rocket:"
+            echo ""
+            echo "**Destination Registry:** $REGISTRY"
+            echo "**Image:** $IMAGE_NAME"
+            echo ""
+            echo "### Tags pushed:"
+            printf -- '- `latest`\n- `%s`\n' "$TIMESTAMP_TAG"
+            if [ -n "$CUSTOM_TAG" ]; then
+              printf -- '- `%s`\n' "$CUSTOM_TAG"
+            fi
+            echo ""
+            echo "**Pull command:**"
+            echo '```bash'
+            echo "podman pull $REGISTRY/$IMAGE_NAME:latest"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -15,16 +15,6 @@
     fail_msg: "Required AWS demo variables must be defined"
     quiet: true
 
-- name: Set demo profile name if not provided
-  ansible.builtin.set_fact:
-    aws_demo_profile_name: "{{ cloud_cli_demo_profile_name }}"
-  when: aws_demo_profile_name is not defined
-
-- name: Set AWS region
-  ansible.builtin.set_fact:
-    aws_demo_region: "{{ cloud_cli_aws_default_region }}"
-  when: aws_demo_region is not defined
-
 - name: Create AWS config directory
   ansible.builtin.file:
     path: "{{ ansible_facts['env']['HOME'] }}/.aws"
@@ -36,30 +26,34 @@
     path: "{{ ansible_facts['env']['HOME'] }}/.aws/credentials"
     create: true
     mode: "0600"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ aws_demo_profile_name }}"
+    marker: >-
+      # {mark} ANSIBLE MANAGED BLOCK - {{ cloud_cli_aws_demo_profile_name }}
     block: |
-      [{{ aws_demo_profile_name }}]
+      [{{ cloud_cli_aws_demo_profile_name }}]
       aws_access_key_id = {{ aws_demo_access_key }}
       aws_secret_access_key = {{ aws_demo_secret_key }}
+  no_log: true
+  diff: false
 
 - name: Configure AWS demo profile config
   ansible.builtin.blockinfile:
     path: "{{ ansible_facts['env']['HOME'] }}/.aws/config"
     create: true
     mode: "0600"
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ aws_demo_profile_name }}"
+    marker: >-
+      # {mark} ANSIBLE MANAGED BLOCK - {{ cloud_cli_aws_demo_profile_name }}
     block: |
-      [profile {{ aws_demo_profile_name }}]
-      region = {{ aws_demo_region }}
+      [profile {{ cloud_cli_aws_demo_profile_name }}]
+      region = {{ cloud_cli_aws_demo_region }}
       output = {{ cloud_cli_aws_default_output }}
 
 - name: Display AWS demo configuration info
   ansible.builtin.debug:
     msg:
       - "AWS demo environment configured successfully"
-      - "Profile: {{ aws_demo_profile_name }}"
+      - "Profile: {{ cloud_cli_aws_demo_profile_name }}"
       - "Account: {{ aws_demo_account_id }}"
-      - "Region: {{ aws_demo_region }}"
+      - "Region: {{ cloud_cli_aws_demo_region }}"
       - ""
-      - "Usage: export AWS_PROFILE={{ aws_demo_profile_name }}"
-      - "   or: aws --profile {{ aws_demo_profile_name }} s3 ls"
+      - "Usage: export AWS_PROFILE={{ cloud_cli_aws_demo_profile_name }}"
+      - "   or: aws --profile {{ cloud_cli_aws_demo_profile_name }} s3 ls"

@@ -11,21 +11,21 @@
     domain: NSGlobalDomain
     key: KeyRepeat
     type: int
-    value: "{{ macos_keyboard_key_repeat }}"
+    value: "{{ macos_defaults_keyboard_key_repeat }}"
 
 - name: Set initial key repeat delay
   community.general.osx_defaults:
     domain: NSGlobalDomain
     key: InitialKeyRepeat
     type: int
-    value: "{{ macos_keyboard_initial_key_repeat }}"
+    value: "{{ macos_defaults_keyboard_initial_key_repeat }}"
 
 - name: Set press-and-hold for special characters
   community.general.osx_defaults:
     domain: NSGlobalDomain
     key: ApplePressAndHoldEnabled
     type: bool
-    value: "{{ macos_keyboard_press_and_hold }}"
+    value: "{{ macos_defaults_keyboard_press_and_hold }}"
 
 - name: Display keyboard configuration status
   ansible.builtin.debug:

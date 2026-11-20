@@ -5,7 +5,8 @@
 
 galaxy_info:
   author: Brian Grimmett
-  description: Install and configure cloud provider CLI tools with demo environment support
+  description: >-
+    Install and configure cloud provider CLI tools with demo environment support
   company: Starbase Engineering
   license: MIT
   min_ansible_version: "2.15"

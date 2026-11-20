@@ -6,17 +6,17 @@
 # =============================================================================
 
 - name: Check if Dashlane CLI is installed
-  ansible.builtin.command: which {{ dashlane_cli }}
-  register: dashlane_cli_check
+  ansible.builtin.command: which {{ dashlane_secrets_cli }}
+  register: dashlane_secrets_cli_check
   failed_when: false
   changed_when: false
 
 - name: Assert Dashlane CLI is installed
   ansible.builtin.assert:
     that:
-      - dashlane_cli_check.rc == 0
+      - dashlane_secrets_cli_check.rc == 0
     fail_msg: |
-      Dashlane CLI ({{ dashlane_cli }}) is not installed.
+      Dashlane CLI ({{ dashlane_secrets_cli }}) is not installed.
       Please install it first:
         brew tap dashlane/tap
         brew install dashlane-cli
@@ -24,27 +24,27 @@
     success_msg: "Dashlane CLI is installed"
 
 - name: Confirm Dashlane vault can sync
-  ansible.builtin.command: "{{ dashlane_cli }} sync"
-  register: dashlane_auth_check
+  ansible.builtin.command: "{{ dashlane_secrets_cli }} sync"
+  register: dashlane_secrets_auth_check
   failed_when: false
   changed_when: false
-  when: dashlane_validate_auth
+  when: dashlane_secrets_validate_auth
 
 - name: Assert Dashlane is authenticated
   ansible.builtin.assert:
     that:
-      - dashlane_auth_check.rc == 0
+      - dashlane_secrets_auth_check.rc == 0
     fail_msg: |
       Dashlane CLI could not sync the vault.
       Please authenticate first:
-        {{ dashlane_cli }} sync
+        {{ dashlane_secrets_cli }} sync
     success_msg: "Dashlane authenticated operation succeeded"
-  when: dashlane_validate_auth
+  when: dashlane_secrets_validate_auth
 
 - name: Display Dashlane authentication status
   ansible.builtin.debug:
     msg: "Dashlane CLI is authenticated"
   when:
-    - dashlane_validate_auth
-    - dashlane_auth_check.rc == 0
-    - dashlane_log_retrievals
+    - dashlane_secrets_validate_auth
+    - dashlane_secrets_auth_check.rc == 0
+    - dashlane_secrets_log_retrievals

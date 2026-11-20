@@ -10,7 +10,9 @@
   ansible.builtin.assert:
     that:
       - ansible_facts['os_family'] == 'Darwin'
-    fail_msg: "Homebrew can only be installed on macOS (Darwin). Detected: {{ ansible_facts['os_family'] }}"
+    fail_msg: >-
+      Homebrew can only be installed on macOS (Darwin). Detected: {{
+      ansible_facts['os_family'] }}
     success_msg: "Platform validation passed: macOS detected"
     quiet: true
 
@@ -18,13 +20,14 @@
   ansible.builtin.assert:
     that:
       - homebrew_state in ['present', 'absent']
-    fail_msg: "homebrew_state must be 'present' or 'absent', got: {{ homebrew_state }}"
+    fail_msg: >-
+      homebrew_state must be 'present' or 'absent', got: {{ homebrew_state }}
     success_msg: "State validation passed"
     quiet: true
 
 - name: Validate Command Line Tools are installed
   ansible.builtin.command: xcode-select -p
-  register: xcode_check
+  register: homebrew_xcode_check
   failed_when: false
   changed_when: false
   when: homebrew_state == 'present'
@@ -32,7 +35,7 @@
 - name: Assert Command Line Tools are installed
   ansible.builtin.assert:
     that:
-      - xcode_check.rc == 0
+      - homebrew_xcode_check.rc == 0
     fail_msg: |
       Apple Command Line Tools not installed. Please install them first:
         xcode-select --install
@@ -43,7 +46,7 @@
 - name: Validate shell profiles exist (if configuring shell)
   ansible.builtin.stat:
     path: "{{ item }}"
-  register: shell_profile_check
+  register: homebrew_shell_profile_check
   loop: "{{ homebrew_shell_profiles }}"
   when:
     - homebrew_configure_shell
@@ -53,8 +56,8 @@
   ansible.builtin.file:
     path: "{{ item.item }}"
     state: touch
-    mode: '0644'
-  loop: "{{ shell_profile_check.results | default([]) }}"
+    mode: "0644"
+  loop: "{{ homebrew_shell_profile_check.results | default([]) }}"
   when:
     - homebrew_configure_shell
     - homebrew_state == 'present'

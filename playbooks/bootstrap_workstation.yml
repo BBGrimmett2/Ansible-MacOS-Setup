@@ -25,12 +25,15 @@
       ansible.builtin.assert:
         that:
           - workstation_profile in ['personal', 'work']
-        fail_msg: "Profile must be 'personal' or 'work', got '{{ workstation_profile }}'"
+        fail_msg: >-
+          Profile must be 'personal' or 'work', got '{{ workstation_profile }}'
         success_msg: "Profile '{{ workstation_profile }}' selected"
 
     - name: Load selected non-secret profile configuration
       ansible.builtin.include_vars:
-        file: "{{ playbook_dir }}/../inventories/group_vars/profiles/{{ workstation_profile }}.yml"
+        file: >-
+          {{ playbook_dir }}/../inventories/group_vars/profiles/{{
+          workstation_profile }}.yml
       tags: [always]
 
     - name: Display profile information
@@ -39,7 +42,10 @@
           - "=========================================="
           - "Workstation Profile: {{ workstation_profile }}"
           - "=========================================="
-          - "{% if workstation_profile == 'work' %}Work profile includes Red Hat-specific tools and configurations{% else %}Personal profile with standard development tools{% endif %}"
+          - "{% if workstation_profile == 'work' %}Work profile includes Red
+          Hat-specific tools and configurations{% else %}Personal profile with
+          standard development
+            tools{% endif %}"
 
     - name: Initialize structured workstation reporting
       ansible.builtin.import_role:
@@ -92,7 +98,9 @@
             setup_reporting_message: Completed role execution
           tags: [foundation, secrets]
 
-        - name: Configure personal sudo policy before privileged certificate operations
+        - name: >-
+            Configure personal sudo policy before privileged certificate
+            operations
           ansible.builtin.import_role:
             name: sudo_access
           tags: [foundation, security, sudo]
@@ -116,7 +124,9 @@
             tasks_from: record
           vars:
             setup_reporting_component: certificates
-            setup_reporting_status: "{{ 'success' if certificates | default([]) | length > 0 else 'skipped' }}"
+            setup_reporting_status: >-
+              {{ 'success' if certificates | default([]) | length > 0 else
+              'skipped' }}
             setup_reporting_message: Completed role execution
           tags: [foundation, security, certificates]
 
@@ -401,7 +411,8 @@
         - name: Capture sanitized setup failure
           ansible.builtin.set_fact:
             setup_reporting_failed: true
-            setup_reporting_failure_message: "Failed task: {{ ansible_failed_task.name | default('unknown') }}"
+            setup_reporting_failure_message: >-
+              Failed task: {{ ansible_failed_task.name | default('unknown') }}
           changed_when: false
 
         - name: Record failed stage without storing secrets
@@ -409,9 +420,11 @@
             name: setup_reporting
             tasks_from: record
           vars:
-            setup_reporting_component: "{{ setup_reporting_current_stage | default('unknown') }}"
+            setup_reporting_component: >-
+              {{ setup_reporting_current_stage | default('unknown') }}
             setup_reporting_status: failed
-            setup_reporting_message: "A task in this stage failed; inspect Ansible output"
+            setup_reporting_message: >-
+              A task in this stage failed; inspect Ansible output
 
       always:
         - name: Persist and display run summary even after failure
@@ -422,7 +435,9 @@
 
     - name: Stop playbook after failed required setup stage
       ansible.builtin.fail:
-        msg: "Workstation setup failed; see {{ setup_reporting_state_dir }}/latest.json"
+        msg: >-
+          Workstation setup failed; see {{ setup_reporting_state_dir
+          }}/latest.json
       when: setup_reporting_failed | default(false) | bool
 
   post_tasks:
@@ -470,8 +485,8 @@
 
     - name: Display deferred configuration warnings
       ansible.builtin.debug:
-        msg: "{{ workstation_setup_warnings | default([]) }}"
-      when: (workstation_setup_warnings | default([]) | length) > 0
+        msg: "{{ setup_reporting_warnings | default([]) }}"
+      when: (setup_reporting_warnings | default([]) | length) > 0
 
     - name: Display installation summary
       ansible.builtin.debug:

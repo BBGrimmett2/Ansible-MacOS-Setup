@@ -5,4 +5,5 @@
       - workstation_profile in ['personal', 'work']
       - setup_reporting_schema_version | int == 1
       - setup_reporting_state_dir | length > 0
-    fail_msg: "Invalid setup reporting profile, schema version, or state directory"
+    fail_msg: >-
+      Invalid setup reporting profile, schema version, or state directory

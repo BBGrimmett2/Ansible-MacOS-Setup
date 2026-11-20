@@ -16,16 +16,16 @@ ssh_config_dir: "{{ ansible_facts['env']['HOME'] }}/.ssh"
 ssh_config_file: "{{ ssh_config_dir }}/config"
 
 # SSH directory permissions
-ssh_dir_permissions: "0700"
+ssh_config_dir_permissions: "{{ ssh_dir_permissions | default('0700') }}"
 
 # SSH config file permissions
 ssh_config_permissions: "0600"
 
 # SSH key permissions
-ssh_key_permissions: "0600"
+ssh_config_key_permissions: "{{ ssh_key_permissions | default('0600') }}"
 
 # SSH public key permissions
-ssh_pubkey_permissions: "0644"
+ssh_config_pubkey_permissions: "{{ ssh_pubkey_permissions | default('0644') }}"
 
 # -----------------------------------------------------------------------------
 # Profile Configuration
@@ -40,7 +40,9 @@ ssh_pubkey_permissions: "0644"
 # -----------------------------------------------------------------------------
 
 # Personal SSH keys to deploy (fetched from Dashlane)
-ssh_personal_keys:
+ssh_config_personal_keys: >-
+  {{ ssh_personal_keys | default(ssh_config_personal_keys_default) }}
+ssh_config_personal_keys_default:
   - name: github
     dashlane_secret: ssh_key_personal_github
     file: "{{ ssh_config_dir }}/id_personal_github"
@@ -57,7 +59,9 @@ ssh_personal_keys:
 # -----------------------------------------------------------------------------
 
 # Work SSH keys to deploy (fetched from Dashlane)
-ssh_work_keys:
+ssh_config_work_keys: >-
+  {{ ssh_work_keys | default(ssh_config_work_keys_default) }}
+ssh_config_work_keys_default:
   - name: work_gitlab
     dashlane_secret: ssh_key_work_gitlab
     file: "{{ ssh_config_dir }}/id_work_gitlab"
@@ -73,10 +77,10 @@ ssh_work_keys:
 # -----------------------------------------------------------------------------
 
 # Whether to deploy SSH config file
-ssh_deploy_config: true
+ssh_config_deploy_config: "{{ ssh_deploy_config | default(true) }}"
 
 # Whether to backup existing SSH config
-ssh_backup_existing: true
+ssh_config_backup_existing: "{{ ssh_backup_existing | default(true) }}"
 
 # Fetch SSH config from Dashlane (if true, ignores template)
 ssh_config_from_dashlane: false
@@ -85,7 +89,9 @@ ssh_config_from_dashlane: false
 ssh_config_dashlane_secret: "ssh_config"
 
 # SSH client options (applied globally)
-ssh_global_options:
+ssh_config_global_options: >-
+  {{ ssh_global_options | default(ssh_config_global_options_default) }}
+ssh_config_global_options_default:
   AddKeysToAgent: "yes"
   UseKeychain: "yes"
   IdentitiesOnly: "yes"
@@ -93,7 +99,7 @@ ssh_global_options:
   ServerAliveCountMax: 3
 
 # Compression (useful for slow connections)
-ssh_compression: false
+ssh_config_compression: "{{ ssh_compression | default(false) }}"
 
 # -----------------------------------------------------------------------------
 # SSH Keys Configuration
@@ -101,7 +107,7 @@ ssh_compression: false
 
 # SSH keys to deploy (override in group_vars)
 # This should be defined in inventories/host_vars/localhost.yml
-ssh_keys: []
+ssh_config_keys: "{{ ssh_keys | default([]) }}"
 
 # -----------------------------------------------------------------------------
 # SSH Host Configurations
@@ -109,23 +115,27 @@ ssh_keys: []
 
 # SSH host configurations (override in group_vars)
 # This should be defined in inventories/host_vars/localhost.yml
-ssh_host_configs: []
+ssh_config_host_configs: "{{ ssh_host_configs | default([]) }}"
 
 # -----------------------------------------------------------------------------
 # Known Hosts
 # -----------------------------------------------------------------------------
 
 # Manage known_hosts file
-ssh_manage_known_hosts: true
+ssh_config_manage_known_hosts: "{{ ssh_manage_known_hosts | default(true) }}"
 
 # Strict host key checking (yes, no, ask, accept-new)
-ssh_strict_host_key_checking: 'yes'
+ssh_config_strict_host_key_checking: >-
+  {{ ssh_strict_host_key_checking | default('yes') }}
 
 # Pre-populate known hosts for common services
-ssh_prepopulate_known_hosts: true
+ssh_config_prepopulate_known_hosts: >-
+  {{ ssh_prepopulate_known_hosts | default(true) }}
 
 # GitHub host keys are retrieved from its authenticated HTTPS metadata API.
 # Other hosts require trusted, explicitly pinned key material.
-ssh_known_hosts:
+ssh_config_known_hosts: >-
+  {{ ssh_known_hosts | default(ssh_config_known_hosts_default) }}
+ssh_config_known_hosts_default:
   - github.com
-ssh_known_hosts_pinned: []
+ssh_config_known_hosts_pinned: "{{ ssh_known_hosts_pinned | default([]) }}"

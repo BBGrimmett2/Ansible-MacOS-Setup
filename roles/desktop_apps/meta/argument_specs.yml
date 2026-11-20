@@ -73,12 +73,15 @@ argument_specs:
       desktop_apps_canon_ij_scan_download_url:
         type: str
         required: false
-        description: Canon official IJ Scan Utility Lite download page requiring disclaimer acceptance
+        description: >-
+          Canon official IJ Scan Utility Lite download page requiring disclaimer
+          acceptance
 
       desktop_apps_canon_ij_scan_dmg_filename:
         type: str
         required: false
-        description: Canon IJ Scan Utility Lite installer filename expected in Downloads
+        description: >-
+          Canon IJ Scan Utility Lite installer filename expected in Downloads
 
       desktop_apps_microsoft_365_enabled:
         type: bool
@@ -118,7 +121,8 @@ argument_specs:
 
   install_app_store:
     short_description: Install Mac App Store applications
-    description: Install profile-selected App Store apps after signing in via the GUI
+    description: >-
+      Install profile-selected App Store apps after signing in via the GUI
     author: Brian Grimmett
     options:
       desktop_apps_app_store_enabled:

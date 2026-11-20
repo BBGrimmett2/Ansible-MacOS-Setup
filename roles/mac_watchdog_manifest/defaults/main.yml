@@ -1,7 +1,12 @@
 ---
 mac_watchdog_manifest_enabled: true
-mac_watchdog_manifest_path: "{{ ansible_facts['env']['HOME'] }}/.local/state/mac-watchdog/expected-state.json"
-mac_watchdog_manifest_formulae_common: "{{ cli_tools_packages_common | default([]) }}"
-mac_watchdog_manifest_formulae_extra: "{{ cli_tools_packages_extra | default([]) }}"
-mac_watchdog_manifest_resources: "{{ mac_watchdog_expected_resources | default([]) }}"
+mac_watchdog_manifest_path: >-
+  {{ ansible_facts['env']['HOME']
+  }}/.local/state/mac-watchdog/expected-state.json
+mac_watchdog_manifest_formulae_common: >-
+  {{ cli_tools_packages_common | default([]) }}
+mac_watchdog_manifest_formulae_extra: >-
+  {{ cli_tools_packages_extra | default([]) }}
+mac_watchdog_manifest_resources: >-
+  {{ mac_watchdog_expected_resources | default([]) }}
 mac_watchdog_manifest_repo_root: "{{ playbook_dir }}/.."

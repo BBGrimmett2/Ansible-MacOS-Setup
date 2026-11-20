@@ -7,72 +7,76 @@
 # =============================================================================
 
 - name: Check if Touch ID is already configured
-  ansible.builtin.command: grep -q "pam_tid.so" {{ pam_sudo_config }}
-  register: touchid_check
+  ansible.builtin.command: grep -q "pam_tid.so" {{ pam_security_sudo_config }}
+  register: pam_security_touchid_check
   failed_when: false
   changed_when: false
 
 - name: Display Touch ID configuration status
   ansible.builtin.debug:
-    msg: "Touch ID {{ 'already configured' if touchid_check.rc == 0 else 'not configured' }}"
+    msg: >-
+      Touch ID {{ 'already configured' if pam_security_touchid_check.rc == 0
+      else 'not configured' }}
 
 - name: Configure Touch ID for sudo
   when:
-    - pam_touchid_enabled
-    - touchid_check.rc != 0
+    - pam_security_touchid_enabled
+    - pam_security_touchid_check.rc != 0
   become: true
   block:
     - name: Create PAM backup directory
       ansible.builtin.file:
-        path: "{{ pam_backup_dir }}"
+        path: "{{ pam_security_backup_dir }}"
         state: directory
-        mode: '0755'
-      when: pam_backup_original
+        mode: "0755"
+      when: pam_security_backup_original
 
     - name: Backup original PAM sudo configuration
       ansible.builtin.copy:
-        src: "{{ pam_sudo_config }}"
-        dest: "{{ pam_backup_dir }}/sudo.{{ ansible_date_time.epoch }}"
+        src: "{{ pam_security_sudo_config }}"
+        dest: "{{ pam_security_backup_dir }}/sudo.{{ ansible_date_time.epoch }}"
         remote_src: true
-        mode: '0644'
-      when: pam_backup_original
+        mode: "0644"
+      when: pam_security_backup_original
 
     - name: Read current PAM sudo configuration
       ansible.builtin.slurp:
-        src: "{{ pam_sudo_config }}"
-      register: pam_config_content
+        src: "{{ pam_security_sudo_config }}"
+      register: pam_security_config_content
 
     - name: Add Touch ID to PAM sudo configuration
       ansible.builtin.lineinfile:
-        path: "{{ pam_sudo_config }}"
+        path: "{{ pam_security_sudo_config }}"
         line: "auth       sufficient     pam_tid.so"
         insertbefore: "^auth"
         state: present
         validate: "/usr/bin/grep -q 'auth' %s"
-      register: touchid_config
+      register: pam_security_touchid_config
 
     - name: Display Touch ID configuration result
       ansible.builtin.debug:
         msg: "Touch ID configured successfully for sudo"
-      when: touchid_config.changed
+      when: pam_security_touchid_config.changed
 
 - name: Remove Touch ID configuration
   when:
-    - not pam_touchid_enabled
-    - touchid_check.rc == 0
+    - not pam_security_touchid_enabled
+    - pam_security_touchid_check.rc == 0
   become: true
   block:
     - name: Backup PAM configuration before removal
       ansible.builtin.copy:
-        src: "{{ pam_sudo_config }}"
-        dest: "{{ pam_backup_dir }}/sudo.{{ ansible_date_time.epoch }}.before_removal"
+        src: "{{ pam_security_sudo_config }}"
+        dest: >-
+          {{ pam_security_backup_dir }}/sudo.{{ ansible_date_time.epoch
+          }}.before_removal
         remote_src: true
-        mode: '0644'
-      when: pam_backup_original
+        mode: "0644"
+      when: pam_security_backup_original
 
     - name: Remove Touch ID from PAM sudo configuration
       ansible.builtin.lineinfile:
-        path: "{{ pam_sudo_config }}"
+        path: "{{ pam_security_sudo_config }}"
         line: "auth       sufficient     pam_tid.so"
         state: absent
 
@@ -83,15 +87,17 @@
 - name: Verification
   block:
     - name: Verify Touch ID configuration
-      ansible.builtin.command: grep "pam_tid.so" {{ pam_sudo_config }}
-      register: touchid_verify
+      ansible.builtin.command: grep "pam_tid.so" {{ pam_security_sudo_config }}
+      register: pam_security_touchid_verify
       failed_when: false
       changed_when: false
 
     - name: Display verification result
       ansible.builtin.debug:
         msg: |
-          Touch ID configuration: {{ 'ENABLED' if touchid_verify.rc == 0 else 'DISABLED' }}
+          Touch ID configuration: {{ 'ENABLED' if
+             pam_security_touchid_verify.rc == 0
+             else 'DISABLED' }}
 
           To test Touch ID for sudo:
           1. Open a new terminal window
