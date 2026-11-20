@@ -5,8 +5,7 @@
 - name: Select Homebrew packages configured by Ansible roles
   ansible.builtin.set_fact:
     mac_watchdog_manifest_selected: >-
-      {{ mac_watchdog_manifest_role_defaults | watchdog_role_packages(
-           mac_watchdog_manifest_profile) }}
+      {{ mac_watchdog_manifest_repo_root | watchdog_role_packages }}
   changed_when: false
   no_log: true
 
