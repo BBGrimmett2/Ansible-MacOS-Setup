@@ -8,5 +8,5 @@
     setup_reporting_run_id: "{{ ansible_date_time.iso8601_basic_short }}"
     setup_reporting_results: []
     setup_reporting_failed: false
-    setup_reporting_failure_message: ''
+    setup_reporting_failure_message: ""
   changed_when: false

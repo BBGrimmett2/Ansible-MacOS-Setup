@@ -72,7 +72,8 @@ argument_specs:
 
   deploy_certificates:
     short_description: Deploy profile CA certificates from Dashlane
-    description: Validate and install profile-scoped root CAs before SSH and software setup
+    description: >-
+      Validate and install profile-scoped root CAs before SSH and software setup
     author: Brian Grimmett
     options:
       certificates:

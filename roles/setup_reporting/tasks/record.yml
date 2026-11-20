@@ -10,5 +10,8 @@
 
 - name: Append component result
   ansible.builtin.set_fact:
-    setup_reporting_results: "{{ setup_reporting_results | default([]) + [{'component': setup_reporting_component, 'status': setup_reporting_status, 'message': setup_reporting_message | default('')}] }}"
+    setup_reporting_results: "{{ setup_reporting_results | default([]) +
+    [{'component': setup_reporting_component, 'status': setup_reporting_status,
+    'message': setup_reporting_message
+      | default('')}] }}"
   changed_when: false

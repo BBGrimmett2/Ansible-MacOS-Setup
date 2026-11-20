@@ -1,0 +1,5 @@
+---
+- name: Publish legacy Dashlane result variables
+  ansible.builtin.set_fact:
+    dashlane_file_retrieved: "{{ dashlane_secrets_file_retrieved }}"
+  no_log: true

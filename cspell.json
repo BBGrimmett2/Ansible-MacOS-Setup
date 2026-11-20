@@ -1,5 +1,6 @@
 {
   "version": "0.2",
+  "language": "en",
   "words": [
     "Dashlane",
     "direnv",
@@ -11,8 +12,6 @@
     "nslookup",
     "Shadowman",
     "Elgato",
-    "dashlane",
-    "shadowman",
     "envrc",
     "shellenv",
     "dcli"

@@ -11,4 +11,5 @@
       - mac_watchdog_manifest_resources is sequence
       - mac_watchdog_manifest_repo_root is string
       - mac_watchdog_manifest_repo_root | length > 0
-    fail_msg: "Expected-state export requires personal profile and valid manifest inputs"
+    fail_msg: >-
+      Expected-state export requires personal profile and valid manifest inputs

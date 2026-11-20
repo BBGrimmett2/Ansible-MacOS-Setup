@@ -41,7 +41,9 @@
           - "Tenant: {{ azure_demo_tenant_id }}"
           - "Location: {{ azure_demo_location }}"
           - ""
-          - "This will authenticate Azure CLI with the provided service principal."
+          - >-
+            This will authenticate Azure CLI with the provided service
+            principal.
 
     - name: Configure Azure demo environment
       ansible.builtin.import_role:

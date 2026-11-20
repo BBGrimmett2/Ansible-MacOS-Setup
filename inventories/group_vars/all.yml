@@ -14,7 +14,8 @@
 
 # Python interpreter - uses system Python or venv if in activated session
 # Note: The bootstrap script creates a venv at ~/venv-ansible for initial setup,
-# but it should be deleted after Ansible is installed globally or in a project-specific location
+# but it should be deleted after Ansible is installed globally or in a
+# project-specific location
 ansible_python_interpreter: auto
 
 # -----------------------------------------------------------------------------
@@ -22,7 +23,9 @@ ansible_python_interpreter: auto
 # -----------------------------------------------------------------------------
 
 # Homebrew prefix varies by architecture
-homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+homebrew_prefix: >-
+  {{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else
+  '/usr/local' }}
 
 # -----------------------------------------------------------------------------
 # User Information

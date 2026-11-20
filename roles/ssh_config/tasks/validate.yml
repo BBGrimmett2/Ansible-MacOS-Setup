@@ -7,7 +7,7 @@
   ansible.builtin.file:
     path: "{{ ssh_config_dir }}"
     state: directory
-    mode: "{{ ssh_dir_permissions }}"
+    mode: "{{ ssh_config_dir_permissions }}"
 
 - name: Reject SSH keys without explicit matching profile labels
   ansible.builtin.assert:
@@ -17,7 +17,7 @@
       - item.dashlane_secret is defined
       - item.file is defined
     fail_msg: "SSH key '{{ item.name }}' requires profile: personal or work"
-  loop: "{{ ssh_keys | selectattr('enabled', 'equalto', true) | list }}"
+  loop: "{{ ssh_config_keys | selectattr('enabled', 'equalto', true) | list }}"
   loop_control:
     label: "{{ item.name }}"
 
@@ -27,9 +27,17 @@
       - item.profile is defined
       - item.profile == workstation_profile
       - item.identity_file is defined
-      - (item.identity_file | replace('~/.ssh/', ssh_config_dir ~ '/')) in (ssh_keys | selectattr('enabled', 'equalto', true) | map(attribute='file') | list)
-    fail_msg: "SSH host '{{ item.name }}' does not point to an enabled {{ workstation_profile }} key"
-  loop: "{{ ssh_host_configs | selectattr('enabled', 'equalto', true) | list }}"
+      - >-
+        (item.identity_file | replace('~/.ssh/', ssh_config_dir ~ '/')) in
+        (ssh_config_keys | selectattr('enabled', 'equalto', true) |
+        map(attribute='file') |
+        list)
+    fail_msg: >-
+      SSH host '{{ item.name }}' does not point to an enabled {{
+      workstation_profile }} key
+  loop: >-
+    {{ ssh_config_host_configs | selectattr('enabled', 'equalto', true) | list
+    }}
   loop_control:
     label: "{{ item.name }}"
 
@@ -38,6 +46,7 @@
     msg: |
       SSH Configuration:
       - SSH Directory: {{ ssh_config_dir }}
-      - Keys configured: {{ ssh_keys | length }}
-      - Keys enabled: {{ ssh_keys | selectattr('enabled', 'equalto', true) | list | length }}
-      - Host configs: {{ ssh_host_configs | length }}
+      - Keys configured: {{ ssh_config_keys | length }}
+      - Keys enabled: {{ ssh_config_keys
+        | selectattr('enabled', 'equalto', true) | list | length }}
+      - Host configs: {{ ssh_config_host_configs | length }}

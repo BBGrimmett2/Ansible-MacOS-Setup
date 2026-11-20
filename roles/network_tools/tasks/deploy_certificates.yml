@@ -7,7 +7,8 @@
       - item.profile == workstation_profile
       - item.dashlane_secret is defined
       - item.file is defined
-    fail_msg: "CA '{{ item.name }}' has invalid profile or incomplete designation"
+    fail_msg: >-
+      CA '{{ item.name }}' has invalid profile or incomplete designation
   loop: "{{ certificates | selectattr('enabled', 'equalto', true) | list }}"
   loop_control:
     label: "{{ item.name }}"
@@ -16,12 +17,18 @@
   ansible.builtin.file:
     path: "{{ user_home }}/.certs"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: Read system keychain certificate identifiers
   ansible.builtin.command:
-    argv: [security, find-certificate, -a, -Z, /Library/Keychains/System.keychain]
-  register: profile_installed_ca_inventory
+    argv: [
+      security,
+      find-certificate,
+      -a,
+      -Z,
+      /Library/Keychains/System.keychain,
+    ]
+  register: network_tools_profile_installed_ca_inventory
   changed_when: false
 
 - name: Deploy and validate required profile CA certificates

@@ -15,7 +15,8 @@
 
 - name: Install custom scripts
   ansible.builtin.include_tasks: install_custom_scripts.yml
-  when: development_tools_install_all or development_tools_custom_scripts_enabled
+  when: >-
+    development_tools_install_all or development_tools_custom_scripts_enabled
 
 - name: Install Codex CLI
   ansible.builtin.include_tasks: install_codex.yml

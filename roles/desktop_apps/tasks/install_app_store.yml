@@ -8,7 +8,9 @@
       - item.id | int > 0
       - item.name is defined
       - item.name is match('^[A-Za-z0-9][A-Za-z0-9 ._-]*$')
-    fail_msg: "Each App Store entry needs a name suitable for an .app bundle and a positive numeric ID"
+    fail_msg: >-
+      Each App Store entry needs a name suitable for an .app bundle and a
+      positive numeric ID
   loop: "{{ desktop_apps_app_store_apps }}"
   loop_control:
     label: "{{ item.name | default('unidentified') }}"
@@ -40,7 +42,8 @@
 
 - name: Build list of missing App Store application IDs
   ansible.builtin.set_fact:
-    desktop_apps_store_missing_ids: "{{ desktop_apps_store_missing_ids | default([]) + [item.item.id | int] }}"
+    desktop_apps_store_missing_ids: >-
+      {{ desktop_apps_store_missing_ids | default([]) + [item.item.id | int] }}
   loop: "{{ desktop_apps_store_system_apps.results }}"
   loop_control:
     index_var: store_app_index
@@ -64,7 +67,9 @@
 
 - name: Report when all managed App Store apps are present
   ansible.builtin.debug:
-    msg: "All managed Mac App Store applications are already installed; nothing to install."
+    msg: >-
+      All managed Mac App Store applications are already installed; nothing to
+      install.
   when:
     - desktop_apps_state == 'present'
     - desktop_apps_app_store_enabled | bool

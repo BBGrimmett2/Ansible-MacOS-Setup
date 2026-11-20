@@ -3,32 +3,40 @@
 # Development Tools Role - Configure MCP Servers (Public Function)
 # =============================================================================
 # Idempotently registers MCP servers at user scope (~/.claude.json)
-# Servers defined in development_tools_mcp_servers (defaults/main.yml or host_vars)
+# Servers defined in development_tools_mcp_servers (defaults/main.yml or
+# host_vars)
 # =============================================================================
 
 - name: Get current MCP server list
   ansible.builtin.command: claude mcp list
-  register: mcp_current_list
+  register: development_tools_mcp_current_list
   changed_when: false
   failed_when: false
 
 - name: Remove MCP server if transport has changed
   ansible.builtin.command: claude mcp remove {{ item.name }}
-  loop: "{{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) | list }}"
+  loop: >-
+    {{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) |
+    list }}
   when:
-    - item.name in mcp_current_list.stdout
+    - item.name in development_tools_mcp_current_list.stdout
     - >
-      (item.transport == 'http' and item.name ~ ' (stdio)' in mcp_current_list.stdout) or
-      (item.transport == 'stdio' and item.name ~ ' (http)' in mcp_current_list.stdout) or
-      (item.transport == 'http' and item.name ~ ' (sse)' in mcp_current_list.stdout)
+      (item.transport == 'http' and item.name ~ ' (stdio)' in
+      development_tools_mcp_current_list.stdout) or
+      (item.transport == 'stdio' and item.name ~ ' (http)' in
+      development_tools_mcp_current_list.stdout) or
+      (item.transport == 'http' and item.name ~ ' (sse)' in
+      development_tools_mcp_current_list.stdout)
   changed_when: true
   loop_control:
     label: "{{ item.name }}"
 
 - name: Check if MCP server is already configured
   ansible.builtin.shell: claude mcp list | grep -q "^{{ item.name }}"
-  loop: "{{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) | list }}"
-  register: mcp_check
+  loop: >-
+    {{ development_tools_mcp_servers | selectattr('enabled', 'equalto', true) |
+    list }}
+  register: development_tools_mcp_check
   changed_when: false
   failed_when: false
   loop_control:
@@ -36,8 +44,9 @@
 
 - name: Add HTTP MCP server (user scope)
   ansible.builtin.command: >
-    claude mcp add {{ item.item.name }} --scope user --transport http {{ item.item.url }}
-  loop: "{{ mcp_check.results }}"
+    claude mcp add {{ item.item.name }} --scope user --transport http {{
+    item.item.url }}
+  loop: "{{ development_tools_mcp_check.results }}"
   when:
     - item.rc != 0
     - item.item.transport == 'http'
@@ -48,9 +57,10 @@
 - name: Add stdio MCP server (user scope)
   ansible.builtin.command: >
     claude mcp add {{ item.item.name }} --scope user --transport stdio
-    {% for key, value in (item.item.env | default({})).items() %}-e {{ key }}={{ value }} {% endfor %}
+    {% for key, value in (item.item.env | default({})).items() %}-e {{ key }}={{
+    value }} {% endfor %}
     -- {{ item.item.command }} {{ item.item.args | join(' ') }}
-  loop: "{{ mcp_check.results }}"
+  loop: "{{ development_tools_mcp_check.results }}"
   when:
     - item.rc != 0
     - item.item.transport == 'stdio'
@@ -60,7 +70,9 @@
 
 - name: Display MCP server configuration status
   ansible.builtin.debug:
-    msg: "MCP server '{{ item.item.name }}' {{ 'added' if item.rc != 0 else 'already configured' }}"
-  loop: "{{ mcp_check.results }}"
+    msg: >-
+      MCP server '{{ item.item.name }}' {{ 'added' if item.rc != 0 else 'already
+      configured' }}
+  loop: "{{ development_tools_mcp_check.results }}"
   loop_control:
     label: "{{ item.item.name }}"

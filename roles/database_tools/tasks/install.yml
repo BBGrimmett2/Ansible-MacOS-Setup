@@ -9,6 +9,10 @@
   ansible.builtin.include_tasks: install_pgadmin.yml
   when: database_tools_install_all or database_tools_pgadmin_enabled
 
+- name: Install and configure Podman CLI and machine
+  ansible.builtin.include_tasks: install_podman.yml
+  when: database_tools_install_all or database_tools_podman_enabled
+
 - name: Install Podman Desktop
   ansible.builtin.include_tasks: install_podman_desktop.yml
   when: database_tools_install_all or database_tools_podman_desktop_enabled

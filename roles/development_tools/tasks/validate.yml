@@ -8,10 +8,12 @@
 - name: Validate Homebrew is installed
   ansible.builtin.stat:
     path: "{{ homebrew_prefix }}/bin/brew"
-  register: brew_binary
-  failed_when: not brew_binary.stat.exists
+  register: development_tools_brew_binary
+  failed_when: not development_tools_brew_binary.stat.exists
   vars:
-    homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+    homebrew_prefix: >-
+      {{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else
+      '/usr/local' }}
 
 - name: Validate macOS platform
   ansible.builtin.assert:

@@ -20,8 +20,11 @@
 - name: Warn if aap-demo CLI is not installed
   ansible.builtin.debug:
     msg:
-      - "aap-demo CLI not found. Install from: {{ development_tools_aap_demo_repo }}"
-      - "  git clone {{ development_tools_aap_demo_repo }} {{ development_tools_aap_demo_dir }}"
+      - >-
+        aap-demo CLI not found. Install from: {{ development_tools_aap_demo_repo
+        }}
+      - "  git clone {{ development_tools_aap_demo_repo }} {{
+      development_tools_aap_demo_dir }}"
       - "  cd {{ development_tools_aap_demo_dir }}"
       - "  # Follow README.md for setup"
   when: development_tools_aap_demo_version.rc != 0

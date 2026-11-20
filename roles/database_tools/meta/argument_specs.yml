@@ -34,6 +34,24 @@ argument_specs:
         default: true
         description: Enable pgAdmin installation
 
+      database_tools_podman_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Enable Podman CLI installation
+
+      database_tools_podman_machine_enabled:
+        type: bool
+        required: false
+        default: true
+        description: Initialize and start the local Podman machine
+
+      database_tools_podman_machine_name:
+        type: str
+        required: false
+        default: podman-machine-default
+        description: Podman machine name managed by this workstation
+
       database_tools_podman_desktop_enabled:
         type: bool
         required: false
@@ -61,6 +79,13 @@ argument_specs:
         type: str
         required: false
         default: present
+
+  install_podman:
+    short_description: Install Podman CLI and manage its machine
+    description: >-
+      Install Podman via Homebrew and initialize/start a named local VM
+    author: Brian Grimmett
+    options: {}
 
   install_podman_desktop:
     short_description: Install Podman Desktop

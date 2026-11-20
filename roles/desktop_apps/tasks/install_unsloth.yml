@@ -11,7 +11,10 @@
 
 - name: Report Unsloth cask incompatibility on Intel Macs
   ansible.builtin.set_fact:
-    workstation_setup_warnings: "{{ workstation_setup_warnings | default([]) + ['Unsloth Desktop: official Homebrew cask requires Apple Silicon. See https://unsloth.ai/download for macOS download options.'] }}"
+    desktop_apps_workstation_setup_warnings: "{{
+    desktop_apps_workstation_setup_warnings | default([]) + ['Unsloth Desktop:
+    official Homebrew cask requires Apple
+      Silicon. See https://unsloth.ai/download for macOS download options.'] }}"
   when:
     - desktop_apps_state == 'present'
     - ansible_facts['architecture'] != 'arm64'

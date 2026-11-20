@@ -1,5 +1,6 @@
 ---
-# Non-secret personal workstation controls. Secret values live in the secret manager.
+# Non-secret personal workstation controls. Secret values live in the secret
+# manager.
 # Allow the signed-in administrator to run any sudo command without a password.
 sudo_access_passwordless_enabled: true
 ssh_keys:
@@ -32,7 +33,6 @@ certificates:
 
 development_tools_aap_demo_enabled: false
 development_tools_mcp_servers: []
-
 
 # Additional CLI packages for the personal profile; appended to common list.
 cli_tools_packages_extra: []
@@ -91,5 +91,7 @@ development_tools_gpg_secret: gpg_key_personal_github
 # launchd, macos_build, brew_formula. Do not list work-profile resources.
 mac_watchdog_expected_resources: []
 
-# Supply the private email through environment or inventory; never reuse a prior identity.
-git_user_email_personal: "{{ lookup('ansible.builtin.env', 'WORKSTATION_GIT_EMAIL_PERSONAL') }}"
+# Supply the private email through environment or inventory; never reuse a prior
+# identity.
+git_user_email_personal: >-
+  {{ lookup('ansible.builtin.env', 'WORKSTATION_GIT_EMAIL_PERSONAL') }}

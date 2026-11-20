@@ -8,14 +8,33 @@
 - name: Validate Homebrew is installed
   ansible.builtin.stat:
     path: "{{ homebrew_prefix }}/bin/brew"
-  register: brew_binary
-  failed_when: not brew_binary.stat.exists
+  register: database_tools_brew_binary
+  failed_when: not database_tools_brew_binary.stat.exists
   vars:
-    homebrew_prefix: "{{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else '/usr/local' }}"
+    homebrew_prefix: >-
+      {{ '/opt/homebrew' if ansible_facts['architecture'] == 'arm64' else
+      '/usr/local' }}
 
 - name: Validate macOS platform
   ansible.builtin.assert:
     that:
       - ansible_facts['os_family'] == 'Darwin'
     fail_msg: "This role is designed for macOS only"
+    quiet: true
+
+- name: Validate Podman machine options
+  ansible.builtin.assert:
+    that:
+      - database_tools_podman_enabled is boolean
+      - database_tools_podman_machine_enabled is boolean
+      - database_tools_podman_machine_name is string
+      - >-
+        database_tools_podman_machine_name is
+        match('^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$')
+      - >-
+        not (database_tools_podman_machine_enabled | bool) or
+        (database_tools_podman_enabled | bool) or (database_tools_install_all |
+        bool)
+    fail_msg: >-
+      Podman machine configuration requires enabled CLI and a valid machine name
     quiet: true

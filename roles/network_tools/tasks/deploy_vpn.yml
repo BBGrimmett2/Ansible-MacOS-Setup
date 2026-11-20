@@ -3,14 +3,15 @@
 # VPN Profile Deployment
 # =============================================================================
 # Purpose: Deploy VPN profiles from Dashlane secrets storage
-# Configuration: Defined in inventories/host_vars/localhost.yml (vpn_profiles list)
+# Configuration: Defined in inventories/host_vars/localhost.yml (vpn_profiles
+# list)
 # =============================================================================
 
 - name: Create VPN profiles directory
   ansible.builtin.file:
     path: "{{ ansible_facts['env']['HOME'] }}/.vpn"
     state: directory
-    mode: '0700'
+    mode: "0700"
   tags: [network, vpn]
 
 - name: Check for existing VPN profiles
@@ -21,7 +22,7 @@
     - item.enabled | default(false)
     - item.profile is defined
     - item.profile == workstation_profile
-  register: vpn_file_check
+  register: network_tools_vpn_file_check
   loop_control:
     label: "{{ item.name }}"
   tags: [network, vpn]
@@ -31,22 +32,22 @@
     name: dashlane_secrets
     tasks_from: fetch_file
   vars:
-    dashlane_secret_name: "{{ item.item.dashlane_secret }}"
-    dashlane_secret_output_path: "{{ item.item.file }}"
-    dashlane_secret_permissions: "0600"
-  loop: "{{ vpn_file_check.results }}"
+    dashlane_secrets_secret_name: "{{ item.item.dashlane_secret }}"
+    dashlane_secrets_secret_output_path: "{{ item.item.file }}"
+    dashlane_secrets_secret_permissions: "0600"
+  loop: "{{ network_tools_vpn_file_check.results }}"
   when:
     - not item.skipped | default(false)
     - not item.stat.exists
   loop_control:
     label: "{{ item.item.name }}"
-  register: vpn_deployed
+  register: network_tools_vpn_deployed
   tags: [network, vpn]
 
 - name: Import newly deployed VPN profiles into Viscosity
   ansible.builtin.command:
     cmd: open "{{ item.item.item.file }}"
-  loop: "{{ vpn_deployed.results }}"
+  loop: "{{ network_tools_vpn_deployed.results }}"
   when:
     - not item.skipped | default(false)
   loop_control:
@@ -56,8 +57,9 @@
 
 - name: Display newly deployed VPN profiles
   ansible.builtin.debug:
-    msg: "VPN profile '{{ item.item.item.name }}' deployed and imported to Viscosity"
-  loop: "{{ vpn_deployed.results }}"
+    msg: >-
+      VPN profile '{{ item.item.item.name }}' deployed and imported to Viscosity
+  loop: "{{ network_tools_vpn_deployed.results }}"
   when:
     - not item.skipped | default(false)
   loop_control:
@@ -67,7 +69,7 @@
 - name: Display skipped VPN profiles
   ansible.builtin.debug:
     msg: "VPN profile '{{ item.item.name }}' already exists - skipping"
-  loop: "{{ vpn_file_check.results }}"
+  loop: "{{ network_tools_vpn_file_check.results }}"
   when:
     - not item.skipped | default(false)
     - item.stat.exists

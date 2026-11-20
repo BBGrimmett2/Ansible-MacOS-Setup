@@ -7,18 +7,18 @@
 
 # Global SSH client options
 Host *
-{% for key, value in ssh_global_options.items() %}
+{% for key, value in ssh_config_global_options.items() %}
     {{ key }} {{ value }}
 {% endfor %}
-    StrictHostKeyChecking {{ ssh_strict_host_key_checking }}
-{% if ssh_compression %}
+    StrictHostKeyChecking {{ ssh_config_strict_host_key_checking }}
+{% if ssh_config_compression %}
     Compression yes
 {% endif %}
 
 # =============================================================================
 # Host-Specific Configurations
 # =============================================================================
-{% for config in ssh_host_configs %}
+{% for config in ssh_config_host_configs %}
 {% if config.enabled | default(false) and config.profile is defined and config.profile == workstation_profile %}
 
 # {{ config.name }}

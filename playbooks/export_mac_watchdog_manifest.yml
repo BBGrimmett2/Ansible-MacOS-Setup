@@ -12,7 +12,8 @@
 
     - name: Load non-secret personal profile
       ansible.builtin.include_vars:
-        file: "{{ playbook_dir }}/../inventories/group_vars/profiles/personal.yml"
+        file: >-
+          {{ playbook_dir }}/../inventories/group_vars/profiles/personal.yml
         name: watchdog_personal_config
   tasks:
     - name: Export expected-state manifest
@@ -20,6 +21,9 @@
         name: mac_watchdog_manifest
       vars:
         mac_watchdog_manifest_repo_root: "{{ playbook_dir }}/.."
-        mac_watchdog_manifest_formulae_common: "{{ watchdog_shared_config.cli_tools_packages_common }}"
-        mac_watchdog_manifest_formulae_extra: "{{ watchdog_personal_config.cli_tools_packages_extra }}"
-        mac_watchdog_manifest_resources: "{{ watchdog_personal_config.mac_watchdog_expected_resources }}"
+        mac_watchdog_manifest_formulae_common: >-
+          {{ watchdog_shared_config.cli_tools_packages_common }}
+        mac_watchdog_manifest_formulae_extra: >-
+          {{ watchdog_personal_config.cli_tools_packages_extra }}
+        mac_watchdog_manifest_resources: >-
+          {{ watchdog_personal_config.mac_watchdog_expected_resources }}

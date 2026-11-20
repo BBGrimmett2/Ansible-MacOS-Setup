@@ -31,7 +31,7 @@
     - name: aws_demo_profile_name
       prompt: "Profile name"
       private: false
-      default: "demo-{{ ansible_date_time.date }}"
+      default: "demo-{{ now(fmt='%Y-%m-%d') }}"
 
   tasks:
     - name: Display demo setup information
@@ -42,7 +42,9 @@
           - "Region: {{ aws_demo_region }}"
           - "Profile: {{ aws_demo_profile_name }}"
           - ""
-          - "This will create a new AWS CLI profile without modifying existing configurations."
+          - >-
+            This will create a new AWS CLI profile without modifying existing
+            configurations.
 
     - name: Configure AWS demo environment
       ansible.builtin.import_role:

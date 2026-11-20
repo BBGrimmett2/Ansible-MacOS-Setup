@@ -6,7 +6,8 @@
 # Usage:
 #   Dry run: ansible-playbook playbooks/tests/test_terminal.yml --check
 #   Execute: ansible-playbook playbooks/tests/test_terminal.yml
-#   Verify:  ansible-playbook playbooks/tests/test_terminal.yml (should show no changes)
+#   Verify:  ansible-playbook playbooks/tests/test_terminal.yml (should show no
+# changes)
 # =============================================================================
 
 - name: Test Terminal Role
@@ -23,7 +24,9 @@
       ansible.builtin.debug:
         msg:
           - "=== Terminal Role Test ==="
-          - "Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else 'EXECUTION MODE' }}"
+          - >-
+            Mode: {{ 'CHECK MODE (dry run)' if ansible_check_mode else
+            'EXECUTION MODE' }}
           - "Terminal emulator: {{ terminal_emulator }}"
           - "Install Nerd Fonts: {{ terminal_install_nerdfonts }}"
 
@@ -33,6 +36,8 @@
       tags: terminal
 
     - name: Verify terminal installation
+      tags: verify
+      when: not ansible_check_mode
       block:
         - name: Check iTerm2 application exists
           ansible.builtin.stat:
@@ -60,6 +65,6 @@
             msg:
               - "✓ Terminal emulator installed successfully"
               - "Emulator: {{ terminal_emulator }}"
-              - "{% if terminal_install_nerdfonts %}Nerd Fonts: installed{% endif %}"
-      tags: verify
-      when: not ansible_check_mode
+              - >-
+                {% if terminal_install_nerdfonts %}Nerd Fonts: installed{% endif
+                %}

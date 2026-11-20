@@ -8,15 +8,17 @@ version: 3
 images:
   # Base image - choose the appropriate image for your needs
   base_image:
-    name: registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest
+    name: >-
+      registry.redhat.io/ansible-automation-platform-26/ee-minimal-rhel9:latest
     # Other common options:
-    # name: registry.redhat.io/ansible-automation-platform-26/ee-supported-rhel9:latest
+    # Example base image: ee-supported-rhel9 from AAP 2.6.
     # name: quay.io/ansible/creator-ee:latest
     # name: quay.io/ansible/ansible-runner:latest
 
-  # Optional: Override the builder image used for multi-stage builds
-  # builder_image:
-  #   name: registry.redhat.io/ansible-automation-platform-26/ansible-builder-rhel9:latest
+# Optional: Override the builder image used for multi-stage builds
+# builder_image:
+#   name:
+# registry.redhat.io/ansible-automation-platform-26/ansible-builder-rhel9:latest
 
 # Dependencies to install in the execution environment
 dependencies:

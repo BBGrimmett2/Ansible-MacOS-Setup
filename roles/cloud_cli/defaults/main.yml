@@ -98,4 +98,17 @@ cloud_cli_github_default_protocol: ssh
 cloud_cli_demo_mode: false
 
 # Demo environment profile name (auto-generated if not set)
-cloud_cli_demo_profile_name: "demo-{{ ansible_date_time.date }}"
+cloud_cli_demo_profile_name: "demo-{{ now(fmt='%Y-%m-%d') }}"
+
+cloud_cli_gcp_demo_config_name: >-
+  {{ gcp_demo_config_name | default(cloud_cli_demo_profile_name) }}
+cloud_cli_gcp_demo_region: >-
+  {{ gcp_demo_region | default(cloud_cli_gcp_default_region) }}
+
+cloud_cli_aws_demo_profile_name: >-
+  {{ aws_demo_profile_name | default(cloud_cli_demo_profile_name) }}
+cloud_cli_aws_demo_region: >-
+  {{ aws_demo_region | default(cloud_cli_aws_default_region) }}
+
+cloud_cli_azure_demo_location: >-
+  {{ azure_demo_location | default(cloud_cli_azure_default_location) }}

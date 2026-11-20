@@ -42,4 +42,5 @@
 
 - name: Display Rectangle configuration status
   ansible.builtin.debug:
-    msg: "Rectangle configuration completed - restart Rectangle to apply changes"
+    msg: >-
+      Rectangle configuration completed - restart Rectangle to apply changes

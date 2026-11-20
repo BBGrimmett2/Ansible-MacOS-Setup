@@ -1,7 +1,8 @@
 ---
 argument_specs:
   main:
-    short_description: Export personal Ansible expected state for the read-only macOS watchdog
+    short_description: >-
+      Export personal Ansible expected state for the read-only macOS watchdog
     options:
       mac_watchdog_manifest_enabled:
         type: bool

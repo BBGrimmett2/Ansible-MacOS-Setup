@@ -25,7 +25,9 @@
   register: development_tools_precommit_template_check
 
 - name: Initialize pre-commit git template directory
-  ansible.builtin.command: pre-commit init-templatedir "{{ ansible_facts['env']['HOME'] }}/.git-template"
+  ansible.builtin.command: >-
+    pre-commit init-templatedir "{{ ansible_facts['env']['HOME']
+    }}/.git-template"
   when: not development_tools_precommit_template_check.stat.exists
   changed_when: true
 
