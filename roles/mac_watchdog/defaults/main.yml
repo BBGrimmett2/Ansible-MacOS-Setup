@@ -2,7 +2,7 @@
 mac_watchdog_enabled: true
 mac_watchdog_repo: https://github.com/BBGrimmett2/MacOS-Config-Watchdog.git
 # Pin installs to a reviewed commit; changes require an explicit Ansible PR.
-mac_watchdog_revision: b015ed2539d12e3a3830026f88ee6b5bf1c0336c
+mac_watchdog_revision: cbbd6587e850b00a2986962d350e9f8c60fe43e1
 mac_watchdog_python_executable: /opt/homebrew/bin/python3
 mac_watchdog_home: "{{ ansible_facts['env']['HOME'] }}"
 mac_watchdog_install_root: "{{ mac_watchdog_home }}/.local/share/mac-watchdog"
