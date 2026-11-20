@@ -17,13 +17,17 @@
   register: database_tools_podman_machine_list
   changed_when: false
   check_mode: false
-  when: database_tools_podman_machine_enabled | bool
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - not ansible_check_mode
 
 - name: Decode machine state
   ansible.builtin.set_fact:
     database_tools_podman_machines: "{{ database_tools_podman_machine_list.stdout | from_json }}"
   changed_when: false
-  when: database_tools_podman_machine_enabled | bool
+  when:
+    - database_tools_podman_machine_enabled | bool
+    - not ansible_check_mode
 
 - name: Initialize Podman machine only when absent
   ansible.builtin.command:
