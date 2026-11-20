@@ -82,6 +82,7 @@ _ROLE_PACKAGES = {
         "brew_cask": {
             "chrome": "google-chrome", "vscode": "visual-studio-code",
             "claude": "claude", "microsoft_365": "microsoft-office",
+            "ollama": "ollama-app",
             "appcleaner": "appcleaner", "stats": "stats", "raycast": "raycast",
             "chatgpt": "chatgpt", "nextcloud": "nextcloud",
             "rectangle": "rectangle", "displaylink": "displaylink",
@@ -132,7 +133,7 @@ def watchdog_role_packages(repo_root, profile=None):
                     raise ValueError("Invalid package enabled flag: " + prefix + key)
                 # desktop apps Claude/Microsoft 365 explicitly check their enabled
                 # flags without the install_all fallback.
-                explicit = role == "desktop_apps" and key in {"claude", "microsoft_365"}
+                explicit = role == "desktop_apps" and key in {"claude", "microsoft_365", "ollama"}
                 if enabled or (install_all and not explicit):
                     selection[category].add(package)
     terminal = defaults_by_role["terminal"]
