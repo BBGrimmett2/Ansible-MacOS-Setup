@@ -1,5 +1,5 @@
 ---
-mac_watchdog_enabled: true
+mac_watchdog_enabled: false
 mac_watchdog_repo: https://github.com/BBGrimmett2/MacOS-Config-Watchdog.git
 # Pin installs to a reviewed commit; changes require an explicit Ansible PR.
 mac_watchdog_revision: 82bf81c66b9b368939a084b1d8d5b412f6842e22
