@@ -635,8 +635,39 @@ run_ansible_playbook() {
     print_info "You will be prompted for your sudo password and workstation profile"
     echo ""
 
-    # Run the bootstrap playbook with become password prompt and verbosity
-    if ! ansible-playbook playbooks/bootstrap_workstation.yml --ask-become-pass -v; then
+    # Select the profile once so the Git identity matches the Ansible run.
+    local selected_profile="${WORKSTATION_PROFILE:-}"
+    if [[ -z "$selected_profile" ]]; then
+        read -r -p "Select workstation profile (personal/work) [personal]: " selected_profile
+        selected_profile="${selected_profile:-personal}"
+    fi
+    if [[ "$selected_profile" != "personal" && "$selected_profile" != "work" ]]; then
+        print_fatal "Profile must be personal or work"
+    fi
+
+    # The profile inventory reads the matching exported environment variable.
+    # Never copy a Git identity from the other profile or silently reuse .gitconfig.
+    local git_email_var=""
+    if [[ "$selected_profile" == "personal" ]]; then
+        git_email_var="WORKSTATION_GIT_EMAIL_PERSONAL"
+    else
+        git_email_var="WORKSTATION_GIT_EMAIL_WORK"
+    fi
+    local selected_git_email="${!git_email_var:-}"
+    if [[ -z "$selected_git_email" ]]; then
+        read -r -p "Git email for $selected_profile profile: " selected_git_email
+    fi
+    if [[ -z "$selected_git_email" || "$selected_git_email" != *@* ]]; then
+        print_fatal "A valid $selected_profile Git email is required"
+    fi
+    printf -v "$git_email_var" '%s' "$selected_git_email"
+    export "$git_email_var"
+    print_step "Profile-specific Git email supplied to Ansible ($selected_profile)"
+
+    # Extra vars override the playbook's profile prompt; the email stays in
+    # the environment instead of appearing in the command-line arguments.
+    if ! ansible-playbook playbooks/bootstrap_workstation.yml --ask-become-pass -v \
+        --extra-vars "workstation_profile=$selected_profile"; then
         print_fatal "Ansible playbook execution failed. Check the output above for errors."
     fi
 
