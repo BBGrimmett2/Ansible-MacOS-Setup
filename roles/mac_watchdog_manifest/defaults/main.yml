@@ -1,5 +1,5 @@
 ---
-mac_watchdog_manifest_enabled: true
+mac_watchdog_manifest_enabled: false
 mac_watchdog_manifest_path: >-
   {{ ansible_facts['env']['HOME']
   }}/.local/state/mac-watchdog/expected-state.json

@@ -6,7 +6,7 @@ argument_specs:
     options:
       mac_watchdog_manifest_enabled:
         type: bool
-        default: true
+        default: false
       mac_watchdog_manifest_path:
         type: path
         required: false

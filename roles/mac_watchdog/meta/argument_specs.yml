@@ -5,7 +5,7 @@ argument_specs:
     options:
       mac_watchdog_enabled:
         type: bool
-        default: true
+        default: false
       mac_watchdog_repo:
         type: str
         required: false
